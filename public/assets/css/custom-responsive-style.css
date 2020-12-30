@@ -1,0 +1,64 @@
+@media only screen and (max-width: 1480px){}
+@media only screen and (max-width: 1366px){}
+@media only screen and (max-width: 1280px){ .page-users-view table td{min-width: inherit;}
+.page-users-view table td:first-child{padding-right: 10px}
+}
+@media only screen and (max-width: 1199px){
+
+}
+@media only screen and (max-width: 1169px){
+
+}
+@media only screen and (max-width: 1024px){
+	table.table{min-width: 110%}
+}
+@media only screen and (max-width: 999px){}
+@media only screen and (max-width: 991px){
+  #user-profile .nav.nav-tabs .nav-item .nav-link{
+    padding: 3rem 1.5rem 2rem;
+  }
+}
+@media only screen and (max-width: 767px){
+  #user-profile .nav.nav-tabs .nav-item .nav-link{
+  	padding: 3rem .5rem 2rem;
+  }
+ .profile-header-nav {
+      width: 100%;
+      justify-content: flex-end !important;
+      float: none;
+  }
+}
+@media only screen and (max-width: 645px){
+	#user-profile .profile-img-container{
+	  left: 5%;
+      width: 100%;
+      bottom: -1rem;
+	}
+  #user-profile .profile-img-container img{
+  	 height: 100px;
+    width: 100px;
+  }
+  .profile-header-nav {
+    width: 100%;
+    justify-content: center !important;
+    float:none; 
+  }
+  #user-profile .nav.nav-tabs .nav-item .nav-link{
+
+  }
+}
+@media only screen and (max-width: 575px){}
+@media only screen and (max-width: 479px){
+  .nav.nav-tabs .nav-item {
+    position: relative;
+    width: 100%;
+   }
+   #user-profile .nav.nav-tabs .nav-item .nav-link {
+    padding: 15px 10px;
+   }
+   #user-profile .nav.nav-tabs {
+    margin-bottom: 0;
+    margin-top: 22px;
+}
+}
+@media only screen and (max-width: 416px){}

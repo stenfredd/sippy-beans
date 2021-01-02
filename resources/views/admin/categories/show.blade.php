@@ -100,7 +100,7 @@
                             <table class="table table-borderless table-striped" id="tblProducts">
                                 <thead>
                                     <tr>
-                                        <th>ID#</th>
+                                        <th>#</th>
                                         <th>IMAGE</th>
                                         <th class="w-18">PRODUCT</th>
                                         <th>BRAND</th>
@@ -294,8 +294,8 @@ $(document).ready(function() {
         },
         "columns": [
             {
-                "data": "id",
-                "class": "text-bold-500 font-small-3"
+                "data": "sort_image",
+                "class": "text-center"
             },
             {
                 "data": "image_path",
@@ -396,6 +396,66 @@ $(document).ready(function() {
                 });
             }
         })
+    }
+
+    let sorting_products = [];
+    $(document).ready(function() {
+        setTimeout(function() {
+            $( "#tblProducts > tbody" ).sortable({
+                placeholder: "ui-state-highlight",
+                helper: 'clone',
+                update: function( event, ui ) {
+                    sorting_products = [];
+                    $(this).children().each(function(index) {
+                        let product_id = $(this).data('id');
+                        sorting_products.push({
+                            product_id: product_id,
+                            sort_order: index + 1,
+                        });
+                    });
+                    updateSortOrders();
+                }
+            });
+            $( "#tblProducts > tbody" ).disableSelection();
+        }, 2000);
+    });
+
+    function updateSortOrders() {
+        // sorting_products
+        let formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('sorting_products', JSON.stringify(sorting_products));
+
+        $.ajax({
+            url: "{{ url('admin/categories/update-products-sort-orders') }}",
+            type: "post",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status === true) {
+                    productsTable.ajax.reload();
+                    Swal.fire({
+                        type: "success",
+                        title: 'Success',
+                        text: response.message,
+                        confirmButtonClass: 'btn btn-success',
+                    })
+                }
+                else {
+                    toastr.error(response.message, 'Error', {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "showMethod": "slideDown",
+                        "hideMethod": "slideUp",
+                        "timeOut": 2000
+                    });
+                }
+            },
+            error: function(error) {
+                // console.log(error);
+            }
+        });
     }
 </script>
 @endsection

@@ -9,14 +9,13 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProcessController extends Controller
 {
-    //
     public function index(Request $request)
     {
         if ($request->ajax()) {
             $processes = Process::select('*')->orderBy('id', 'asc')->get();
 
             return DataTables::of($processes)
-                ->addIndexColumn()                
+                ->addIndexColumn()
                 ->addColumn('action', function ($process) {
                     $action = '<div class="d-inline-flex">';
                     $action .= '<a class="btn btn-sm btn-icon btn-warning mr-1 mb-1 waves-effect waves-light" href="javascript:" onclick="showAddEditModal(this, true)"><i class="feather icon-edit"></i></a>';
@@ -30,7 +29,7 @@ class ProcessController extends Controller
     }
     public function save(Request $request)
     {
-        $validation = [           
+        $validation = [
             'title' => 'required',
         ];
         $this->validate($request, $validation);
@@ -47,7 +46,8 @@ class ProcessController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'process_id' => 'required'
         ];
@@ -61,17 +61,17 @@ class ProcessController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_process' => 'required'
         ]);
 
         $sorting_process = json_decode($request->sorting_origin, true);
-        foreach($sorting_process as $process) {
+        foreach ($sorting_process as $process) {
             Process::find($process['origin_id'])->update(['display_order' => $process['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Process sorting order applied successfully.'];
         return response()->json($response);
     }
-
 }

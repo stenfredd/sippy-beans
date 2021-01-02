@@ -9,7 +9,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class OriginController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         if ($request->ajax()) {
             $origins = Origin::select('*')->orderBy('id', 'asc')->get();
 
@@ -26,7 +27,8 @@ class OriginController extends Controller
         }
         return view('admin.origins');
     }
-    public function save(Request $request) {
+    public function save(Request $request)
+    {
         $validation = [
             'origin_name' => 'required',
         ];
@@ -46,7 +48,8 @@ class OriginController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'origin_id' => 'required'
         ];
@@ -60,13 +63,14 @@ class OriginController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_origins' => 'required'
         ]);
 
         $sorting_origins = json_decode($request->sorting_origins, true);
-        foreach($sorting_origins as $origins) {
+        foreach ($sorting_origins as $origins) {
             Origin::find($origins['origin_id'])->update(['display_order' => $origins['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Origins sorting order applied successfully.'];

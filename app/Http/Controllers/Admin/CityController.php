@@ -57,7 +57,8 @@ class CityController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'city_id' => 'required'
         ];

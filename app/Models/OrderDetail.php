@@ -20,19 +20,23 @@ class OrderDetail extends Model
         'is_cancelled'
     ];
 
-    public function product() {
+    public function product()
+    {
         return $this->hasOne(Product::class, 'id', 'product_id');
     }
 
-    public function variant() {
+    public function variant()
+    {
         return $this->hasOne(Variant::class, 'id', 'variant_id');
     }
 
-    public function equipment() {
+    public function equipment()
+    {
         return $this->hasOne(Equipment::class, 'id', 'equipment_id');
     }
 
-    public function subscription() {
+    public function subscription()
+    {
         return $this->hasOne(Subscription::class, 'id', 'subscription_id');
     }
 }

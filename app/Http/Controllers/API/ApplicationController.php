@@ -11,7 +11,6 @@ use App\Models\Grind;
 use App\Models\MatchMakers;
 use App\Models\Page;
 use App\Models\Product;
-use App\Models\Type;
 use App\Models\UserMatchMaker;
 use Illuminate\Http\Request;
 
@@ -21,12 +20,6 @@ class ApplicationController extends Controller
     {
         $banners = Banner::whereStatus(1)->orderBy('display_order', 'asc')->get();
 
-        // $categories_names = [
-        //     'Local Roasters',
-        //     'International Roasters',
-        //     'Competition Beans',
-        //     'Coffee Equipments'
-        // ];
         $categories_names = Category::whereStatus(1)->get()->pluck('category_title') ?? [];
 
         $categories = [];
@@ -64,8 +57,8 @@ class ApplicationController extends Controller
 
             foreach ($products as $product) {
                 $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
-                if(!empty($product->variants)) {
-                    foreach($product->variants as $variant) {
+                if (!empty($product->variants)) {
+                    foreach ($product->variants as $variant) {
                         $variant->available_quantity = $variant->quantity ?? 0;
                     }
                 }
@@ -83,17 +76,17 @@ class ApplicationController extends Controller
         foreach ($categories_names as $category) {
             $db_category = Category::where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? null;
             if (!empty($db_category) && isset($db_category->id)) {
-                $products = Product::latest()->with(['variants', 'variants.images', 'images', 'weights'])->orderBy('id', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
+                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
                 $equipment = false;
-                if(empty($products) || count($products) == 0) {
+                if (empty($products) || count($products) == 0) {
                     $equipment = true;
-                    $products = Equipment::latest()->with(['images'])->orderBy('id', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
+                    $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
                 }
                 foreach ($products as $product) {
-                    if($equipment === false) {
+                    if ($equipment === false) {
                         $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
-                        if(!empty($product->variants)) {
-                            foreach($product->variants as $variant) {
+                        if (!empty($product->variants)) {
+                            foreach ($product->variants as $variant) {
                                 $variant->available_quantity = $variant->quantity ?? 0;
                             }
                         }
@@ -109,19 +102,6 @@ class ApplicationController extends Controller
                 $categories[] = $category_info;
             }
         }
-
-        // $equipments = Equipment::latest()->limit(20)->orderBy('id', 'asc')->with('images')->get();
-        // foreach($equipments as $equipment) {
-        //     $equipment->available_quantity = $equipment->quantity ?? 0;
-        // }
-        // $category_info = [
-        //     'id' => null,
-        //     'icon' => asset('uploads/types/coffee_equipment.png'),
-        //     'title' => 'Coffee Equipments',
-        //     'description' => 'Our selection to brew',
-        //     'products' => $equipments
-        // ];
-        // $categories[] = $category_info;
 
         $response = [
             'status' => true,
@@ -177,8 +157,8 @@ class ApplicationController extends Controller
         foreach ($products as $product) {
             $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
             $product->is_product = true;
-            if(!empty($product->variants)) {
-                foreach($product->variants as $variant) {
+            if (!empty($product->variants)) {
+                foreach ($product->variants as $variant) {
                     $variant->available_quantity = $variant->quantity ?? 0;
                 }
             }

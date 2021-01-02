@@ -12,7 +12,7 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        if(Category::count() == 0) {
+        if (Category::count() == 0) {
             $categories = [
                 'Local Roasters',
                 'International Roasters',
@@ -34,7 +34,7 @@ class CategorySeeder extends Seeder
                     'image_url' => 'uploads/categories/' . strtolower(str_replace(" ", "_", $category)) . '.png',
                     'category_title' => $category,
                     'description' => $description[$key],
-                    'status' => 1,
+                    'status' => ($key == 3 ? '0' : '1'),
                     'display_order' => ($key + 1)
                 ]);
             }

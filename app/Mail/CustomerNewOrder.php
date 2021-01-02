@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -18,7 +17,7 @@ class CustomerNewOrder extends Mailable
      *
      * @return void
      */
-    public function __construct($order=null)
+    public function __construct($order = null)
     {
         $this->order = $order;
     }

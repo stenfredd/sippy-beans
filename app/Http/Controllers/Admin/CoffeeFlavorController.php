@@ -47,7 +47,8 @@ class CoffeeFlavorController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'coffee_flavor_id' => 'required'
         ];
@@ -61,13 +62,14 @@ class CoffeeFlavorController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_coffee_flavors' => 'required'
         ]);
 
         $sorting_coffee_flavors = json_decode($request->sorting_coffee_flavors, true);
-        foreach($sorting_coffee_flavors as $coffee_flavor) {
+        foreach ($sorting_coffee_flavors as $coffee_flavor) {
             CoffeeFlavor::find($coffee_flavor['coffee_flavor_id'])->update(['display_order' => $coffee_flavor['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Cooffee Flavor sorting order applied successfully.'];

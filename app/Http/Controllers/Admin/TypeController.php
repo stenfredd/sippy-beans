@@ -14,7 +14,7 @@ class TypeController extends Controller
         if ($request->ajax()) {
             $types = Type::select('*')->orderBy('id', 'desc')->get();
             return DataTables::of($types)
-                ->addIndexColumn()                
+                ->addIndexColumn()
                 ->editColumn('type_icon', function ($type) {
                     return '<img src="' . (asset($type->type_icon) ? (asset($type->type_icon)) : asset('images/logo/favicon.ico')) . '" class="img-thumbnail" style="height: 100px; width: 100px;"/>';
                 })
@@ -32,9 +32,9 @@ class TypeController extends Controller
     }
     public function save(Request $request)
     {
-        $validation = [           
+        $validation = [
             'title' => 'required',
-            'description'=> 'required'
+            'description' => 'required'
         ];
         $this->validate($request, $validation);
         $request_data = $request->all();
@@ -50,7 +50,8 @@ class TypeController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'type_id' => 'required'
         ];
@@ -64,13 +65,14 @@ class TypeController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_type' => 'required'
         ]);
 
         $sorting_type = json_decode($request->sorting_type, true);
-        foreach($sorting_type as $type) {
+        foreach ($sorting_type as $type) {
             Type::find($type['type_id'])->update(['display_order' => $type['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Types sorting order applied successfully.'];

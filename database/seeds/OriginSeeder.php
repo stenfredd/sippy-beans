@@ -12,8 +12,7 @@ class OriginSeeder extends Seeder
      */
     public function run()
     {
-        if(Origin::count() == 0)
-        {
+        if (Origin::count() == 0) {
             $origins = [
                 /*'Afghanistan', 'Åland Islands', 'Albania', 'Algeria', 'American Samoa',
                 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda',
@@ -102,8 +101,7 @@ class OriginSeeder extends Seeder
                 'Burundi', 'Costa Rica', 'Guatemala', 'El Salvador', 'Panama',
             ];
 
-            foreach($origins as $key => $level)
-            {
+            foreach ($origins as $key => $level) {
                 Origin::create([
                     'origin_name' => $level,
                     'display_order' => ($key + 1),

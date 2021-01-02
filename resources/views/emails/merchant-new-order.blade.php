@@ -355,7 +355,7 @@
                                                     <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
                                                         <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
                                                             style="display: block; height: 14px;" alt=""> </div>
-                                                    <img src="{{ $item->images[0]->image_path ?? '' }}" width="56" height="80" alt="" style="width:auto" />
+                                                    <img src="{{ asset($item->images[0]->image_path) ?? '' }}" width="56" height="80" alt="" style="width:auto" />
                                                     <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
                                                         <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
                                                             style="display: block; height: 14px;" alt=""> </div>
@@ -445,7 +445,7 @@
                                                                                 <td align="left" valign="top">Delivery
                                                                                     Fee</td>
                                                                                 <td align="right" valign="top">
-                                                                                    {{ $order->delivery_fee > 0 ? $app_settings['currency_code'] ?? 'AED ' . number_format($order->delivery_fee, 2) : 'Free' }}
+                                                                                    {{ $order->delivery_fee > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->delivery_fee, 2)) : 'Free' }}
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>

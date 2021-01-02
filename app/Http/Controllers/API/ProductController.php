@@ -75,7 +75,7 @@ class ProductController extends Controller
         }
 
         $total_products = $products->count();
-        $products = $products->with(['images', 'variants', 'variants.images', 'weights'])->offset($start)->limit($limit)->orderBy('id', 'asc')->get();
+        $products = $products->with(['images', 'variants', 'variants.images', 'weights'])->offset($start)->limit($limit)->orderBy('display_order', 'asc')->get();
         $total_pages = (ceil($total_products / $limit)) ?? 1;
         foreach($products as $product) {
             $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get() ?? [];

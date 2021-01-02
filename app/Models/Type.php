@@ -14,7 +14,8 @@ class Type extends Model
         'status'
     ];
 
-    public function getTypeIconAttribute($value) {
+    public function getTypeIconAttribute($value)
+    {
         return $this->attributes['type_icon'] = !empty($value) ? asset($value) : null;
     }
 }

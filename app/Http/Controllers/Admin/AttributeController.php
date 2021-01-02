@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Type;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
 
 class AttributeController extends Controller
 {
@@ -18,15 +16,13 @@ class AttributeController extends Controller
             'characteristics',
             'best_fors',
             'types',
-            // 'coffee_flavors',
             'levels',
             'processes',
-            // 'coffee_types',
             'sellers',
             'weights'
         ];
         $db_attributes = [];
-        foreach($attributes as $attribute) {
+        foreach ($attributes as $attribute) {
             $db_attributes[] = [
                 'key' => $attribute,
                 'title' => ucfirst(str_replace('_', ' ', $attribute)),
@@ -36,27 +32,6 @@ class AttributeController extends Controller
         view()->share('page_title', 'Attributes');
         return view('admin.attributes.list', compact('db_attributes'));
     }
-
-    /* public function save(Request $request)
-    {
-        $validation = [
-            'title' => 'required',
-            'description'=> 'required'
-        ];
-        $this->validate($request, $validation);
-        $request_data = $request->all();
-        if (isset($request_data['type_id']) && !empty($request_data['type_id'])) {
-            $user = Type::find($request_data['type_id'])->update($request_data);
-        } else {
-            $user = Type::create($request_data);
-        }
-        $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
-        if ($user) {
-            $msg = isset($request_data['type_id']) && !empty($request_data['type_id']) ? 'updated' : 'created';
-            $response = ['status' => true, 'message' => 'Type ' . $msg . ' successfully.'];
-        }
-        return response()->json($response);
-    }*/
 
     public function save(Request $request)
     {
@@ -81,8 +56,8 @@ class AttributeController extends Controller
         }
 
         $request->attributes_list = array_filter($request->attributes_list);
-        foreach($request->attributes_list as $k => $item) {
-            if(DB::table($request->attribute_type)->where($key, $item)->count() === 0) {
+        foreach ($request->attributes_list as $k => $item) {
+            if (DB::table($request->attribute_type)->where($key, $item)->count() === 0) {
                 DB::table($request->attribute_type)->insert([
                     $key => $item,
                     'display_order' => ($k + 1),
@@ -90,8 +65,7 @@ class AttributeController extends Controller
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
                 ]);
-            }
-            else {
+            } else {
                 DB::table($request->attribute_type)->where($key, $item)->update([
                     'display_order' => ($k + 1),
                     'status' => 1,
@@ -102,10 +76,10 @@ class AttributeController extends Controller
 
         session()->flash('success', 'Attribute details updated successfully.');
         return redirect(url('admin/attributes/' . $request->attribute_type));
-
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'id' => 'required',
             'type' => 'required'
@@ -120,23 +94,9 @@ class AttributeController extends Controller
         return response()->json($response);
     }
 
-    /*public function updateSortOrders(Request $request) {
-        $request->validate([
-            'sorting_type' => 'required'
-        ]);
-
-        $sorting_type = json_decode($request->sorting_type, true);
-        foreach($sorting_type as $type) {
-            Type::find($type['type_id'])->update(['display_order' => $type['sort_order']]);
-        }
-        $response = ['status' => true, 'message' => 'Types sorting order applied successfully.'];
-        return response()->json($response);
-    } */
-
-    public function show(Request $request, $key=null)
+    public function show(Request $request, $key = null)
     {
         $attributes = DB::table($key)->orderBy('display_order')->get();
-        // view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Attributes' : 'Add New Attributes'));
         view()->share('page_title', 'Update Attributes');
         return view('admin.attributes.show', compact('attributes'));
     }
@@ -164,10 +124,10 @@ class AttributeController extends Controller
         ]);
 
         $key = 'title';
-        if($request->type == 'brand') {
+        if ($request->type == 'brand') {
             $key = 'name';
         }
-        if($request->type == 'coffee_flavor') {
+        if ($request->type == 'coffee_flavor') {
             $key = 'flavor_name';
         }
         if ($request->type == 'level') {

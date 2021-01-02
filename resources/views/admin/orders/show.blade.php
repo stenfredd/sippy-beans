@@ -744,7 +744,7 @@
                                             <p class="pr-1 font-small-3 gray text-bold-500">
                                                 {{ $transaction->created_at->timezone($app_settings['timezone'])->format('M d, Y g:iA') }}
                                             </p>
-                                            <a href="#" class="gray"><i class="fa fa-ellipsis-v"></i></a>
+                                            <a href="javascript:" class="gray" onclick="deleteTransaction('{{ $transaction->id }}')"><i class="fa fa-ellipsis-v"></i></a>
                                         </div>
                                     </div>
                                     @endforeach
@@ -859,52 +859,40 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="#">
+            <form action="{{ url('admin/orders/add-transaction') }}" name="addEditTransactionForm" id="addEditTransactionForm" method="post" onsubmit="return false;">
+                @csrf
+                <input type="hidden" name="order_id" id="order_id" value="{{ $order->id }}"/>
                 <div class="modal-body">
                     <label>TRANSACTION TYPE</label>
                     <div class="form-group">
-                        <div class="ui fluid selection dropdown">
-                            <input type="hidden" name="transaction type">
-                            <i class="dropdown icon"></i>
-                            <div class="default text">Select Transaction Type</div>
-                            <div class="menu">
-                                <div class="item" data-value="Payment">
-                                    Payment
-                                </div>
-                            </div>
-                        </div>
+                        <select name="payment_type" id="payment_type" class="form-control">
+                            <option value="payment">Payment</option>
+                            <option value="refund">Refund</option>
+                        </select>
                     </div>
                     <label>TRANSACTION METHOD</label>
                     <div class="form-group">
                         <div class="form-group">
-                            <div class="ui fluid selection dropdown">
-                                <input type="hidden" name="transaction method">
-                                <i class="dropdown icon"></i>
-                                <div class="default text">Select Transaction Method</div>
-                                <div class="menu">
-                                    <div class="item" data-value="Payment">
-                                        Payment Link
-                                    </div>
-                                </div>
-                            </div>
+                            <select name="type" id="type" class="form-control">
+                                <option value="card">Card</option>
+                                <option value="cash">Cash</option>
+                                <option value="payment_link">Payment Link</option>
+                            </select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 col-sm-12">
                             <label>AMOUNT</label>
-                            <select class="ui search dropdown w-100">
-                                <option value="">{{ $app_settings['currency_code'] }}X.XX</option>
-                            </select>
+                            <input type="number" step="0.01" class="form-control" name="amount" id="amount">
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <label>TRANSACTION ID</label>
-                            <input type="text" placeholder="Reference Code" class="form-control">
+                            <input type="text" placeholder="Reference Code" class="form-control" name="payment_id" id="payment_id">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary font-weight-bold btn-lg w-30"
-                        data-dismiss="modal">SAVE</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold btn-lg w-30">SAVE</button>
                 </div>
             </form>
         </div>
@@ -994,6 +982,56 @@
             else {
                 $("#all_select").prop("checked", false);
             }
+        });
+
+        $("#addEditTransactionForm").submit(function() {
+            $("#addEditTransactionForm").find('.help-block').remove();
+            $("#addEditTransactionForm").removeClass("error");
+
+            let formData = new FormData($("#addEditTransactionForm")[0]);
+            $.ajax({
+                url: "{{ url('admin/orders/add-transaction') }}",
+                type: "post",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status === true) {
+                        toastr.success(response.message, 'Success', {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "showMethod": "slideDown",
+                            "hideMethod": "slideUp",
+                            "timeOut": 2000
+                        });
+                        $("#add-edit-transaction").modal('hide');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        toastr.error(response.message, 'Error', {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "showMethod": "slideDown",
+                            "hideMethod": "slideUp",
+                            "timeOut": 2000
+                        });
+                    }
+                },
+                error: function(error) {
+                    if (error.status === 422) {
+                        $.each(error.responseJSON.errors, function(field, errorMsg) {
+                            $("#addEditTransactionForm #" + field).parents(
+                                ".form-group").append(
+                                '<div class="help-block"><span class="text-danger">' +
+                                errorMsg +
+                                '</span></div>');
+                            $("#addEditTransactionForm #" + field).parents(
+                                ".form-group").addClass("error");
+                        });
+                    }
+                }
+            });
         });
     });
 
@@ -1087,6 +1125,59 @@
                 },
                 error: function(error) {}
             });
+        }
+
+        function deleteTransaction(transaction_id) {
+            Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    confirmButtonClass: 'btn btn-primary',
+                    cancelButtonClass: 'btn btn-danger ml-1',
+                    buttonsStyling: false,
+                })
+                .then(function(result) {
+                    if (result.value) {
+                        let formData = new FormData();
+                        formData.append('transaction_id', transaction_id);
+                        formData.append('_token', "{{ csrf_token() }}");
+                        $.ajax({
+                            url: "{{ url('admin/orders/delete-transaction') }}",
+                            type: "post",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                if (response.status === true) {
+                                    Swal.fire({
+                                        type: "success",
+                                        title: 'Deleted!',
+                                        text: response.message,
+                                        confirmButtonClass: 'btn btn-success',
+                                    });
+                                    setTimeout(function() {
+                                        location.reload();
+                                    }, 1000);
+                                } else {
+                                    toastr.error(response.message, 'Error', {
+                                        "closeButton": true,
+                                        "progressBar": true,
+                                        "showMethod": "slideDown",
+                                        "hideMethod": "slideUp",
+                                        "timeOut": 2000
+                                    });
+                                }
+                            },
+                            error: function(error) {
+                                console.log(error);
+                            }
+                        });
+                    }
+                });
         }
 </script>
 @endsection

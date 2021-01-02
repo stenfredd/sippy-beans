@@ -12,14 +12,12 @@ class CoffeeTypesSeeder extends Seeder
      */
     public function run()
     {
-        if(CoffeeType::count() == 0)
-        {
+        if (CoffeeType::count() == 0) {
             $types = [
                 'Local Roaster', 'International Roaster'
             ];
 
-            foreach($types as $key => $type)
-            {
+            foreach ($types as $key => $type) {
                 CoffeeType::create([
                     'title' => $type,
                     'display_order' => ($key + 1),

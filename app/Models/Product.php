@@ -32,6 +32,7 @@ class Product extends Model
         'grind_type',
         'commission_fee',
         'commission_type',
+        'display_order',
         'status'
     ];
 
@@ -52,7 +53,8 @@ class Product extends Model
         'is_favourite'
     ];
 
-    public function getAdditionalAttribute() {
+    public function getAdditionalAttribute()
+    {
         $additional = new stdClass();
         $additional->seller_name = $this->seller->seller_name ?? null;
         $additional->origin = $this->origin->origin_name ?? null;
@@ -66,7 +68,8 @@ class Product extends Model
         return $this->attributes['additional'] = $additional;
     }
 
-    public function getIsFavouriteAttribute() {
+    public function getIsFavouriteAttribute()
+    {
         return $this->is_favourite()->first() ? true : false;
     }
 

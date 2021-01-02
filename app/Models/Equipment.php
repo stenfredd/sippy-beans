@@ -26,34 +26,26 @@ class Equipment extends Model
         'commission_fee',
         'commission_type',
         'tags',
+        'display_order',
         'status'
     ];
 
     protected $hidden = [
         'seller',
-        // 'origin',
         'brand',
-        'type',
-        // 'level',
-        // 'coffee_type',
-        // 'process',
-        // 'characteristic'
+        'type'
     ];
 
     public $appends = [
         'additional'
     ];
 
-    public function getAdditionalAttribute() {
+    public function getAdditionalAttribute()
+    {
         $additional = new \stdClass();
         $additional->seller_name = $this->seller->seller_name ?? null;
-        // $additional->origin = $this->origin->origin_name ?? null;
         $additional->brand = $this->brand->name ?? null;
         $additional->type = $this->type->title ?? null;
-        // $additional->level = $this->level->level_title ?? null;
-        // $additional->coffee_type = $this->coffee_type->title ?? null;
-        // $additional->process = $this->process->title ?? null;
-        // $additional->characteristic = $this->characteristic->title ?? null;
         return $this->attributes['additional'] = $additional;
     }
 
@@ -81,5 +73,4 @@ class Equipment extends Model
     {
         return $this->hasMany("App\Models\Image", "content_id", "id")->where("type", "equipment")->orderBy('display_order', 'asc');
     }
-
 }

@@ -18,7 +18,8 @@ class Banner extends Model
         'status'
     ];
 
-    public function getImageUrlAttribute() {
+    public function getImageUrlAttribute()
+    {
         return !empty($this->attributes['image_url']) ? asset($this->attributes['image_url']) : null;
     }
 }

@@ -42,8 +42,7 @@ class PromocodeController extends Controller
                     $response = ['status' => false, 'message' => 'Promocode used limit reached.'];
                     return response()->json($response);
                 }
-            }
-            else {
+            } else {
                 $used_count = RedeemPromocode::wherePromocode($promocode->promocode)->count();
                 if ($used_count >= $promocode->used_limit) {
                     $response = ['status' => false, 'message' => 'Promocode used limit reached.'];
@@ -64,8 +63,7 @@ class PromocodeController extends Controller
         ]);
         if ($redeem_promocode) {
             return response()->json(['status' => true, 'message' => 'Promocode applied successfully.', 'promocode_id' => $redeem_promocode->id]);
-        }
-        else {
+        } else {
             return response()->json(['status' => false, 'message' => 'Applying promocode failed, Please try again.']);
         }
     }
@@ -81,8 +79,7 @@ class PromocodeController extends Controller
         $remove = RedeemPromocode::destroy($promocode_id);
         if ($remove) {
             return response()->json(['status' => true, 'message' => 'Promocode removed successfully.']);
-        }
-        else {
+        } else {
             return response()->json(['status' => false, 'message' => 'Removing promocode failed, Please try again.']);
         }
     }

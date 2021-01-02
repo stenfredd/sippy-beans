@@ -12,8 +12,7 @@ class CoffeeFlavourSeeder extends Seeder
      */
     public function run()
     {
-        if(CoffeeFlavor::count() == 0)
-        {
+        if (CoffeeFlavor::count() == 0) {
             $coffee_flavors = [
                 'Balanced & Fruity',
                 'Chocolate & Sweet',
@@ -24,8 +23,7 @@ class CoffeeFlavourSeeder extends Seeder
                 'Sweet & Inviting',
                 'Sweet & Smooth'
             ];
-            foreach($coffee_flavors as $flavor)
-            {
+            foreach ($coffee_flavors as $flavor) {
                 CoffeeFlavor::create([
                     'flavor_name' => $flavor,
                     'status' => 1

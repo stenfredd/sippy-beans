@@ -15,18 +15,12 @@ class Image extends Model
         'status'
     ];
 
-    /* protected $hidden = [
-        'type',
-        'content_id',
-        'created_at',
-        'updated_at'
-    ]; */
-
     protected $appends = [
         'image_path'
     ];
 
-    public function getImagePathAttribute() {
+    public function getImagePathAttribute()
+    {
         return isset($this->attributes['image_path']) ? asset($this->attributes['image_path']) : null;
     }
 }

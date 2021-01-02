@@ -38,7 +38,7 @@ class CategoryController extends Controller
                 })
                 ->addColumn('products_count', function ($category) {
                     $pro_cnt = Product::whereCategoryId($category->id)->count();
-                    if($pro_cnt == 0) {
+                    if ($pro_cnt == 0) {
                         $pro_cnt = Equipment::whereCategoryId($category->id)->count();
                     }
                     return $pro_cnt;
@@ -72,10 +72,11 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         $products = Product::whereCategoryId($id)->count();
-        if($products == 0) {
+        $is_equipment = 0;
+        if ($products == 0) {
             $products = Equipment::whereCategoryId($category->id)->count();
+            $is_equipment = 1;
         }
-        $is_equipment = 1;
         view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Category' : 'Add New Category'));
         return view('admin.categories.show', compact('category', 'products', 'is_equipment'));
     }
@@ -148,6 +149,20 @@ class CategoryController extends Controller
             Category::find($category['category_id'])->update(['display_order' => $category['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Categories sorting order applied successfully.'];
+        return response()->json($response);
+    }
+
+    public function updateProductsSortOrders(Request $request)
+    {
+        $request->validate([
+            'sorting_products' => 'required'
+        ]);
+
+        $sorting_products = json_decode($request->sorting_products, true);
+        foreach ($sorting_products as $product) {
+            Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+        }
+        $response = ['status' => true, 'message' => 'Product sorting order applied successfully.'];
         return response()->json($response);
     }
 }

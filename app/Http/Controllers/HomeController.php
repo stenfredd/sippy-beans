@@ -87,12 +87,12 @@ class HomeController extends Controller
                         }
                     }
                     // if (empty($order->product_names)) {
-                        foreach ($order->details as $detail) {
-                            if (!empty($detail->equipment) && isset($detail->equipment->title)) {
-                                $name = ($detail->equipment->brand->name ?? '') . ' - ' . $detail->equipment->title . ' x' . $detail->quantity;
-                                $order->product_names .= (!empty($order->product_names) ? ', ' : '') . $name;
-                            }
+                    foreach ($order->details as $detail) {
+                        if (!empty($detail->equipment) && isset($detail->equipment->title)) {
+                            $name = ($detail->equipment->brand->name ?? '') . ' - ' . $detail->equipment->title . ' x' . $detail->quantity;
+                            $order->product_names .= (!empty($order->product_names) ? ', ' : '') . $name;
                         }
+                    }
                     // }
                 }
                 if (!empty($order->product_names) && strlen($order->product_names) > 40) {
@@ -102,21 +102,21 @@ class HomeController extends Controller
         }
 
         $top_5_products = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, product_id')
-        ->where('is_cancelled', 0)
-        ->whereNotNull('product_id')
-        ->groupBy('product_id')
-        ->orderBy("total", "DESC")->limit(5)->get()->each(function($product) {
+            ->where('is_cancelled', 0)
+            ->whereNotNull('product_id')
+            ->groupBy('product_id')
+            ->orderBy("total", "DESC")->limit(5)->get()->each(function ($product) {
                 $product->total = number_format($product->total, 2);
             });
 
         $top_5_equipments = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, equipment_id')
-        ->where('is_cancelled', 0)
-        ->whereNotNull('equipment_id')
-        ->groupBy('equipment_id')
-        ->orderBy("total", "DESC")
-        ->limit(5)->get()->each(function($product) {
-            $product->total = number_format($product->total, 2);
-        });
+            ->where('is_cancelled', 0)
+            ->whereNotNull('equipment_id')
+            ->groupBy('equipment_id')
+            ->orderBy("total", "DESC")
+            ->limit(5)->get()->each(function ($product) {
+                $product->total = number_format($product->total, 2);
+            });
 
         $summary = [
             'users' => $users,
@@ -156,35 +156,35 @@ class HomeController extends Controller
         }
 
         $top_5_products = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, product_id')
-        ->where('is_cancelled', 0)
-        ->whereNotNull('product_id')
-        ->groupBy('product_id')
-        ->orderBy("total", "DESC");
-        if(!empty($start_date) && !empty($end_date)) {
+            ->where('is_cancelled', 0)
+            ->whereNotNull('product_id')
+            ->groupBy('product_id')
+            ->orderBy("total", "DESC");
+        if (!empty($start_date) && !empty($end_date)) {
             $top_5_products = $top_5_products->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
         }
-        $top_5_products = $top_5_products->limit(5)->with('product')->get()->each(function($product) {
+        $top_5_products = $top_5_products->limit(5)->with('product')->get()->each(function ($product) {
             $product->name = $product->product->product_name ?? '';
             $product->brand_name = $product->product->brand()->first()->name ?? '';
             $product->total = number_format($product->total, 2);
         });
 
         $top_5_equipments = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, equipment_id')
-        ->where('is_cancelled', 0)
-        ->whereNotNull('equipment_id')
-        ->groupBy('equipment_id')
-        ->orderBy("total", "DESC");
+            ->where('is_cancelled', 0)
+            ->whereNotNull('equipment_id')
+            ->groupBy('equipment_id')
+            ->orderBy("total", "DESC");
         if (!empty($start_date) && !empty($end_date)) {
             $top_5_equipments = $top_5_equipments->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
         }
-        $top_5_equipments = $top_5_equipments->limit(5)->with('equipment')->get()->each(function($product) {
+        $top_5_equipments = $top_5_equipments->limit(5)->with('equipment')->get()->each(function ($product) {
             $product->name = $product->equipment->title ?? '';
             $product->brand_name = $product->equipment->brand()->first()->name ?? '';
             $product->total = number_format($product->total, 2);
         });
 
         if (!empty($top_5_products) || !empty($top_5_equipments)) {
-            return response()->json(['status' => true, 'products' =>$top_5_products, 'equipments' => $top_5_equipments]);
+            return response()->json(['status' => true, 'products' => $top_5_products, 'equipments' => $top_5_equipments]);
         }
         return response()->json(['status' => false]);
     }
@@ -217,50 +217,47 @@ class HomeController extends Controller
 
         $data = [];
         $total = 0;
-        if($request->data_type == 'users') {
+        if ($request->data_type == 'users') {
             $data = User::selectRaw('DATE(created_at), count(*) as total')
-            ->groupBy(DB::raw('DATE(created_at)'));
+                ->groupBy(DB::raw('DATE(created_at)'));
             if (!empty($start_date) && !empty($end_date)) {
                 $data = $data->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
             }
             $data = $data->get()->pluck('total') ?? [];
             $total = array_sum($data->toArray()) ?? [];
-        }
-        else if($request->data_type == 'orders') {
+        } else if ($request->data_type == 'orders') {
             $data = Order::selectRaw('DATE(created_at), count(*) as total')
-            ->groupBy(DB::raw('DATE(created_at)'));
+                ->groupBy(DB::raw('DATE(created_at)'));
             if (!empty($start_date) && !empty($end_date)) {
                 $data = $data->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
             }
             $data = $data->get()->pluck('total') ?? [];
             $total = array_sum($data->toArray()) ?? [];
-        }
-        else if($request->data_type == 'sales-revenue') {
+        } else if ($request->data_type == 'sales-revenue') {
             $data = Order::selectRaw('DATE(created_at), sum(total_amount) as total')
-            ->groupBy(DB::raw('DATE(created_at)'));
+                ->groupBy(DB::raw('DATE(created_at)'));
             if (!empty($start_date) && !empty($end_date)) {
                 $data = $data->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
             }
             $data = $data->get()->pluck('total') ?? [];
-            if(!empty($data)) {
-                $total = number_format(array_sum($data->toArray()),2) ?? [];
+            if (!empty($data)) {
+                $total = number_format(array_sum($data->toArray()), 2) ?? [];
                 $data = array_map(function ($num) {
                     return number_format($num, 2);
                 }, $data->toArray());
             }
-        }
-        else if($request->data_type == 'avg-sales-revenue') {
+        } else if ($request->data_type == 'avg-sales-revenue') {
             $data = Order::selectRaw('DATE(created_at), sum(total_amount) as total')
-            ->groupBy(DB::raw('DATE(created_at)'));
+                ->groupBy(DB::raw('DATE(created_at)'));
             if (!empty($start_date) && !empty($end_date)) {
                 $data = $data->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);
             }
             $data = $data->get()->pluck('total') ?? [];
             $total = array_sum($data->toArray());
-            if($total > 0) {
+            if ($total > 0) {
                 $total = array_sum($data->toArray()) / Order::count();
             }
-            $total = number_format($total,2) ?? [];
+            $total = number_format($total, 2) ?? [];
             $data = array_map(function ($num) {
                 return number_format($num, 2);
             }, $data->toArray());

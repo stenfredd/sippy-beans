@@ -13,12 +13,12 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-        if(User::count() == 0)  {
+        if (User::count() == 0) {
             $admin = [
                 'first_name' => 'Sippy',
                 'last_name' => 'Beans',
                 'name' => 'Sippy Beans',
-                'profile_image' => 'assets/default/admin.png',
+                'profile_image' => 'assets/images/user-large.png',
                 'email' => env("ADMIN_EMAIL"),
                 'password' => Hash::make(env("ADMIN_PASS")),
                 'status' => 1,

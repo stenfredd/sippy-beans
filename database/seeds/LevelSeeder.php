@@ -12,8 +12,7 @@ class LevelSeeder extends Seeder
      */
     public function run()
     {
-        if(Level::count() == 0)
-        {
+        if (Level::count() == 0) {
             $levels = [
                 'Light Roast',
                 'Light Medium Roast',
@@ -24,8 +23,7 @@ class LevelSeeder extends Seeder
                 'Omni Roast'
             ];
 
-            foreach($levels as $key => $level)
-            {
+            foreach ($levels as $key => $level) {
                 Level::create([
                     'level_title' => $level,
                     'display_order' => ($key + 1),

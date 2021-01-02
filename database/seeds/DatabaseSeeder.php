@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CharacteristicSeeder::class);
         $this->call(CoffeeFlavourSeeder::class);
         $this->call(CoffeeTypesSeeder::class);
-        // $this->call(EmailTemplate::class);
         $this->call(GrindSeeder::class);
         $this->call(LevelSeeder::class);
         $this->call(LocationSeeder::class);

@@ -41,6 +41,7 @@ class CreateProductsTable extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories');
 
             $table->tinyInteger('grind_type')->nullable()->default(0)->comment("1-All, 2=Custom");
+            $table->tinyInteger('display_order')->nullable()->default(0);
             $table->tinyInteger('status')->nullable()->default(0)->comment("0-Default/Inactive, 1-Active");
             $table->timestamps();
         });

@@ -15,8 +15,8 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(auth()->check()) {
-            if(auth()->user()->user_type !== 'admin') {
+        if (auth()->check()) {
+            if (auth()->user()->user_type !== 'admin') {
                 auth()->logout();
                 return redirect('login');
             }

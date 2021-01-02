@@ -10,7 +10,6 @@ use App\Models\Seller;
 use App\Models\Brand;
 use App\Models\CoffeeType;
 use App\Models\Image;
-
 use Yajra\DataTables\Facades\DataTables;
 
 class EquipmentController extends Controller
@@ -26,13 +25,16 @@ class EquipmentController extends Controller
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
                 });
             }
-            $equipments = $equipments->with("images")->latest()->get();
+            $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
 
             return DataTables::of($equipments)
                 ->addIndexColumn()
+                ->addColumn('sort_image', function ($banner) {
+                    return '<img src="' . asset('assets/images/sort-icon.png') . '" class="handle">';
+                })
                 ->addColumn('image_path', function ($equipment) {
                     $image_url = $equipment->images[0]->image_path ?? null;
-                    return '<img src="'.asset($image_url ?? 'assets/images/product-img.png').'">';
+                    return '<img src="' . asset($image_url ?? 'assets/images/product-img.png') . '">';
                 })
                 ->addColumn('product_name', function ($equipment) {
                     return $equipment->title ?? '-';
@@ -55,9 +57,9 @@ class EquipmentController extends Controller
                     return ($equipment->status == 1 ? 'Enabled' : 'Disabled');
                 })
                 ->editColumn('price', function ($equipment) {
-                    return $this->app_settings['currency_code'] .' '. number_format($equipment->price,2);
+                    return $this->app_settings['currency_code'] . ' ' . number_format($equipment->price, 2);
                 })
-                ->rawColumns(['chk_select', 'image_path', 'created_at', 'action'])
+                ->rawColumns(['sort_image', 'chk_select', 'image_path', 'created_at', 'action'])
                 ->make(TRUE);
         }
         $total_equipments = $equipments->count();
@@ -119,14 +121,15 @@ class EquipmentController extends Controller
             return redirect()->back();
         }
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'equipment_id' => 'required'
         ];
         $request->validate($validation);
 
-        $image = Image::where('content_id',$request->equipment_id)->first();
-        if($image){
+        $image = Image::where('content_id', $request->equipment_id)->first();
+        if ($image) {
             $image->delete();
         }
         // $img=Image::select('*')->where('content_id', '=',$request->equipment_id)->get();

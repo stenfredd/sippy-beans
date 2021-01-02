@@ -12,8 +12,7 @@ class PriceSeeder extends Seeder
      */
     public function run()
     {
-        if(Price::count() == 0)
-        {
+        if (Price::count() == 0) {
             $prices = [
                 [
                     'title' => '< AED 55',
@@ -41,8 +40,7 @@ class PriceSeeder extends Seeder
                 ]
             ];
 
-            foreach ($prices as $price)
-            {
+            foreach ($prices as $price) {
                 Price::create($price);
             }
         }

@@ -13,8 +13,7 @@ class EquipmentsSeeder extends Seeder
      */
     public function run()
     {
-        if(Equipment::count() == 0)
-        {
+        if (Equipment::count() == 0) {
             $equipments = [
                 [
                     'title' => 'Kalita Stainless Steel Wave',
@@ -178,36 +177,34 @@ class EquipmentsSeeder extends Seeder
                 ]
             ];
 
-            foreach ($equipments as $equipment)
-            {
+            foreach ($equipments as $key => $equipment) {
+                $product['display_order'] = ($key + 1);
                 $save = Equipment::create($equipment);
-                if($save)
-                {
+                if ($save) {
                     $images = [
                         [
                             'type' => 'equipment',
                             'content_id' => $save->id,
-                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id .'.png',
+                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id . '.png',
                             'display_order' => 1,
                             'status' => 1
                         ],
                         [
                             'type' => 'equipment',
                             'content_id' => $save->id,
-                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id .'a.png',
+                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id . 'a.png',
                             'display_order' => 2,
                             'status' => 1
                         ],
                         [
                             'type' => 'equipment',
                             'content_id' => $save->id,
-                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id .'b.png',
+                            'image_path' => 'uploads/equipments/' . $equipment['title'] . '/' . $save->id . 'b.png',
                             'display_order' => 3,
                             'status' => 1
                         ]
                     ];
-                    foreach($images as $image)
-                    {
+                    foreach ($images as $image) {
                         Image::create($image);
                     }
                 }

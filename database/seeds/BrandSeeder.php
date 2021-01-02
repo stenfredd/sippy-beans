@@ -12,8 +12,7 @@ class BrandSeeder extends Seeder
      */
     public function run()
     {
-        if(Brand::count() == 0)
-        {
+        if (Brand::count() == 0) {
             $brands = [
                 /* 'Amor Perfecto', 'Café Rider', 'Cartel Coffee Roasters', 'Cupping Room',
                 'Emirati Coffee', 'Fritz', 'Goldbox', 'Nightjar', 'NOW', 'Onibus', 'Refill Roastery',
@@ -28,8 +27,7 @@ class BrandSeeder extends Seeder
                 'NY Coffee Roastery', 'Taf', 'The Barn', 'Blacksmith', 'NOW', 'Gardelli'
             ];
 
-            foreach($brands as $key => $brand)
-            {
+            foreach ($brands as $key => $brand) {
                 Brand::create([
                     'type' => 'product',
                     'name' => $brand,
@@ -48,8 +46,7 @@ class BrandSeeder extends Seeder
                 'Brewista'
             ];
 
-            foreach($brands as $key => $brand)
-            {
+            foreach ($brands as $key => $brand) {
                 Brand::create([
                     'type' => 'equipment',
                     'name' => $brand,

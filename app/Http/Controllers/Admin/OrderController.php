@@ -6,36 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Mail\CustomerOrderCancelled;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\Product;
-use App\Models\Seller;
-use App\Models\Origin;
-use App\Models\Brand;
-use App\Models\BrandType;
-use App\Models\BestFor;
-use App\Models\TaxClass;
-use App\Models\Type;
-use App\Models\CoffeeType;
-use App\Models\CoffeeFlavor;
-use App\Models\Level;
-use App\Models\Image;
-use App\Models\Process;
 use App\Models\Grind;
-use App\Models\Characteristic;
 use App\Models\Promocode;
 use App\Models\RedeemPromocode;
-use App\Models\Weight;
-use App\Models\Variant;
 use App\Models\Subscription;
 use App\Models\Transaction;
-use App\Models\UserAddress;
 use App\Models\UserPromocode;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use OneSignal;
 
 class OrderController extends Controller
 {
@@ -54,11 +36,11 @@ class OrderController extends Controller
             if ($status !== null && $status > -1) {
                 $orders = $orders->where('status', $status);
             }
-            if(!empty($request->input('search')) && !is_array($request->input('search'))) {
-                $orders = $orders->where(function($query) use ($request){
+            if (!empty($request->input('search')) && !is_array($request->input('search'))) {
+                $orders = $orders->where(function ($query) use ($request) {
                     $query->where('id', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('order_number', 'LIKE', "%" . $request->input('search') . "%");
-                    $query->orWhereHas('user', function($qry) use($request) {
+                    $query->orWhereHas('user', function ($qry) use ($request) {
                         $qry->where('name', 'LIKE', "%" . $request->input('search') . "%");
                         $qry->orWhere('email', 'LIKE', "%" . $request->input('search') . "%");
                         $qry->orWhere('phone', 'LIKE', "%" . $request->input('search') . "%");
@@ -73,31 +55,30 @@ class OrderController extends Controller
                     return $order->user->name ?? '-';
                 })
                 ->editColumn('total_amount', function ($order) {
-                    return ($this->app_settings['currency_code'] .' '. number_format($order->total_amount,2)) ?? '-';
+                    return ($this->app_settings['currency_code'] . ' ' . number_format($order->total_amount, 2)) ?? '-';
                 })
                 ->addColumn('product_names', function ($order) {
                     $product_names = null;
-                    if($order->order_type == 'subscription') {
+                    if ($order->order_type == 'subscription') {
                         $order->subscription = Subscription::whereStatus(1)->first();
                         $product_names = "SIPPY - " . ($order->subscription->title ?? '') . ' x1';
-                    }
-                    else {
-                        foreach($order->details as $detail) {
-                            if(!empty($detail->product) && isset($detail->product->product_name)) {
-                                $name = ($detail->product->brand->name ?? '') .' - ' . $detail->product->product_name .' x'.$detail->quantity;
+                    } else {
+                        foreach ($order->details as $detail) {
+                            if (!empty($detail->product) && isset($detail->product->product_name)) {
+                                $name = ($detail->product->brand->name ?? '') . ' - ' . $detail->product->product_name . ' x' . $detail->quantity;
                                 $product_names .= (!empty($product_names) ? ', ' : '') . $name;
                             }
                         }
                         // if(empty($product_names)) {
-                            foreach($order->details as $detail) {
-                                if(!empty($detail->equipment) && isset($detail->equipment->title)) {
-                                    $name = ($detail->equipment->brand->name ?? '') .' - '. $detail->equipment->title .' x'.$detail->quantity;
-                                    $product_names .= (!empty($product_names) ? ', ' : '') . $name;
-                                }
+                        foreach ($order->details as $detail) {
+                            if (!empty($detail->equipment) && isset($detail->equipment->title)) {
+                                $name = ($detail->equipment->brand->name ?? '') . ' - ' . $detail->equipment->title . ' x' . $detail->quantity;
+                                $product_names .= (!empty($product_names) ? ', ' : '') . $name;
                             }
+                        }
                         // }
                     }
-                    if(!empty($product_names) && strlen($product_names) >= 40) {
+                    if (!empty($product_names) && strlen($product_names) >= 40) {
                         $product_names = substr($product_names, 0, 37) . '...';
                     }
                     return $product_names;
@@ -111,9 +92,9 @@ class OrderController extends Controller
                     $action .= "</div>";
                     return $action;
                 })
-                ->editColumn('payment_type', function($order) {
-                    if(strtolower($order->payment_type) == 'card')
-                        $payment_type = '<img src="'.asset('assets/images/'.$order->card_type.'.png').'"> <span>****'.ucfirst($order->card_number).'</span>';
+                ->editColumn('payment_type', function ($order) {
+                    if (strtolower($order->payment_type) == 'card')
+                        $payment_type = '<img src="' . asset('assets/images/' . $order->card_type . '.png') . '"> <span>****' . ucfirst($order->card_number) . '</span>';
                     else {
                         $payment_type = '<span>Cash On Delivery</span>';
                     }
@@ -139,33 +120,32 @@ class OrderController extends Controller
     public function show(Request $request, $id = false)
     {
         $order = Order::select('*')->with(["transactions", 'activities', 'user', 'user.addresses'])
-                    ->with(["details", 'details.product', 'details.equipment', 'details.subscription'])
-                    // ->find($id) ?? [];
-                    ->findOrFail($id);
-        if(!empty($order)) {
+            ->with(["details", 'details.product', 'details.equipment', 'details.subscription'])
+            // ->find($id) ?? [];
+            ->findOrFail($id);
+        if (!empty($order)) {
             $order->total_discount = ($order->discount_type == 'percentage' ? (($order->subtotal / 100) * $order->discount_amount) : $order->discount_amount) + $order->promocode_discount;
-            foreach($order->details as $detail) {
+            foreach ($order->details as $detail) {
                 $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
             }
 
             $order->total_refund = 0;
             $order->pending_refund = 0;
             $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
-            if($cancelled_items_amount > 0) {
+            $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
+            if ($cancelled_items_amount > 0) {
                 if (OrderDetail::whereOrderId($order->id)->count() == OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->count()) {
-                    if($order->pending_refund == 0) {
+                    if ($order->pending_refund == 0) {
                         Order::find($order->id)->update(['payment_status' => 4]);
-                    }
-                    else {
+                    } else {
                         Order::find($order->id)->update(['payment_status' => 3]);
                     }
                     $cancelled_items_amount = $cancelled_items_amount + $order->delivery_fee + $order->tax_charges;
                 }
-                $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
                 $order->pending_refund = $cancelled_items_amount - $order->total_refund;
             }
-
             $order->balance_amount = $order->total_amount - $order->payment_received - $order->total_discount - $cancelled_items_amount;
+            $order->balance_amount = $order->balance_amount - (($order->balance_amount < 0 ? '-' : '') . $order->total_refund);
         }
 
         $users = User::whereStatus(1)->where('user_type', '!=', 'admin')->get();
@@ -264,8 +244,7 @@ class OrderController extends Controller
             $order->product_names = null;
             if ($order->order_type == 'subscription') {
                 $order->product_names = $order->subscription->title ?? '';
-            }
-            else {
+            } else {
                 foreach ($order->details as $detail) {
                     if (!empty($detail->product) && isset($detail->product->product_name)) {
                         $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->product->product_name;
@@ -284,10 +263,23 @@ class OrderController extends Controller
             Mail::to($order->user->email)->queue(new CustomerOrderCancelled($order));
         }
 
+        if (isset($request->status) && !empty($request->status)) {
+            $push_msg = "Your Order#" . $order->order_number . " is being processed.";
+            if ($request->status == 2) {
+                $push_msg = "Your Order#" . $order->order_number . " has shipped and will be delivered soon.";
+            } else if ($request->status == 3) {
+                $push_msg = "Your Order#" . $order->order_number . " has been delivered.";
+            } else if ($request->status == 4) {
+                $push_msg = "Your Order#" . $order->order_number . " has been cancelled.";
+            }
+            OneSignal::sendNotificationToUser($push_msg, $order->user()->first()->device_token, null, ['order_id' => $order->id]);
+        }
+
         return response()->json(['status' => true, 'message' => 'Order details updated successfully.']);
     }
 
-    public function cancelItems(Request $request) {
+    public function cancelItems(Request $request)
+    {
         $request->validate([
             'order_id' => 'required',
             'detail_ids' => 'required'
@@ -297,20 +289,25 @@ class OrderController extends Controller
         $detail_ids = explode(',', $request->detail_ids);
 
         $status = false;
-        foreach($detail_ids as $detail_id) {
+        foreach ($detail_ids as $detail_id) {
             $status = OrderDetail::find($detail_id)->update(['is_cancelled' => 1]);
         }
 
-        if(OrderDetail::whereOrderId($order_id)->count() == OrderDetail::whereOrderId($order_id)->whereIsCancelled(1)->count()) {
-            $status = Order::find($order_id)->update(['status' => 4]);
+        $order_data = Order::find($order_id);
+        if (OrderDetail::whereOrderId($order_id)->count() == OrderDetail::whereOrderId($order_id)->whereIsCancelled(1)->count()) {
+            $status = $order_data->update(['status' => 4]);
+            $push_msg = 'Your Order#' . $order_data->order_number . ' has been cancelled.';
+        } else {
+            $push_msg = 'Item(s) from your Order#' . $order_data->order_number . ' has been cancelled.';
         }
+        OneSignal::sendNotificationToUser($push_msg, $order_data->user()->first()->device_token, null, ['order_id' => $order_data->id]);
 
         $order = Order::with([
-                'user', 'address', 'details',
-                'details.product', 'details.variant', 'details.equipment', 'details.subscription',
-                'details.product.seller', 'details.equipment.seller',
-                'details.product.images', 'details.equipment.images'
-            ])
+            'user', 'address', 'details',
+            'details.product', 'details.variant', 'details.equipment', 'details.subscription',
+            'details.product.seller', 'details.equipment.seller',
+            'details.product.images', 'details.equipment.images'
+        ])
             ->latest()
             ->find($order_id);
         $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
@@ -324,8 +321,7 @@ class OrderController extends Controller
         $order->product_names = null;
         if ($order->order_type == 'subscription') {
             $order->product_names = $order->subscription->title ?? '';
-        }
-        else {
+        } else {
             foreach ($order->details as $detail) {
                 if (!empty($detail->product) && isset($detail->product->product_name)) {
                     $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->product->product_name;
@@ -344,9 +340,42 @@ class OrderController extends Controller
         Mail::to($order->user->email)->queue(new CustomerOrderCancelled($order, $detail_ids));
 
         $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
-        if($status) {
+        if ($status) {
             $response = ['status' => true, 'message' => 'Selected item(s) has beed cancelled successfully.'];
         }
         return response()->json($response);
+    }
+
+    public function addTransaction(Request $request)
+    {
+        $request->validate([
+            'type' => 'required',
+            'order_id' => 'required',
+            'payment_type' => 'required',
+            'amount' => 'required'
+        ]);
+
+        Transaction::create([
+            'order_id' => $request->order_id,
+            'type' => $request->type,
+            'payment_type' => $request->payment_type,
+            'amount' => $request->amount,
+            'transaction_id' => $request->transaction_id ?? null
+        ]);
+        return response()->json(['status' => true, 'message' => 'Transaction details added successfully.']);
+    }
+
+    public function deleteTransaction(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required'
+        ]);
+
+        $payment = Transaction::find($request->transaction_id);
+        if (!empty($payment) && isset($payment->id)) {
+            $payment->delete();
+            return response()->json(['status' => true, 'message' => 'Transaction details deleted successfully.']);
+        }
+        return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
     }
 }

@@ -10,7 +10,7 @@ class FavouriteController extends Controller
 {
     public function createUpdate(Request $request)
     {
-        if(empty($request->input('product_id')) && empty($request->input('equipment_id'))) {
+        if (empty($request->input('product_id')) && empty($request->input('equipment_id'))) {
             $request->validate([
                 'product_id' => 'required_unless:equipment_id,null',
                 'equipment_id' => 'required_unless:product_id,null'
@@ -22,18 +22,17 @@ class FavouriteController extends Controller
         $equipment_id = $request->input('equipment_id') ?? null;
 
         $db_favourite = Favourite::whereUserId($user_id);
-        if(!empty($product_id)) {
+        if (!empty($product_id)) {
             $db_favourite->whereProductId($product_id);
         }
-        if(!empty($equipment_id)) {
+        if (!empty($equipment_id)) {
             $db_favourite->whereEquipmentId($equipment_id);
         }
         $db_favourite = $db_favourite->first();
-        if(!empty($db_favourite) && isset($db_favourite->id)) {
+        if (!empty($db_favourite) && isset($db_favourite->id)) {
             $db_favourite->delete();
             $response = ['status' => true, 'message' => 'Removed from favourite successfully.'];
-        }
-        else {
+        } else {
             Favourite::create([
                 'user_id' => $user_id,
                 'product_id' => $product_id,

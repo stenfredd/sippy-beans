@@ -12,8 +12,7 @@ class GrindSeeder extends Seeder
      */
     public function run()
     {
-        if(Grind::count() == 0)
-        {
+        if (Grind::count() == 0) {
             $grinds = [
                 'Whole Beans-type-1',
                 'Extra Coarse (Cold Brew)-type-1',
@@ -27,8 +26,7 @@ class GrindSeeder extends Seeder
                 '10 Sachets-type-2',
             ];
 
-            foreach ($grinds as $grind)
-            {
+            foreach ($grinds as $grind) {
                 Grind::create([
                     'title' => explode('-type-', $grind)[0],
                     'grind_type' => explode('-type-', $grind)[1],

@@ -15,7 +15,8 @@ class MatchMakers extends Model
         'status'
     ];
 
-    public function getImageUrlAttribute($value) {
+    public function getImageUrlAttribute($value)
+    {
         return $this->attributes['image_url'] = !empty($value) ? asset($value) : null;
     }
 }

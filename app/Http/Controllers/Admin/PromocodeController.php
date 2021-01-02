@@ -106,8 +106,8 @@ class PromocodeController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->all();
-        $start_date = $request->start_date .' '. $request->start_hour.':'.$request->start_minute.' '. $request->start_am_pm;
-        $end_date = $request->end_date .' '. $request->end_hour.':'.$request->end_minute.' '. $request->end_am_pm;
+        $start_date = $request->start_date . ' ' . $request->start_hour . ':' . $request->start_minute . ' ' . $request->start_am_pm;
+        $end_date = $request->end_date . ' ' . $request->end_hour . ':' . $request->end_minute . ' ' . $request->end_am_pm;
 
         $request_data['start_date'] = Carbon::parse($start_date, $this->app_settings['timezone'])->setTimezone('UTC')->format("Y-m-d H:i:s");
         $request_data['end_date'] = Carbon::parse($end_date, $this->app_settings['timezone'])->setTimezone('UTC')->format("Y-m-d H:i:s");
@@ -124,17 +124,16 @@ class PromocodeController extends Controller
         $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
         if ($promocode) {
 
-            if(isset($request_data['user_ids']) && !empty($request_data['user_ids'])) {
+            if (isset($request_data['user_ids']) && !empty($request_data['user_ids'])) {
                 $request_data['user_ids'] = array_filter($request_data['user_ids']);
                 UserPromocode::where('promocode_id', $promocode_id)->whereNotIn('user_id', $request_data['user_ids'])->delete();
-                foreach($request_data['user_ids'] as $user_id) {
+                foreach ($request_data['user_ids'] as $user_id) {
                     UserPromocode::firstOrCreate(
                         ['user_id' => $user_id, 'promocode_id' => $promocode_id],
                         ['user_id' => $user_id, 'promocode_id' => $promocode_id]
                     );
                 }
-            }
-            else {
+            } else {
                 UserPromocode::where('promocode_id', $promocode_id)->delete();
             }
 
@@ -144,7 +143,8 @@ class PromocodeController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'promocode_id' => 'required'
         ];

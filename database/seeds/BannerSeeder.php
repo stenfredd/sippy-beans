@@ -12,8 +12,7 @@ class BannerSeeder extends Seeder
      */
     public function run()
     {
-        if(Banner::count() == 0)
-        {
+        if (Banner::count() == 0) {
             $banners = [
                 [
                     'title' => 'Intro Banner',
@@ -53,8 +52,7 @@ class BannerSeeder extends Seeder
                 ]
             ];
 
-            foreach($banners as $banner)
-            {
+            foreach ($banners as $banner) {
                 Banner::create($banner);
             }
         }

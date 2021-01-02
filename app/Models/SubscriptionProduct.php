@@ -14,10 +14,14 @@ class SubscriptionProduct extends Model
         'quantity',
         'status'
     ];
-    public function subscription() {
+
+    public function subscription()
+    {
         return $this->hasOne("App\Models\Subscription", "id", "subscription_id");
     }
-    public function product() {
+
+    public function product()
+    {
         return $this->hasOne("App\Models\Product", "id", "product_id");
     }
 }

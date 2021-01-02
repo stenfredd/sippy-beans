@@ -9,7 +9,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CoffeeTypeController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         if ($request->ajax()) {
             $coffee_types = CoffeeType::select('*')->orderBy('id', 'asc')->get();
 
@@ -27,7 +28,8 @@ class CoffeeTypeController extends Controller
         return view('admin.coffee_types');
     }
 
-    public function save(Request $request) {
+    public function save(Request $request)
+    {
         $validation = [
             'title' => 'required',
         ];
@@ -36,8 +38,7 @@ class CoffeeTypeController extends Controller
         $request_data = $request->all();
         if (isset($request_data['coffee_type_id']) && !empty($request_data['coffee_type_id'])) {
             $coffee_type = CoffeeType::find($request_data['coffee_type_id'])->update($request_data);
-        }
-        else {
+        } else {
             $coffee_type = CoffeeType::create($request_data);
         }
 
@@ -49,7 +50,8 @@ class CoffeeTypeController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'coffee_type_id' => 'required'
         ];
@@ -64,13 +66,14 @@ class CoffeeTypeController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_coffee_type' => 'required'
         ]);
 
         $sorting_coffee_type = json_decode($request->sorting_coffee_type, true);
-        foreach($sorting_coffee_type as $coffee_type) {
+        foreach ($sorting_coffee_type as $coffee_type) {
             CoffeeType::find($coffee_type['coffee_type_id'])->update(['display_order' => $coffee_type['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Cooffee type sorting order applied successfully.'];

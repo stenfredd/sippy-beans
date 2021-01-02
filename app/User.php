@@ -86,17 +86,16 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::created(function ($user) {
-            if($user->user_type !== 'admin') {
+            if ($user->user_type !== 'admin') {
                 $stripe = new StripeClient(env("STRIPE_SECRET"));
                 $customers = $stripe->customers->all();
-                if(isset($customers['data']) && !empty($customers['data'])) {
+                if (isset($customers['data']) && !empty($customers['data'])) {
                     $customer_emails = array_column($customers['data'], 'email');
-                    if(in_array($user->email, $customer_emails)) {
+                    if (in_array($user->email, $customer_emails)) {
                         $key = array_search($user->email, $customer_emails);
                         $customer = $customers['data'][$key];
                         $user->stripe_id = $customer->id;
-                    }
-                    else {
+                    } else {
                         $customer = $stripe->customers->create([
                             'name' => $user->name,
                             'phone' => $user->phone,

@@ -35,6 +35,7 @@ class CreateEquipmentsTable extends Migration
             $table->foreignId('roster_type_id')->nullable()->constrained('coffee_types');
             $table->foreignId('category_id')->nullable()->constrained('categories');
 
+            $table->tinyInteger('display_order')->nullable()->default(0);
             $table->tinyInteger('status')->nullable()->default(0)->comment("0-Default/Inactive, 1-Active");
             $table->timestamps();
         });

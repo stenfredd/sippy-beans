@@ -12,8 +12,7 @@ class ProcessSeeder extends Seeder
      */
     public function run()
     {
-        if(Process::count() == 0)
-        {
+        if (Process::count() == 0) {
             $processes = [
                 'Natural',
                 'Washed Process',
@@ -28,12 +27,10 @@ class ProcessSeeder extends Seeder
                 'Sun-Dried Natural',
                 'Carbonic Maceration',
                 'Ethyl Acetate Decaffeinated',
-                'Fermented',
-                // 'Semi-Washed'
+                'Fermented'
             ];
 
-            foreach ($processes as $key => $process)
-            {
+            foreach ($processes as $key => $process) {
                 Process::create([
                     'title' => $process,
                     'display_order' => ($key + 1),

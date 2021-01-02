@@ -12,8 +12,7 @@ class PageSeeder extends Seeder
      */
     public function run()
     {
-        if(Page::count() == 0)
-        {
+        if (Page::count() == 0) {
             $pages = [
                 [
                     'page' => 'contact-us',
@@ -37,8 +36,7 @@ class PageSeeder extends Seeder
                 ]
             ];
 
-            foreach ($pages as $page)
-            {
+            foreach ($pages as $page) {
                 Page::create($page);
             }
         }

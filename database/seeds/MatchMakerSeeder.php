@@ -37,7 +37,7 @@ class MatchMakerSeeder extends Seeder
                 'price-icon.svg'
             ];
 
-            foreach($questions as $key => $question) {
+            foreach ($questions as $key => $question) {
                 MatchMakers::create([
                     'image_url' => 'uploads/match-makers/' . $images[$key],
                     'question' => $question,

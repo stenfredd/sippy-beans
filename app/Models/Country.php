@@ -11,7 +11,8 @@ class Country extends Model
         'status'
     ];
 
-    public function cities() {
+    public function cities()
+    {
         $this->hasMany("App\Models\City", "country_id", "id");
     }
 }

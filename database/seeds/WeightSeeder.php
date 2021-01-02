@@ -12,8 +12,7 @@ class WeightSeeder extends Seeder
      */
     public function run()
     {
-        if(Weight::count() == 0)
-        {
+        if (Weight::count() == 0) {
             $weights = [
                 [
                     'title' => '20g',
@@ -97,8 +96,7 @@ class WeightSeeder extends Seeder
                 ]
             ];
 
-            foreach($weights as $weight)
-            {
+            foreach ($weights as $weight) {
                 Weight::create($weight);
             }
         }

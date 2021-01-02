@@ -47,7 +47,8 @@ class GrindController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'grind_id' => 'required'
         ];
@@ -61,13 +62,14 @@ class GrindController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_grinds' => 'required'
         ]);
 
         $sorting_grinds = json_decode($request->sorting_grinds, true);
-        foreach($sorting_grinds as $grind) {
+        foreach ($sorting_grinds as $grind) {
             Grind::find($grind['grind_id'])->update(['display_order' => $grind['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Grind sorting order applied successfully.'];

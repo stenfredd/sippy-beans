@@ -1,14 +1,6 @@
 <?php
 
-use App\Mail\AppNewOrder;
-use App\Mail\CustomerNewOrder;
-use App\Mail\MerchantNewOrder;
-use App\Models\Grind;
-use App\Models\Order;
-use App\Models\Seller;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Auth::routes([
@@ -33,6 +25,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::post('orders/create', 'Admin\OrderController@create');
         Route::post('orders/update', 'Admin\OrderController@update');
         Route::post('orders/cancel-items', 'Admin\OrderController@cancelItems');
+        Route::post('orders/add-transaction', 'Admin\OrderController@addTransaction');
+        Route::post('orders/delete-transaction', 'Admin\OrderController@deleteTransaction');
         Route::get("orders/{id}", "Admin\OrderController@show");
 
         Route::match(['get', 'post'], 'products', 'Admin\ProductController@index');
@@ -52,6 +46,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::match(['get', 'post'], 'categories', 'Admin\CategoryController@index');
         Route::post('categories/save', 'Admin\CategoryController@save');
         Route::post('categories/update-sort-orders', 'Admin\CategoryController@updateSortOrders');
+        Route::post('categories/update-products-sort-orders', 'Admin\CategoryController@updateProductsSortOrders');
         Route::post('categories/delete', 'Admin\CategoryController@delete');
         Route::get("categories/{id}", "Admin\CategoryController@show");
 
@@ -83,7 +78,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::get('delivery-areas/{id}', 'Admin\PageController@editDeliveryAreass');
 
         Route::match(['get', 'post'], 'tax-charges', 'Admin\PageController@taxCharges');
-        // Route::match(['get', 'post'], 'service-policies', 'Admin\PageController@servicePolicies');
 
         Route::get('service-policies', 'Admin\PageController@index');
         Route::post('service-policies', 'Admin\PageController@save');
@@ -93,7 +87,3 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 // Stripe Callback
 Route::get('/subscription/create', 'User\SubscriptionController@index')->name('subscription.create');
 Route::any('stripe/callback', 'Server\StripeController@webhookCallback');
-
-Route::get('test-push', function () {
-    \OneSignal::sendNotificationToUser("New push messgae", "ececda29-6213-4fa4-9abd-42df7e3e7c9e", $url = url('/admin'), $data = ['test' => 'test']);
-});

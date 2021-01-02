@@ -17,22 +17,22 @@ class EquipmentController extends Controller
         $limit = 20;
         $start = ($page - 1) * $limit;
 
-        $equipments = Equipment::whereStatus(1)->latest();
+        $equipments = Equipment::whereStatus(1)->orderBy('display_order', 'asc');
         if (!empty($search)) {
             $equipments = $equipments->where(function ($query) use ($search) {
                 $query->where('title', 'LIKE', '%' . $search . '%')
                     ->orWhere('description', 'LIKE', '%' . $search . '%');
             });
         }
-        if(!empty($seller_id)) {
+        if (!empty($seller_id)) {
             $equipments = $equipments->where('seller_id', $seller_id);
         }
 
         $total_equipments = $equipments->count();
         $equipments = $equipments->with('images')->offset($start)->limit($limit)->get();
         $totalPages = (ceil($total_equipments / $limit)) ?? 1;
-        
-        foreach($equipments as $equipment) {
+
+        foreach ($equipments as $equipment) {
             $equipment->available_quantity = $equipment->quantity ?? 0;
         }
 

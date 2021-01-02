@@ -17,16 +17,6 @@ class FilterController extends Controller
 {
     public function get()
     {
-        /* $prices = [
-            ['title' => '40-60'],
-            ['title' => '60-80'],
-            ['title' => '80-100'],
-            ['title' => '100-120'],
-            ['title' => '120-140'],
-            ['title' => '140-160'],
-            ['title' => '160-180']
-        ]; */
-
         $prices = Price::selectRaw('id, title, min_price, max_price')->whereStatus(1)->orderBy('id', 'asc')->get();
         $origins = Origin::selectRaw('id, origin_name as title')->whereStatus(1)->orderBy('id', 'asc')->get();
         $brands = Brand::selectRaw('id, name as title')->whereStatus(1)->orderBy('display_order', 'asc')->get();

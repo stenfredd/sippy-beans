@@ -12,7 +12,7 @@ class SubscriptionSeeder extends Seeder
      */
     public function run()
     {
-        if(Subscription::count() == 0) {
+        if (Subscription::count() == 0) {
             Subscription::create([
                 'grind_ids' => '1,2,3,4,5,6,7',
                 'price_id' => env('STRIPE_PRICE_ID'),

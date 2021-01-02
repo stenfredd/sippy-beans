@@ -14,10 +14,6 @@ Route::post('search', 'API\ApplicationController@search');
 
 // Pages
 Route::post('pages', 'API\ApplicationController@pages');
-// Route::post('contact-us', 'API\ApplicationController@contactUs');
-// Route::post('terms-conditions', 'API\ApplicationController@termsConditions');
-// Route::post('privacy-policy', 'API\ApplicationController@privacyPolicy');
-// Route::post('faq', 'API\ApplicationController@faq');
 
 // Locations
 Route::post('locations/countries', 'API\LocationController@countries');

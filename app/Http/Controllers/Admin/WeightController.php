@@ -15,7 +15,7 @@ class WeightController extends Controller
             $weights = Weight::select('*')->orderBy('id', 'desc')->get();
 
             return DataTables::of($weights)
-                ->addIndexColumn()                
+                ->addIndexColumn()
                 ->addColumn('action', function ($weight) {
                     $action = '<div class="d-inline-flex">';
                     $action .= '<a class="btn btn-sm btn-icon btn-warning mr-1 mb-1 waves-effect waves-light" href="javascript:" onclick="showAddEditModal(this, true)"><i class="feather icon-edit"></i></a>';
@@ -26,14 +26,12 @@ class WeightController extends Controller
                 ->make(TRUE);
         }
         $page = new Weight;
-        return view('admin.weight',compact('page'));
+        return view('admin.weight', compact('page'));
     }
     public function save(Request $request)
     {
-        $validation = [           
+        $validation = [
             'title' => 'required',
-            // 'type' => 'required',
-            // 'weight' => 'required',
         ];
         $this->validate($request, $validation);
         $request_data = $request->all();
@@ -49,7 +47,8 @@ class WeightController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'weight_id' => 'required'
         ];
@@ -63,13 +62,14 @@ class WeightController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_weight' => 'required'
         ]);
 
         $sorting_weight = json_decode($request->sorting_weight, true);
-        foreach($sorting_weight as $weight) {
+        foreach ($sorting_weight as $weight) {
             Weight::find($weight['weight_id'])->update(['display_order' => $weight['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Weight sorting order applied successfully.'];

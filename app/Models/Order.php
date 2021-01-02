@@ -44,31 +44,29 @@ class Order extends Model
         'payment_type'
     ];
 
-    public function getPaymentTypeAttribute() {
+    public function getPaymentTypeAttribute()
+    {
         $value = $this->attributes['payment_type'] ?? '';
         $payment_type = '';
-        if($value == 1) {
+        if ($value == 1) {
             $payment_type = 'Cash on Delivery';
-        }
-        else if($value == 2) {
+        } else if ($value == 2) {
             $payment_type = 'Card';
         }
         return $payment_type;
     }
 
-    public function getStatusTextAttribute() {
+    public function getStatusTextAttribute()
+    {
         $value = $this->attributes['status'] ?? 0;
         $status_text = 'New';
-        if($value === 1) {
+        if ($value === 1) {
             $status_text = 'In Progress';
-        }
-        else if($value === 2) {
+        } else if ($value === 2) {
             $status_text = 'Shipped';
-        }
-        else if($value === 3) {
+        } else if ($value === 3) {
             $status_text = 'Completed';
-        }
-        else if($value === 4) {
+        } else if ($value === 4) {
             $status_text = 'Cancelled';
         }
         return $this->attributes['status_text'] = $status_text;

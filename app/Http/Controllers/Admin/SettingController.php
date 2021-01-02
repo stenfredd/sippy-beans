@@ -12,10 +12,8 @@ class SettingController extends Controller
     {
         $settings = [];
         $db_settings = Setting::all();
-        if(!empty($db_settings) && count($db_settings) > 0)
-        {
-            foreach($db_settings as $setting)
-            {
+        if (!empty($db_settings) && count($db_settings) > 0) {
+            foreach ($db_settings as $setting) {
                 $settings[$setting->setting_key] = $setting->setting_value;
             }
         }
@@ -26,11 +24,9 @@ class SettingController extends Controller
     {
         $settings = $request->all();
         unset($settings['_token']);
-        foreach($settings as $key => $setting)
-        {
+        foreach ($settings as $key => $setting) {
             $db_setting = Setting::where('setting_key', $key)->first();
-            if(empty($db_setting) || !isset($db_setting->setting_key))
-            {
+            if (empty($db_setting) || !isset($db_setting->setting_key)) {
                 $db_setting = new Setting();
                 $db_setting->setting_key = $key;
             }

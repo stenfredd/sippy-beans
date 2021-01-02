@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Brand;
 use Yajra\DataTables\Facades\DataTables;
-use \Illuminate\Support\Facades\URL;
 
 class BrandController extends Controller
 {
@@ -45,12 +44,12 @@ class BrandController extends Controller
 
         $request_data = $request->except('brand_image');
 
-        if($file = $request->hasFile('brand_image')) {
-            $file = $request->file('brand_image') ;
-            $fileName = time().'.'. $file->getClientOriginalExtension() ;
-            $destinationPath = public_path().'/uploads/brands/' ;
-            $file->move($destinationPath,$fileName);
-            $request_data['brand_image'] = 'uploads/brands/'.$fileName ;
+        if ($file = $request->hasFile('brand_image')) {
+            $file = $request->file('brand_image');
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path() . '/uploads/brands/';
+            $file->move($destinationPath, $fileName);
+            $request_data['brand_image'] = 'uploads/brands/' . $fileName;
         }
 
         if (isset($request_data['brand_id']) && !empty($request_data['brand_id'])) {
@@ -66,7 +65,8 @@ class BrandController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'brand_id' => 'required'
         ];
@@ -80,13 +80,14 @@ class BrandController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_brands' => 'required'
         ]);
 
         $sorting_brands = json_decode($request->sorting_brands, true);
-        foreach($sorting_brands as $brand) {
+        foreach ($sorting_brands as $brand) {
             Brand::find($brand['brand_id'])->update(['display_order' => $brand['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Brand sorting order applied successfully.'];

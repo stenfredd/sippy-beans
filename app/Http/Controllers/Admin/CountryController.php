@@ -50,7 +50,8 @@ class CountryController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'country_id' => 'required'
         ];

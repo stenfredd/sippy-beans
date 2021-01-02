@@ -35,7 +35,7 @@ class BannerController extends Controller
                 })
                 ->editColumn('status', function ($banner) {
                     $status = '<div class="custom-control custom-switch custom-switch-primary mr-2 mb-1 text-center">
-                    <input type="checkbox" class="custom-control-input" ' . ($banner->status == 1 ? 'checked' : '') . ' id="banner-status-' . $banner->id . '" onchange="updateStatus('.$banner->id.', '.($banner->status == 1 ? '0' : '1').')">
+                    <input type="checkbox" class="custom-control-input" ' . ($banner->status == 1 ? 'checked' : '') . ' id="banner-status-' . $banner->id . '" onchange="updateStatus(' . $banner->id . ', ' . ($banner->status == 1 ? '0' : '1') . ')">
                     <label class="custom-control-label" for="banner-status-' . $banner->id . '">
                     <span class="switch-text-left"></span>
                     <span class="switch-text-right"></span>
@@ -61,11 +61,8 @@ class BannerController extends Controller
     public function save(Request $request)
     {
         $validation = [
-            // 'image_url' => 'required',
             'title' => 'required_if:status,null',
             'banner_id' => 'required_if:title,null',
-            // 'status' => 'required_if:title,null',
-            // 'description' => 'required'
         ];
         $this->validate($request, $validation);
 
@@ -84,26 +81,24 @@ class BannerController extends Controller
             $banner = Banner::create($request_data);
             $banner_id = $banner->id;
         }
-        if($request->ajax()) {
+        if ($request->ajax()) {
             $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
             if ($banner) {
                 $msg = isset($request_data['banner_id']) && !empty($request_data['banner_id']) ? 'updated' : 'created';
                 $response = ['status' => true, 'message' => 'Banner ' . $msg . ' successfully.'];
             }
             return response()->json($response);
+        } else {
+            $msg = isset($request_data['banner_id']) && !empty($request_data['banner_id']) ? 'updated' : 'created';
+            $msg1 = isset($request_data['banner_id']) && !empty($request_data['banner_id']) ? 'Updating' : 'Creating';
+            if ($banner) {
+                session()->flash('success', 'Banners ' . $msg . ' successfully.');
+                return redirect(url('admin/banners/' . $banner_id));
+            } else {
+                session()->flash('error', $msg1 . ' category failed, Please try again.');
+                return redirect()->back();
+            }
         }
-        else {
-        $msg = isset($request_data['banner_id']) && !empty($request_data['banner_id']) ? 'updated' : 'created';
-        $msg1 = isset($request_data['banner_id']) && !empty($request_data['banner_id']) ? 'Updating' : 'Creating';
-        if ($banner) {
-            session()->flash('success', 'Banners '.$msg.' successfully.');
-            return redirect(url('admin/banners/' . $banner_id));
-        }
-        else {
-            session()->flash('error', $msg1 . ' category failed, Please try again.');
-            return redirect()->back();
-        }
-    }
     }
 
     public function delete(Request $request)
@@ -135,7 +130,7 @@ class BannerController extends Controller
         return response()->json($response);
     }
 
-    public function show($id=null)
+    public function show($id = null)
     {
         $products = Product::whereStatus(1)->get();
         $equipments = Equipment::whereStatus(1)->get();

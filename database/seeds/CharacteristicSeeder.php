@@ -12,8 +12,7 @@ class CharacteristicSeeder extends Seeder
      */
     public function run()
     {
-        if(Characteristic::count() == 0)
-        {
+        if (Characteristic::count() == 0) {
             $characteristics = [
                 'Chocolaty & Sweet',
                 'Sweet & Tart',
@@ -25,8 +24,7 @@ class CharacteristicSeeder extends Seeder
                 'Balanced & Fruity',
                 'Earthy & Rich'
             ];
-            foreach($characteristics as $key => $characteristic)
-            {
+            foreach ($characteristics as $key => $characteristic) {
                 Characteristic::create([
                     'title' => $characteristic,
                     'display_order' => ($key + 1),

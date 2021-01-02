@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MatchMakers;
 use App\Models\Order;
-use App\Models\UserAddress;
-use App\Models\UserMatchMaker;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +20,8 @@ class UserController extends Controller
     {
         $users = User::select('*')->where('user_type', '!=', 'admin')->orderBy('id', 'DESC');
         if ($request->ajax()) {
-            if(!empty($request->input('search'))) {
-                $users = $users->where(function($query) use ($request){
+            if (!empty($request->input('search'))) {
+                $users = $users->where(function ($query) use ($request) {
                     $query->where('first_name', 'LIKE', "%" . $request->search . "%");
                     $query->orWhere('last_name', 'LIKE', "%" . $request->search . "%");
                     $query->orWhere('email', 'LIKE', "%" . $request->search . "%");
@@ -45,17 +43,13 @@ class UserController extends Controller
                     $total_withdraw_reward = UserReward::whereRewardType('withdraw')->whereUserId($user->id)->sum('reward_points');
                     return $total_credit_reward - $total_withdraw_reward;;
                 })
-                // ->editColumn('created_at', function ($user) {
-                //     return $user->created_at->format("M d, Y") . "\n" . $user->created_at->format('h:mA');
-                // })
-                ->editColumn('created_at', function($user) {
+                ->editColumn('created_at', function ($user) {
                     $date = Carbon::parse($user->created_at)->timezone($this->app_settings['timezone'])->format("M d,Y");
                     $time = Carbon::parse($user->created_at)->timezone($this->app_settings['timezone'])->format("g:iA");
                     return $date . '<br><span class="time">' . $time . '</span>';
                 })
                 ->addColumn('action', function ($user) {
-                    // $action = '<a class="btn btn-sm btn-icon mr-1 mb-1 waves-effect waves-light" href="users/'.$user->id.'"><i class="feather icon-eye"></i></a>';
-                    $action = '<a href="'.url('admin/users/' . $user->id).'" href="'.url('admin/users/' . $user->id).'"><i class="feather icon-eye"></i></a>';
+                    $action = '<a href="' . url('admin/users/' . $user->id) . '" href="' . url('admin/users/' . $user->id) . '"><i class="feather icon-eye"></i></a>';
                     return $action;
                 })
                 ->rawColumns(['profile_image', 'action', 'created_at'])
@@ -135,21 +129,21 @@ class UserController extends Controller
         $last_user_reward = UserReward::latest()->whereUserId($user_id)->first();
 
         $match_makers = MatchMakers::select('match_makers.*', 'user_match_makers.values')
-                    ->leftJoin('user_match_makers', function ($q) use($user_id) {
-                        $q->on('match_makers.id', 'user_match_makers.match_maker_id');
-                        $q->where('user_id', $user_id);
-                    })
-                    ->where('match_makers.status', 1);
+            ->leftJoin('user_match_makers', function ($q) use ($user_id) {
+                $q->on('match_makers.id', 'user_match_makers.match_maker_id');
+                $q->where('user_id', $user_id);
+            })
+            ->where('match_makers.status', 1);
         $last_update_match = $match_makers;
 
         $match_makers = $match_makers->get();
         $last_update_match = $last_update_match->latest()->first()->created_at ?? null;
 
-        if(!empty($match_makers) && count($match_makers) > 0) {
-            foreach($match_makers as $match_maker) {
+        if (!empty($match_makers) && count($match_makers) > 0) {
+            foreach ($match_makers as $match_maker) {
                 $match_maker->values_name = 'N/A';
                 $match_maker_values = DB::table($match_maker->type . 's')->whereIn("id", explode(',', $match_maker->values))->get();
-                if(!empty($match_maker_values) && count($match_maker_values) > 0 && isset($match_maker_values[0]->name)) {
+                if (!empty($match_maker_values) && count($match_maker_values) > 0 && isset($match_maker_values[0]->name)) {
                     $match_maker->values_name = implode(' | ', array_column($match_maker_values->toArray(), 'name'));
                 }
                 if (!empty($match_maker_values) && count($match_maker_values) > 0 && isset($match_maker_values[0]->title)) {
@@ -169,7 +163,8 @@ class UserController extends Controller
         return view('admin.users.show', compact("user", 'match_makers', 'last_update_match', 'new_orders', 'inprogress_orders', 'shipped_orders', 'completed_orders', 'cancelled_orders', 'all_orders', 'last_user_reward'));
     }
 
-    public function export(Request $request) {
+    public function export(Request $request)
+    {
         return \Excel::download(new UserExport, 'usersData.xlsx');
     }
 
@@ -189,7 +184,7 @@ class UserController extends Controller
         $type = null;
         $reward_points = null;
 
-        if($user_reward_points < $request->reward_points) {
+        if ($user_reward_points < $request->reward_points) {
             $type = 'credit';
             $reward_points = $request->reward_points - $user_reward_points;
         }
@@ -198,7 +193,7 @@ class UserController extends Controller
             $reward_points = $user_reward_points - $request->reward_points;
         }
         $create = false;
-        if(!empty($type) && !empty($reward_points)) {
+        if (!empty($type) && !empty($reward_points)) {
             $create = UserReward::create([
                 'user_id' => $request->user_id,
                 'reward_type' => $type,

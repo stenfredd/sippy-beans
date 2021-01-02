@@ -12,12 +12,10 @@ class BrandTypeSeeder extends Seeder
      */
     public function run()
     {
-        if(BrandType::count() == 0)
-        {
+        if (BrandType::count() == 0) {
             $types = ['Local', 'International'];
 
-            foreach($types as $type)
-            {
+            foreach ($types as $type) {
                 BrandType::create([
                     'title' => $type,
                     'status' => 1

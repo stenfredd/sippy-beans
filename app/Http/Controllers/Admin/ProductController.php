@@ -36,13 +36,16 @@ class ProductController extends Controller
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
                 });
             }
-            if(!empty($request->input('category_id'))) {
+            if (!empty($request->input('category_id'))) {
                 $products = $products->whereCategoryId($request->category_id);
             }
-            $products = $products->with("images")->orderBy('id')->get();
+            $products = $products->with("images")->orderBy('display_order', 'asc')->get();
 
             return DataTables::of($products)
                 ->addIndexColumn()
+                ->addColumn('sort_image', function ($banner) {
+                    return '<img src="' . asset('assets/images/sort-icon.png') . '" class="handle">';
+                })
                 ->addColumn('image_path', function ($product) {
                     $image_url = $product->images[0]->image_path ?? null;
                     return '<img src="' . asset($image_url ?? 'assets/images/product-img.png') . '">';
@@ -61,10 +64,10 @@ class ProductController extends Controller
                     $action = '<a href="' . url('admin/products/' . $product->id) . '"><i class="feather icon-eye"></i></a>';
                     return $action;
                 })
-                ->editColumn('status', function($product) {
+                ->editColumn('status', function ($product) {
                     return ($product->status == 1 ? 'Enabled' : 'Disabled');
                 })
-                ->rawColumns(['chk_select', 'image_path', 'created_at', 'action'])
+                ->rawColumns(['sort_image', 'chk_select', 'image_path', 'created_at', 'action'])
                 ->make(TRUE);
         }
         $total_products = $products->count();
@@ -76,10 +79,10 @@ class ProductController extends Controller
     {
         $product = Product::with('variants')->find($id);
         $variants = [];
-        if(!empty($product) && isset($product->id)) {
-            foreach($product->variants as $variant) {
+        if (!empty($product) && isset($product->id)) {
+            foreach ($product->variants as $variant) {
                 $grind_ids = explode(',', $variant->grind_ids);
-                foreach($grind_ids as $grind_id) {
+                foreach ($grind_ids as $grind_id) {
                     $variant_grind = $variant->replicate();
                     $variant_grind->id = $variant->id;
                     $variant_grind->grind_id = $grind_id;
@@ -253,24 +256,26 @@ class ProductController extends Controller
         }
     }
 
-    public function saveVariants(Request $request) {
+    public function saveVariants(Request $request)
+    {
         $post_data = $request->all();
         $save = true;
-        if(isset($post_data['variant_id']) && !empty($post_data['variant_id'])) {
+        if (isset($post_data['variant_id']) && !empty($post_data['variant_id'])) {
             $save = Variant::find($post_data['variant_id'])->update($post_data);
         }
-        if($save) {
+        if ($save) {
             return response()->json(['status' => true, 'message' => 'Variant details updated successfully.']);
         }
         return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
     }
 
-    public function createVariants(Request $request) {
+    public function createVariants(Request $request)
+    {
         $post_data = $request->all();
         $response = ['status' => false, 'message' => 'Something went wrong, Please try again'];
-        if(!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
+        if (!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
             $grind_ids = implode(',', $post_data['grind_ids']);
-            foreach($post_data['weight_ids'] as $weight_id) {
+            foreach ($post_data['weight_ids'] as $weight_id) {
                 $variant = [
                     'product_id' => $request->product_id,
                     'weight_id' => $weight_id,

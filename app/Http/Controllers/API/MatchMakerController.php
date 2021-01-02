@@ -17,13 +17,13 @@ class MatchMakerController extends Controller
         $user_id = auth('api')->user()->id;
 
         $match_makers = MatchMakers::select('match_makers.*', 'user_match_makers.values')
-                    ->leftJoin('user_match_makers', function ($q) use($user_id) {
-                        $q->on('match_makers.id', 'user_match_makers.match_maker_id');
-                        $q->where('user_id', $user_id);
-                    })
-                    ->where('match_makers.status', 1)
-                    ->orderBy("match_makers.id")
-                    ->get();
+            ->leftJoin('user_match_makers', function ($q) use ($user_id) {
+                $q->on('match_makers.id', 'user_match_makers.match_maker_id');
+                $q->where('user_id', $user_id);
+            })
+            ->where('match_makers.status', 1)
+            ->orderBy("match_makers.id")
+            ->get();
 
         $fields = [
             'best_for' => 'id,title',
@@ -41,15 +41,15 @@ class MatchMakerController extends Controller
         ];
 
         if (!empty($match_makers)  && count($match_makers) > 0) {
-            foreach($match_makers as $match_maker) {
+            foreach ($match_makers as $match_maker) {
                 $match_maker->options = [];
-                if(!empty($match_maker->type)) {
-                    $match_maker->options = DB::table($match_maker->type .($match_maker->type == 'process' ? 'e' : '') . 's')->selectRaw($fields[$match_maker->type])->get();
+                if (!empty($match_maker->type)) {
+                    $match_maker->options = DB::table($match_maker->type . ($match_maker->type == 'process' ? 'e' : '') . 's')->selectRaw($fields[$match_maker->type])->get();
                 }
 
                 $match_maker->values = explode(',', $match_maker->values);
-                if(!empty($match_maker->options) && count($match_maker->options) > 0) {
-                    foreach($match_maker->options as $option) {
+                if (!empty($match_maker->options) && count($match_maker->options) > 0) {
+                    foreach ($match_maker->options as $option) {
                         $option->is_selected = (in_array($option->id, $match_maker->values) ? 1 : 0);
                     }
                 }
@@ -64,15 +64,14 @@ class MatchMakerController extends Controller
     {
         $request->validate([
             'match_maker_obj' => 'required',
-            // 'values' => 'required'
         ]);
         $save = false;
-        // $request->match_maker_obj = trim($request->match_maker_obj, '"');
+
         $match_maker_obj = json_decode($request->match_maker_obj, true);
         $user_id = auth('api')->user()->id;
-        foreach($match_maker_obj as $match_maker) {
+        foreach ($match_maker_obj as $match_maker) {
             $user_match_maker = UserMatchMaker::where('user_id', $user_id)->where('match_maker_id', $match_maker['id'])->first();
-            if(empty($user_match_maker) || !isset($user_match_maker->id)) {
+            if (empty($user_match_maker) || !isset($user_match_maker->id)) {
                 $user_match_maker = new UserMatchMaker();
                 $user_match_maker->user_id = $user_id;
                 $user_match_maker->match_maker_id = $match_maker['id'];
@@ -81,8 +80,7 @@ class MatchMakerController extends Controller
             $save = $user_match_maker->save();
         }
 
-        if($save)
-        {
+        if ($save) {
             return response()->json(['status' => true, 'message' => 'Match makers details updated succesfully.']);
         }
         return response()->json(['status' => true, 'message' => 'Something went wrong, Please try again.']);

@@ -9,7 +9,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class LevelController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         if ($request->ajax()) {
             $levels = Level::select('*')->orderBy('id', 'asc')->get();
 
@@ -27,7 +28,8 @@ class LevelController extends Controller
         return view('admin.levels');
     }
 
-    public function save(Request $request) {
+    public function save(Request $request)
+    {
         $validation = [
             'level_title' => 'required',
         ];
@@ -36,8 +38,7 @@ class LevelController extends Controller
         $request_data = $request->all();
         if (isset($request_data['level_id']) && !empty($request_data['level_id'])) {
             $level = Level::find($request_data['level_id'])->update($request_data);
-        }
-        else {
+        } else {
             $level = Level::create($request_data);
         }
 
@@ -49,7 +50,8 @@ class LevelController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'level_id' => 'required'
         ];
@@ -63,13 +65,14 @@ class LevelController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_levels' => 'required'
         ]);
 
         $sorting_levels = json_decode($request->sorting_levels, true);
-        foreach($sorting_levels as $levels) {
+        foreach ($sorting_levels as $levels) {
             Level::find($levels['level_id'])->update(['display_order' => $levels['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Cooffee type sorting order applied successfully.'];

@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
     {
         $subscriptions = Subscription::select('*')->orderBy('id', 'asc')->get();
         view()->share('page_title', 'Subscription');
-        return view('admin.subscription.list',compact('subscriptions'));
+        return view('admin.subscription.list', compact('subscriptions'));
     }
 
     public function save(Request $request)
@@ -37,14 +37,13 @@ class SubscriptionController extends Controller
             $request_data['image_url'] = asset('uploads/subscriptions/' . $imageName);
         }
         $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
-        if(isset($request_data['grind_ids']) && !empty($request_data['grind_ids'])) {
+        if (isset($request_data['grind_ids']) && !empty($request_data['grind_ids'])) {
             $request_data['grind_ids'] = implode(',', $request_data['grind_ids']);
         }
         if (isset($request_data['subscription_id']) && !empty($request_data['subscription_id'])) {
             $subscription = Subscription::find($request_data['subscription_id'])->update($request_data);
             $subscription_id = $request_data['subscription_id'];
-        }
-        else {
+        } else {
             $subscription = Subscription::create($request_data);
             $subscription_id = $subscription->id;
         }
@@ -54,8 +53,7 @@ class SubscriptionController extends Controller
         if ($subscription) {
             session()->flash('success', 'Subscription details ' . $msg . ' successfully.');
             return redirect(url('admin/subscription/' . $subscription_id));
-        }
-        else {
+        } else {
             session()->flash('error', $msg1 . ' subscription details failed, Please try again.');
             return redirect()->back();
         }

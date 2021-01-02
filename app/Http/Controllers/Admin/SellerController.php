@@ -45,12 +45,12 @@ class SellerController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->except('seller_image');
-        if($file = $request->hasFile('seller_image')) {
-            $file = $request->file('seller_image') ;
-            $fileName = time().'.'. $file->getClientOriginalExtension() ;
-            $destinationPath = public_path().'/uploads/sellers/' ;
-            $file->move($destinationPath,$fileName);
-            $request_data['seller_image'] = 'uploads/sellers/'.$fileName ;
+        if ($file = $request->hasFile('seller_image')) {
+            $file = $request->file('seller_image');
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path() . '/uploads/sellers/';
+            $file->move($destinationPath, $fileName);
+            $request_data['seller_image'] = 'uploads/sellers/' . $fileName;
         }
 
         if (isset($request_data['seller_id']) && !empty($request_data['seller_id'])) {
@@ -66,7 +66,8 @@ class SellerController extends Controller
         return response()->json($response);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'seller_id' => 'required'
         ];
@@ -80,13 +81,14 @@ class SellerController extends Controller
         return response()->json($response);
     }
 
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_sellers' => 'required'
         ]);
 
         $sorting_sellers = json_decode($request->sorting_sellers, true);
-        foreach($sorting_sellers as $seller) {
+        foreach ($sorting_sellers as $seller) {
             Seller::find($seller['seller_id'])->update(['display_order' => $seller['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Seller sorting order applied successfully.'];

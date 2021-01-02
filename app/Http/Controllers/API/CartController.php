@@ -11,33 +11,28 @@ use App\Models\UserAddress;
 
 class CartController extends Controller
 {
-	public function index(Request $request)
-	{
-		$user_id = auth('api')->user()->id;
-		$db_cart_data = Cart::where('user_id', $user_id)->with(['variant', 'product', 'product.variants', 'product.images', 'equipment', 'equipment.images', 'subscription'])->get();
-		$response = [
-			'status' => false,
-			'message' => 'No cart data found.'
-		];
+    public function index(Request $request)
+    {
+        $user_id = auth('api')->user()->id;
+        $db_cart_data = Cart::where('user_id', $user_id)->with(['variant', 'product', 'product.variants', 'product.images', 'equipment', 'equipment.images', 'subscription'])->get();
+        $response = [
+            'status' => false,
+            'message' => 'No cart data found.'
+        ];
 
-		if(!empty($db_cart_data) && count($db_cart_data) > 0)
-		{
+        if (!empty($db_cart_data) && count($db_cart_data) > 0) {
             $cart_total = 0;
 
-			foreach($db_cart_data as $db_cart)
-			{
+            foreach ($db_cart_data as $db_cart) {
                 $db_cart->brand_name = null;
-                if(!empty($db_cart->subscription_id)) {
+                if (!empty($db_cart->subscription_id)) {
                     $db_cart->brand_name = 'SIPPY';
                     $price = $db_cart->subscription->price; // Quantity always 1
-                }
-                else if(!empty($db_cart->equipment_id)) {
+                } else if (!empty($db_cart->equipment_id)) {
                     $price = $db_cart->equipment->price * $db_cart->quantity;
-                }
-                else if(!empty($db_cart->variant)) {
+                } else if (!empty($db_cart->variant)) {
                     $price = $db_cart->variant->price * $db_cart->quantity;
-                }
-                else {
+                } else {
                     $price = $db_cart->product->price * $db_cart->quantity;
                 }
                 $db_cart->price = $price;
@@ -48,7 +43,7 @@ class CartController extends Controller
 
             $promocode_discount_amount = 0;
             $promocode = RedeemPromocode::whereNull('order_id')->where('status', 0)->where('user_id', $user_id)->with('promocode_data')->first();
-            if(!empty($promocode) && isset($promocode->id)) {
+            if (!empty($promocode) && isset($promocode->id)) {
                 $promocode_discount_amount = $promocode->type == 'percentage' ? (($cart_total / 100) * $promocode->promocode_amount) : $promocode->promocode_amount;
             }
 
@@ -95,45 +90,43 @@ class CartController extends Controller
             $payments['delivery_time'] = $area_delivery_time;
             $payments['allow_cash_payment'] = ($this->app_settings['allow_cash_payment'] == '1' ? true : false) ?? false;
 
-			$response = [
-				'status' => true,
+            $response = [
+                'status' => true,
                 'cart_data' => $db_cart_data,
                 'payments' => $payments,
                 'address' => $address
-			];
+            ];
         }
-		return response()->json($response);
-	}
+        return response()->json($response);
+    }
 
     public function update(Request $request)
     {
-    	$request->validate([
-    		'subscription_id' => 'required_if:equipment_id,null|required_if:product_id,null',
-    		'product_id' => 'required_if:equipment_id,null',
-    		'variant_id' => 'required_if:equipment_id,null',
-    		'grind_id' => 'required_if:equipment_id,null',
-    		'equipment_id' => 'required_if:product_id,null',
-    		'quantity' => 'required'
-    	]);
-    	// info(print_r($request->all(), true));
+        $request->validate([
+            'subscription_id' => 'required_if:equipment_id,null|required_if:product_id,null',
+            'product_id' => 'required_if:equipment_id,null',
+            'variant_id' => 'required_if:equipment_id,null',
+            'grind_id' => 'required_if:equipment_id,null',
+            'equipment_id' => 'required_if:product_id,null',
+            'quantity' => 'required'
+        ]);
+        // info(print_r($request->all(), true));
 
         $user_id = auth('api')->user()->id;
 
         $cart = Cart::whereUserId(auth('api')->user()->id);
 
-        if(!empty($request->input('subscription_id'))) {
+        if (!empty($request->input('subscription_id'))) {
             $cart = $cart->whereSubscriptionId($request->subscription_id);
             $request->quantity = 1;
-        }
-        else if(!empty($request->input('equipment_id'))) {
+        } else if (!empty($request->input('equipment_id'))) {
             $cart = $cart->whereEquipmentId($request->equipment_id);
-        }
-        else {
+        } else {
             $cart = $cart->whereProductId($request->product_id)->whereVariantId($request->variant_id)->whereGrindId($request->grind_id);
         }
         $cart = $cart->first();
 
-        if(empty($cart) || !isset($cart->id)) {
+        if (empty($cart) || !isset($cart->id)) {
             $cart = new Cart();
             $cart->user_id = $user_id;
             $cart->product_id = $request->product_id ?? null;
@@ -142,39 +135,35 @@ class CartController extends Controller
             $cart->subscription_id = $request->subscription_id ?? null;
             $cart->grind_id = $request->grind_id ?? null;
             $cart->quantity = $request->quantity;
+        } else {
+            if (empty($request->input('subscription_id'))) {
+                if (isset($request->type)) {
+                    if ($request->type == 1) {
+                        $cart->quantity = $cart->quantity + 1;
+                    } else {
+                        $cart->quantity = $cart->quantity - 1;
+                    }
+                } else {
+                    $cart->quantity = $cart->quantity + $request->quantity;
+                }
+            }
         }
-        else {
-        	if(empty($request->input('subscription_id'))) {
-	            if(isset($request->type)) {
-	                if($request->type == 1) {
-	                    $cart->quantity = $cart->quantity + 1;
-	                }
-	                else {
-	                    $cart->quantity = $cart->quantity - 1;
-	                }
-	            }
-	            else {
-	                $cart->quantity = $cart->quantity + $request->quantity;
-	            }
-	        }
-        }
-        if(!empty($request->input('subscription_id'))) {
-        	$cart->grind_id = $request->grind_id ?? null;
+        if (!empty($request->input('subscription_id'))) {
+            $cart->grind_id = $request->grind_id ?? null;
         }
         $status = $cart->save();
 
-		$response = [
-			'status' => false,
-			'message' => 'Something went wrong, Please try again'
-		];
-    	if($status)
-    	{
-    		$response = [
-    			'status' => true,
-    			'message' => 'Cart details saved successfully'
-    		];
-    	}
-    	return response()->json($response);
+        $response = [
+            'status' => false,
+            'message' => 'Something went wrong, Please try again'
+        ];
+        if ($status) {
+            $response = [
+                'status' => true,
+                'message' => 'Cart details saved successfully'
+            ];
+        }
+        return response()->json($response);
     }
 
     public function delete(Request $request)
@@ -184,14 +173,14 @@ class CartController extends Controller
         ]);
 
         $status = false;
-        if(isset($request->cart_id) && !empty($request->cart_id)) {
+        if (isset($request->cart_id) && !empty($request->cart_id)) {
             $status = Cart::destroy($request->cart_id);
         }
 
-    	$response = [
-    		'status' => $status ? true : false,
-    		'message' => $status ? 'Item removed from cart successfully.' : 'Removing item from cart failed, Please try again'
-    	];
-    	return response()->json($response);
+        $response = [
+            'status' => $status ? true : false,
+            'message' => $status ? 'Item removed from cart successfully.' : 'Removing item from cart failed, Please try again'
+        ];
+        return response()->json($response);
     }
 }

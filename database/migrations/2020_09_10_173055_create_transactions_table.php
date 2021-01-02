@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->string('stripe_subscription_id')->nullable();
             $table->string('payment_id')->nullable();
             $table->enum('payment_type', ['payment', 'refund'])->nullable()->default('payment');
-            $table->enum('type', ['card', 'cash'])->nullable()->default('card');
+            $table->enum('type', ['card', 'cash', 'payment_link'])->nullable()->default('card');
             $table->double('amount', 10, 2)->nullable()->default(0);
             $table->timestamps();
         });

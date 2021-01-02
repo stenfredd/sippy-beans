@@ -17,12 +17,9 @@ class Brand extends Model
 
     public function getBrandImageAttribute($value)
     {
-        if(!empty($value) && file_exists(public_path('uploads/brands/'.$value)))
-        {
+        if (!empty($value) && file_exists(public_path('uploads/brands/' . $value))) {
             $value = asset($value);
-        }
-        else
-        {
+        } else {
             $value = asset('images/user-default.png');
         }
         return $value;

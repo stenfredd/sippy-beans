@@ -15,7 +15,8 @@ class City extends Model
         'status'
     ];
 
-    public function country() {
+    public function country()
+    {
         return $this->hasOne("App\Models\Country", "id", "country_id");
     }
 }

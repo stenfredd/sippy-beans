@@ -12,8 +12,7 @@ class SellersSeeder extends Seeder
      */
     public function run()
     {
-        if(Seller::count() == 0)
-        {
+        if (Seller::count() == 0) {
             $sellers = [
                 [
                     'name' => "Mohit's Coffee Shop",
@@ -25,8 +24,7 @@ class SellersSeeder extends Seeder
                 ]
             ];
 
-            foreach($sellers as $key => $seller)
-            {
+            foreach ($sellers as $key => $seller) {
                 Seller::create([
                     'seller_name' => $seller['name'],
                     'seller_info' => $seller['name'],

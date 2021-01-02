@@ -305,7 +305,7 @@
                                                                                     style="font-size:12px"><img
                                                                                         src="{{ asset('assets/images/' . $order->card_type .'.png') }}"
                                                                                         width="25" height="15" alt="" />
-                                                                                    **** 1234</td>
+                                                                                    **** {{ $order->card_number ?? '' }}}}</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>&nbsp;</td>
@@ -516,7 +516,7 @@
                                                                                 <td align="left" valign="top">Delivery
                                                                                     Fee</td>
                                                                                 <td align="right" valign="top">
-                                                                                    {{ $order->delivery_fee > 0 ? $app_settings['currency_code'] ?? 'AED ' . number_format($order->delivery_fee, 2) : 'Free' }}
+                                                                                    {{ $order->delivery_fee > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->delivery_fee, 2)) : 'Free' }}
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>

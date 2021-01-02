@@ -12,14 +12,12 @@ class TaxClassesSeeder extends Seeder
      */
     public function run()
     {
-        if(TaxClass::count() == 0)
-        {
+        if (TaxClass::count() == 0) {
             $classes = [
                 '5'
             ];
 
-            foreach($classes as $class)
-            {
+            foreach ($classes as $class) {
                 TaxClass::create([
                     'class' => $class,
                     'status' => 1

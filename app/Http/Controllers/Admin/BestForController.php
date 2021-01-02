@@ -38,8 +38,7 @@ class BestForController extends Controller
         $request_data = $request->all();
         if (isset($request_data['best_for_id']) && !empty($request_data['best_for_id'])) {
             $best_for = BestFor::find($request_data['best_for_id'])->update($request_data);
-        }
-        else {
+        } else {
             $best_for = BestFor::create($request_data);
         }
 

@@ -54,8 +54,7 @@ class OrderController extends Controller
             if ($order->order_type == 'subscription') {
                 $order->subscription = Subscription::whereStatus(1)->first();
                 $order->product_names = "SIPPY - " . ($order->subscription->title ?? '') . ' x1';
-            }
-            else {
+            } else {
                 foreach ($order->details as $detail) {
                     if (!empty($detail->product) && isset($detail->product->product_name)) {
                         $name = ($detail->product->brand->name ?? '') . ' - ' . $detail->product->product_name . ' x' . $detail->quantity;
@@ -163,8 +162,7 @@ class OrderController extends Controller
                         $response = ['status' => false, 'message' => 'Promocode used limit reached.', 'is_promocode_invalid' => true];
                         return response()->json($response);
                     }
-                }
-                else {
+                } else {
                     $used_count = RedeemPromocode::wherePromocode($db_promocode->promocode)->count();
                     if ($used_count >= $db_promocode->used_limit) {
                         $applied_promocode->delete();
@@ -192,19 +190,16 @@ class OrderController extends Controller
                 $details['grind_id'] = $db_cart->grind_id;
                 $price = $db_cart->subscription->price;
                 $order_type = 'subscription';
-            }
-            else if (!empty($db_cart->equipment_id)) {
+            } else if (!empty($db_cart->equipment_id)) {
                 $details['equipment_id'] = $db_cart->equipment_id;
                 $price = $db_cart->equipment->price;
-            }
-            else if (!empty($db_cart->variant_id)) {
+            } else if (!empty($db_cart->variant_id)) {
                 $details['variant_id'] = $db_cart->variant_id;
                 $details['product_id'] = $db_cart->product_id;
                 $details['grind_id'] = $db_cart->grind_id;
                 $price = $db_cart->variant->price;
                 $reward_points = $reward_points + ($db_cart->variant->reward_point * $db_cart->quantity);
-            }
-            else {
+            } else {
                 $details['product_id'] = $db_cart->product_id;
                 $price = $db_cart->product->price;
                 $reward_points = $reward_points + ($db_cart->variant->reward_point * $db_cart->quantity);
@@ -236,8 +231,8 @@ class OrderController extends Controller
         $subtotal = ($cart_total + $delivery_fee) - $promocode_discount_amount;
 
         $tax_charges = (float) ($this->app_settings['tax_charges'] ?? 0);
-        if($tax_charges > 0) {
-        	$tax_charges = ($subtotal / 100) * $tax_charges;
+        if ($tax_charges > 0) {
+            $tax_charges = ($subtotal / 100) * $tax_charges;
         }
 
         $payments = [
@@ -356,8 +351,7 @@ class OrderController extends Controller
             $order->product_names = null;
             if ($order->order_type == 'subscription') {
                 $order->product_names = $order->subscription->title ?? '';
-            }
-            else {
+            } else {
                 foreach ($order->details as $detail) {
                     if (!empty($detail->product) && isset($detail->product->product_name)) {
                         $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->product->product_name;
@@ -394,10 +388,9 @@ class OrderController extends Controller
                 }
                 if (!empty($detail->equipment_id)) {
                     $commission_fee = 0;
-                    if($detail->equipment->commission_type === 'percentage') {
+                    if ($detail->equipment->commission_type === 'percentage') {
                         $commission_fee = ($detail->subtotal / 100) * $detail->equipment->commission_fee;
-                    }
-                    else {
+                    } else {
                         $commission_fee = $detail->equipment->commission_fee * $detail->quantity;
                     }
                     $detail->seller_price = $detail->subtotal - $commission_fee;
@@ -405,10 +398,9 @@ class OrderController extends Controller
                 }
                 if (!empty($detail->product_id)) {
                     $commission_fee = 0;
-                    if($detail->product->commission_type === 'percentage') {
+                    if ($detail->product->commission_type === 'percentage') {
                         $commission_fee = ($detail->subtotal / 100) * $detail->product->commission_fee;
-                    }
-                    else {
+                    } else {
                         $commission_fee = $detail->product->commission_fee * $detail->quantity;
                     }
                     $detail->seller_price = $detail->subtotal - $commission_fee;
@@ -416,8 +408,8 @@ class OrderController extends Controller
                 }
             }
 
-            if(!empty($seller_details)) {
-                foreach($seller_details as $seller_id => $details) {
+            if (!empty($seller_details)) {
+                foreach ($seller_details as $seller_id => $details) {
                     $seller = Seller::find($seller_id);
                     $order->seller_total = array_sum(array_column($details, "seller_price"));
                     Mail::to($seller->seller_email)->queue(new MerchantNewOrder($order, $details, $seller));

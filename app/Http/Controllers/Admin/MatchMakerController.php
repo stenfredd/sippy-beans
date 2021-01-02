@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MatchMakers;
-use Yajra\DataTables\Facades\DataTables;
 
 class MatchMakerController extends Controller
 {
@@ -39,7 +38,8 @@ class MatchMakerController extends Controller
         }
         return response()->json($response);
     }
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $validation = [
             'match_maker_id' => 'required'
         ];
@@ -52,13 +52,14 @@ class MatchMakerController extends Controller
         }
         return response()->json($response);
     }
-    public function updateSortOrders(Request $request) {
+    public function updateSortOrders(Request $request)
+    {
         $request->validate([
             'sorting_match_makers' => 'required'
         ]);
 
         $sorting_match_makers = json_decode($request->sorting_match_makers, true);
-        foreach($sorting_match_makers as $match_maker) {
+        foreach ($sorting_match_makers as $match_maker) {
             MatchMakers::find($match_maker['match_maker_id'])->update(['display_order' => $match_maker['sort_order']]);
         }
         $response = ['status' => true, 'message' => 'Match makers sorting order applied successfully.'];

@@ -13,46 +13,6 @@ class LocationSeeder extends Seeder
      */
     public function run()
     {
-        /*$countries = [
-            'India',
-            'UAE'
-        ];
-
-        if(Country::count() == 0) {
-            foreach($countries as $country) {
-                Country::create(['country_name' => $country, 'status' => 1]);
-            }
-        }
-
-        if(City::count() == 0) {
-            foreach($countries as $country) {
-                if($country == 'India') {
-                    $cities = [
-                        'Surat', 'Mumbai'
-                    ];
-                    foreach($cities as $city) {
-                        City::create([
-                            'country_id' => 1,
-                            'name' => $city,
-                            'status' => 1
-                        ]);
-                    }
-                }
-                if($country == 'UAE') {
-                    $cities = [
-                        'Dubai', 'Abu Dhabi'
-                    ];
-                    foreach($cities as $city) {
-                        City::create([
-                            'country_id' => 1,
-                            'name' => $city,
-                            'status' => 1
-                        ]);
-                    }
-                }
-            }
-        }*/
-
         $countries = [
             'United Arab Emirates'
         ];

@@ -18,11 +18,13 @@ class UserAddress extends Model
         'is_default'
     ];
 
-    public function city() {
+    public function city()
+    {
         return $this->hasOne("App\Models\City", "id", "city_id");
     }
 
-    public function country() {
+    public function country()
+    {
         return $this->hasOne("App\Models\Country", "id", "country_id");
     }
 }

@@ -420,7 +420,7 @@
                                                                 @if (!empty($item->product_id) && !empty($item->variant_id))
                                                                 {{ $item->variant->title }} -
                                                                 @endif
-                                                                {{ $item->grind_title }}
+{{ $item->grind_title ?? '' }}
                                                             </div>
                                                         </div>
                                                         <div class="col-2" style="width: 33%;display: inline-block;vertical-align: middle;text-align: right;">
@@ -536,7 +536,9 @@
                                                                             <tr>
                                                                                 <td align="left" valign="top">Delivery
                                                                                     Fee</td>
-                                                                                <td align="right" valign="top">{{ $order->delivery_fee > 0 ? $app_settings['currency_code'] ?? 'AED ' . number_format($order->delivery_fee, 2) : 'Free' }}</td>
+<td align="right" valign="top">
+    {{ $order->delivery_fee > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->delivery_fee, 2)) : 'Free' }}
+</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td align="left" valign="top">Discount

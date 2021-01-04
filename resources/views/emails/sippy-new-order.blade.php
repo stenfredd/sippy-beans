@@ -363,8 +363,13 @@
                                                     <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
                                                         <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1"
                                                             height="14" style="display: block; height: 14px;" alt=""> </div>
-                                                    <img src="{{ $item->images[0]->image_path ?? '' }}" width="56" height="80" alt=""
-                                                        style="width:auto" />
+@if (!empty($item->subscription_id))
+<img src="{{ $item->subscription->image_url ?? '' }}" width="56" height="80" alt="" style="width:auto" />
+@elseif (!empty($item->equipment_id))
+<img src="{{ $item->equipment->images[0]->image_path ?? '' }}" width="56" height="80" alt="" style="width:auto" />
+@else
+<img src="{{ $item->product->images[0]->image_path ?? '' }}" width="56" height="80" alt="" style="width:auto" />
+@endif
                                                     <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
                                                         <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1"
                                                             height="14" style="display: block; height: 14px;" alt=""> </div>
@@ -397,7 +402,7 @@
                                                                 @if (!empty($item->product_id) && !empty($item->variant_id))
                                                                 {{ $item->variant->title }} -
                                                                 @endif
-                                                                {{ $item->grind_title }}
+{{ $item->grind_title ?? '' }}
                                                             </div>
                                                         </div>
                                                         <div class="col-2"

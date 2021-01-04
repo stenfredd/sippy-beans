@@ -13,6 +13,7 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\UserPromocode;
 use App\User;
+use App\UserReward;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -94,7 +95,7 @@ class OrderController extends Controller
                 })
                 ->editColumn('payment_type', function ($order) {
                     if (strtolower($order->payment_type) == 'card')
-                        $payment_type = '<img src="' . asset('assets/images/' . $order->card_type . '.png') . '"> <span>****' . ucfirst($order->card_number) . '</span>';
+                $payment_type = '<img src="' . asset('assets/images/' . $order->card_type . '.png') . '" height="8px"> <span>****' . ucfirst($order->card_number) . '</span>';
                     else {
                         $payment_type = '<span>Cash On Delivery</span>';
                     }
@@ -221,6 +222,25 @@ class OrderController extends Controller
         if (isset($request->status) && !empty($request->status) && $request->status == 3) {
             $request_data['completion_date'] = date("Y-m-d H:i:s");
         }
+        if (isset($request->reward_points) && $request->reward_points > 0) {
+            if ($old_object->reward_points > $request->reward_points) {
+                $user_reward_point = $old_object->reward_points - $request->reward_points;
+                UserReward::create([
+                    'user_id' => $order->user_id,
+                    'order_id' => $order->id,
+                    'reward_type' => 'withdraw',
+                    'reward_points' => $user_reward_point
+                ]);
+            } else {
+                $user_reward_point = $request->reward_points - $old_object->reward_points;
+                UserReward::create([
+                    'user_id' => $order->user_id,
+                    'order_id' => $order->id,
+                    'reward_type' => 'credit',
+                    'reward_points' => $user_reward_point
+                ]);
+            }
+        }
         $order->update($request_data);
         if (isset($request->status) && !empty($request->status) && $request->status == 4) {
 
@@ -272,7 +292,7 @@ class OrderController extends Controller
             } else if ($request->status == 4) {
                 $push_msg = "Your Order#" . $order->order_number . " has been cancelled.";
             }
-            OneSignal::sendNotificationToUser($push_msg, $order->user()->first()->device_token, null, ['order_id' => $order->id]);
+            \OneSignal::sendNotificationToUser($push_msg, $order->user()->first()->device_token, null, ['order_id' => $order->id]);
         }
 
         return response()->json(['status' => true, 'message' => 'Order details updated successfully.']);

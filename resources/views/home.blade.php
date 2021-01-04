@@ -388,7 +388,7 @@
                                         <tr>
                                             <td>{{ $k + 1 }}</td>
                                             <td class="font-small-3 text-bold-700">
-                                                {{ $item->product->product_name }}<span
+{{ $item->name ?? ($item->product->product_name ?? '-') }}<span
                                                     class="d-block gray text-bold-500">{{ $item->product->brand->name
                                                     ?? '-' }}</span>
                                             </td>
@@ -455,7 +455,7 @@
                                         <tr>
                                             <td>{{ $k + 1 }}</td>
                                             <td class="font-small-3 text-bold-700">
-                                                {{ $item->equipment->title }}<span
+{{ $item->name ?? ($item->equipment->title ?? '-') }}<span
                                                     class="d-block gray text-bold-500">{{ $item->equipment->brand->name
                                                     ?? '-' }}</span>
                                             </td>
@@ -529,7 +529,7 @@
                                     <td class="font-small-3 text-bold-500">
                                         <div class="d-flex align-items-center">
                                             @if(strtolower($order->payment_type) == 'card')
-                                            <img src="{{ asset('assets/images/'.$order->card_type.'.png') }}">
+<img src="{{ asset('assets/images/'.$order->card_type.'.png') }}" height="7px">
                                             <span>
                                                 **** {{ ucfirst($order->card_number) }}
                                             </span>

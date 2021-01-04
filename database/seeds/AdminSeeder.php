@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
                 'first_name' => 'Sippy',
                 'last_name' => 'Beans',
                 'name' => 'Sippy Beans',
-                'profile_image' => 'assets/images/user-large.png',
+                'profile_image' => 'assets/images/profilePicture.png',
                 'email' => env("ADMIN_EMAIL"),
                 'password' => Hash::make(env("ADMIN_PASS")),
                 'status' => 1,

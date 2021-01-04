@@ -149,6 +149,9 @@ class UserController extends Controller
                 if (!empty($match_maker_values) && count($match_maker_values) > 0 && isset($match_maker_values[0]->title)) {
                     $match_maker->values_name = implode(' | ', array_column($match_maker_values->toArray(), 'title'));
                 }
+                if (!empty($match_maker_values) && count($match_maker_values) > 0 && isset($match_maker_values[0]->level_title)) {
+                    $match_maker->values_name = implode(' | ', array_column($match_maker_values->toArray(), 'level_title'));
+                }
             }
         }
 

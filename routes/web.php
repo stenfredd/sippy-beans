@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
         Route::match(['get', 'post'], 'promo-offers', 'Admin\PromocodeController@index');
         Route::post('promo-offers/create', 'Admin\PromocodeController@create');
+        Route::post('promo-offers/save', 'Admin\PromocodeController@save');
         Route::post('promo-offers/update', 'Admin\PromocodeController@update');
         Route::get("promo-offers/{id}", "Admin\PromocodeController@show");
 

@@ -106,8 +106,10 @@ class PromocodeController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->all();
-        $start_date = $request->start_date . ' ' . $request->start_hour . ':' . $request->start_minute . ' ' . $request->start_am_pm;
-        $end_date = $request->end_date . ' ' . $request->end_hour . ':' . $request->end_minute . ' ' . $request->end_am_pm;
+        // $start_date = $request->start_date . ' ' . $request->start_hour . ':' . $request->start_minute . ' ' . $request->start_am_pm;
+        // $end_date = $request->end_date . ' ' . $request->end_hour . ':' . $request->end_minute . ' ' . $request->end_am_pm;
+        $start_date = $request->start_date . ' ' . $request->start_time;
+        $end_date = $request->end_date . ' ' . $request->end_time;
 
         $request_data['start_date'] = Carbon::parse($start_date, $this->app_settings['timezone'])->setTimezone('UTC')->format("Y-m-d H:i:s");
         $request_data['end_date'] = Carbon::parse($end_date, $this->app_settings['timezone'])->setTimezone('UTC')->format("Y-m-d H:i:s");
@@ -140,7 +142,19 @@ class PromocodeController extends Controller
             $msg = isset($request_data['promocode_id']) && !empty($request_data['promocode_id']) ? 'updated' : 'created';
             $response = ['status' => true, 'message' => 'Promocode ' . $msg . ' successfully.'];
         }
-        return response()->json($response);
+        if ($request->ajax()) {
+            return response()->json($response);
+        } else {
+            if ($response['status']) {
+                $msg = isset($request_data['promocode_id']) && !empty($request_data['promocode_id']) ? 'updated' : 'created';
+                session()->flash('success', 'Promo offer ' . $msg . ' successfully.');
+                return redirect(url('admin/promo-offers/' . $promocode_id));
+            } else {
+                $msg1 = isset($request_data['promocode_id']) && !empty($request_data['promocode_id']) ? 'Updating' : 'Creating';
+                session()->flash('error', $msg1 . ' promocode failed, Please try again.');
+                return redirect()->back();
+            }
+        }
     }
 
     public function delete(Request $request)
@@ -160,8 +174,16 @@ class PromocodeController extends Controller
 
     public function show(Request $request, $id = false)
     {
+        $promocode = Promocode::find($id) ?? [];
+        if (!empty($promocode)) {
+            $promocode->start_date = Carbon::parse($promocode->start_date, 'UTC')->setTimezone($this->app_settings['timezone'])->format("Y-m-d");
+            $promocode->end_date = Carbon::parse($promocode->end_date, 'UTC')->setTimezone($this->app_settings['timezone'])->format("Y-m-d");
+            $promocode->start_time = Carbon::parse($promocode->start_date, 'UTC')->setTimezone($this->app_settings['timezone'])->format("g:i A");
+            $promocode->end_time = Carbon::parse($promocode->end_date, 'UTC')->setTimezone($this->app_settings['timezone'])->format("g:i A");
+        }
+        $promo_users = UserPromocode::wherePromocodeId($id)->get()->pluck('user_id')->toArray() ?? [];
         $users = User::where('user_type', '!=', 'admin')->whereStatus(1)->get();
         view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Promotion' : 'Add New Promotion'));
-        return view('admin.promo-offers.show', compact('users'));
+        return view('admin.promo-offers.show', compact('users', 'promocode', 'promo_users'));
     }
 }

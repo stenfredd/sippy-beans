@@ -102,19 +102,28 @@ class HomeController extends Controller
         }
 
         $top_5_products = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, product_id')
-            ->where('is_cancelled', 0)
+            ->whereRaw('(is_cancelled is null or is_cancelled = 0)')
             ->whereNotNull('product_id')
             ->groupBy('product_id')
-            ->orderBy("total", "DESC")->limit(5)->get()->each(function ($product) {
+            ->orderBy("total", "DESC")->limit(5)
+            ->with(['product', 'product.brand'])
+            ->get()->each(function ($product) {
+                // $product->total = number_format($product->total, 2);
+                $product->name = $product->product->product_name ?? '';
+                $product->brand_name = $product->product->brand->name ?? '';
                 $product->total = number_format($product->total, 2);
             });
 
         $top_5_equipments = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, equipment_id')
-            ->where('is_cancelled', 0)
+            ->whereRaw('(is_cancelled is null or is_cancelled = 0)')
             ->whereNotNull('equipment_id')
             ->groupBy('equipment_id')
             ->orderBy("total", "DESC")
+            ->with(['equipment', 'equipment.brand'])
             ->limit(5)->get()->each(function ($product) {
+            // $product->total = number_format($product->total, 2);
+            $product->name = $product->equipment->title ?? '';
+            $product->brand_name = $product->equipment->brand->name ?? '';
                 $product->total = number_format($product->total, 2);
             });
 
@@ -156,7 +165,7 @@ class HomeController extends Controller
         }
 
         $top_5_products = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, product_id')
-            ->where('is_cancelled', 0)
+            ->whereRaw('(is_cancelled is null or is_cancelled = 0)')
             ->whereNotNull('product_id')
             ->groupBy('product_id')
             ->orderBy("total", "DESC");
@@ -170,7 +179,7 @@ class HomeController extends Controller
         });
 
         $top_5_equipments = OrderDetail::selectRaw('sum(subtotal) as total, count(id) as order_count, equipment_id')
-            ->where('is_cancelled', 0)
+            ->whereRaw('(is_cancelled is null or is_cancelled = 0)')
             ->whereNotNull('equipment_id')
             ->groupBy('equipment_id')
             ->orderBy("total", "DESC");

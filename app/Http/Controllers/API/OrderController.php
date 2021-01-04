@@ -42,8 +42,27 @@ class OrderController extends Controller
             ->paginate(20);
 
         foreach ($orders as $order) {
-            $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
-            $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
+
+            $order->total_refund = 0;
+            $order->pending_refund = 0;
+            $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
+            $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
+            if ($cancelled_items_amount > 0) {
+                if (OrderDetail::whereOrderId($order->id)->count() == OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->count()) {
+                    if ($order->pending_refund == 0) {
+                        Order::find($order->id)->update(['payment_status' => 4]);
+                    } else {
+                        Order::find($order->id)->update(['payment_status' => 3]);
+                    }
+                    $cancelled_items_amount = $cancelled_items_amount + $order->delivery_fee + $order->tax_charges;
+                }
+                $order->pending_refund = $cancelled_items_amount - $order->total_refund;
+            }
+            $order->balance = $order->total_amount - $order->payment_received - $order->total_discount - $cancelled_items_amount;
+            $order->balance = $order->balance - (($order->balance < 0 ? '-' : '') . $order->total_refund);
+
+            // $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
+            // $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
             $order->total_discount = $order->promocode_discount ?? 0;
             if (!empty($order->discount_type) && !empty($order->discount_amount)) {
                 $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);

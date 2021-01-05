@@ -42,35 +42,49 @@ class AttributeController extends Controller
         $request->validate($validation);
 
         $key = 'title';
-        if ($request->type == 'brand') {
+        if ($request->attribute_type == 'brand') {
             $key = 'name';
         }
-        if ($request->type == 'coffee_flavor') {
+        if ($request->attribute_type == 'coffee_flavor') {
             $key = 'flavor_name';
         }
-        if ($request->type == 'level') {
+        if ($request->attribute_type == 'level') {
             $key = 'level_title';
         }
-        if ($request->type == 'origins') {
+        if ($request->attribute_type == 'origins') {
             $key = 'origin_name';
+        }
+        if ($request->attribute_type == 'sellers') {
+            $key = 'seller_name';
         }
 
         $request->attributes_list = array_filter($request->attributes_list);
+        if ($request->attribute_type == 'sellers') {
+            $request->attributes_emails = array_filter($request->attributes_emails);
+        }
         foreach ($request->attributes_list as $k => $item) {
             if (DB::table($request->attribute_type)->where($key, $item)->count() === 0) {
-                DB::table($request->attribute_type)->insert([
+                $data_insert = [
                     $key => $item,
                     'display_order' => ($k + 1),
                     'status' => 1,
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
-                ]);
+                ];
+                if ($request->attribute_type == 'sellers') {
+                    $data_insert['seller_email'] = $request->attributes_emails[$k];
+                }
+                DB::table($request->attribute_type)->insert($data_insert);
             } else {
-                DB::table($request->attribute_type)->where($key, $item)->update([
+                $update_data = [
                     'display_order' => ($k + 1),
                     'status' => 1,
                     'updated_at' => date("Y-m-d H:i:s")
-                ]);
+                ];
+                if ($request->attribute_type == 'sellers') {
+                    $update_data['seller_email'] = $request->attributes_emails[$k];
+                }
+                DB::table($request->attribute_type)->where($key, $item)->update($update_data);
             }
         }
 

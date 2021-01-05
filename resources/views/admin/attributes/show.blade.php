@@ -3,7 +3,8 @@
 <section id="horizontal-vertical" class="user-section">
     <form name="attribute-form" id="attribute-form" action="{{ url('admin/attributes/save') }}" method="post">
         @csrf
-        <input type="hidden" name="attribute_type" id="attribute_type" value="{{ request()->segment(count(request()->segments())) }}">
+<input type="hidden" name="attribute_type" id="attribute_type"
+    value="{{ request()->segment(count(request()->segments())) }}">
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -57,6 +58,9 @@
                                         <th class="w-5"></th>
                                         <th class="font-small-3 text-bold-700 text-center w-15">SORT ORDER</th>
                                         <th class="font-small-3 text-bold-700">ATTRIBUTE</th>
+@if(request()->segment(count(request()->segments())) == 'sellers')
+<th>Email</th>
+@endif
                                         <th class="w-5"></th>
                                         <th class="font-small-3 text-bold-700 w-5"></th>
                                     </tr>
@@ -72,18 +76,26 @@
                                         </td>
                                         <td>
                                             <div class="form-group mb-0">
-                                                <input type="text" name="attributes_list[]" class="form-control" placeholder="Input Attribute"
+<input type="text" name="attributes_list[]" class="form-control" placeholder="Input Attribute"
                                                     id="title-{{ $attribute->id }}" value="{{
-                                                    ($attribute->title ?? '' ) .
-                                                    ($attribute->name ?? '' ) .
-                                                    ($attribute->flavor_name ?? '' ) .
-                                                    ($attribute->level_title ?? '' ) .
-                                                    ($attribute->seller_name ?? '' ) .
-                                                    ($attribute->origin_name ?? '' )
-                                                }}">
+($attribute->title ?? '' ) .
+($attribute->name ?? '' ) .
+($attribute->flavor_name ?? '' ) .
+($attribute->level_title ?? '' ) .
+($attribute->seller_name ?? '' ) .
+($attribute->origin_name ?? '' )
+}}">
                                             </div>
                                         </td>
-                                        <td>
+@if(request()->segment(count(request()->segments())) == 'sellers')
+<td>
+    <input type="text" name="attributes_emails[]" class="form-control" placeholder="Input Attribute"
+        id="email-{{ $attribute->id }}" value="{{
+                                                                                                    ($attribute->seller_email ?? '' )
+                                                                                                }}">
+</td>
+@endif
+                                            <td>
                                             @if ((count($attributes) - 1) == $key)
                                             <button type="button" onclick="addAttribute()"
                                                 class="btn btn-icon btn-success  waves-effect waves-light">

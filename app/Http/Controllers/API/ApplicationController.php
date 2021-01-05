@@ -57,6 +57,7 @@ class ApplicationController extends Controller
 
             foreach ($products as $product) {
                 $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
+                $product->is_equipment = false;
                 if (!empty($product->variants)) {
                     foreach ($product->variants as $variant) {
                         $variant->available_quantity = $variant->quantity ?? 0;
@@ -83,6 +84,7 @@ class ApplicationController extends Controller
                     $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
                 }
                 foreach ($products as $product) {
+                    $product->is_equipment = $equipment;
                     if ($equipment === false) {
                         $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
                         if (!empty($product->variants)) {

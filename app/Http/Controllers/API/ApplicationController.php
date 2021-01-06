@@ -20,7 +20,7 @@ class ApplicationController extends Controller
     {
         $banners = Banner::whereStatus(1)->orderBy('display_order', 'asc')->get();
 
-        $categories_names = Category::whereStatus(1)->get()->pluck('category_title') ?? [];
+        $categories_names = Category::whereStatus(1)->orderBy('display_order', 'asc')->get()->pluck('category_title') ?? [];
 
         $categories = [];
         if (auth('api')->check() && UserMatchMaker::whereUserId(auth('api')->user()->id)->count() > 0) {
@@ -75,7 +75,7 @@ class ApplicationController extends Controller
         }
 
         foreach ($categories_names as $category) {
-            $db_category = Category::where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? null;
+            $db_category = Category::whereStatus(1)->where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? null;
             if (!empty($db_category) && isset($db_category->id)) {
                 $products = Product::with(['variants', 'variants.images', 'images', 'weights'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
                 $equipment = false;
@@ -96,7 +96,7 @@ class ApplicationController extends Controller
                 }
                 $category_info = [
                     'id' => $db_category->id,
-                    'icon' => $db_category->image_url,
+                    'icon' => asset($db_category->image_url),
                     'title' => $db_category->category_title,
                     'description' => $db_category->description,
                     'products' => $products

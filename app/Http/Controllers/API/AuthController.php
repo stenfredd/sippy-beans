@@ -195,6 +195,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = $request->user();
 
+            if (isset($request->device_token)) {
+                $user->update(['device_token' => $request->device_token]);
+            }
+
             $token_obj = $user->createToken(md5(time()));
             $token = $token_obj->token;
 

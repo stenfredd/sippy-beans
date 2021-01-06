@@ -158,9 +158,15 @@ class CategoryController extends Controller
             'sorting_products' => 'required'
         ]);
 
+        $is_equipment = $request->is_equipment ?? 0;
+
         $sorting_products = json_decode($request->sorting_products, true);
         foreach ($sorting_products as $product) {
-            Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+            if (isset($is_equipment) && $is_equipment == 1) {
+                Equipment::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+            } else {
+                Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+            }
         }
         $response = ['status' => true, 'message' => 'Product sorting order applied successfully.'];
         return response()->json($response);

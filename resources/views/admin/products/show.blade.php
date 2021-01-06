@@ -678,8 +678,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button"
-                        {{-- class="btn btn-outline-primary mr-1  waves-effect waves-light btn-lg font-weight-bold">DELETE</button> --}}
+{{-- <button type="button"
+                        class="btn btn-outline-primary mr-1  waves-effect waves-light btn-lg font-weight-bold">DELETE</button> --}}
                     <button type="button" class="btn btn-primary font-weight-bold btn-lg px-1" onclick="updateVariant()">UPDATE</button>
                 </div>
             </form>

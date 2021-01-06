@@ -63,7 +63,7 @@ class OrderController extends Controller
 
             // $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
             // $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
-            $order->total_discount = $order->promocode_discount ?? 0;
+            $order->total_discount = $order->promocode_amount ?? 0;
             if (!empty($order->discount_type) && !empty($order->discount_amount)) {
                 $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
                 $order->total_discount = $order->total_discount + $discount_amount;
@@ -361,7 +361,7 @@ class OrderController extends Controller
                 ->find($order->id);
             $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
             $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
-            $order->total_discount = $order->promocode_discount ?? 0;
+            $order->total_discount = $order->promocode_amount ?? 0;
             if (!empty($order->discount_type) && !empty($order->discount_amount)) {
                 $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
                 $order->total_discount = $order->total_discount + $discount_amount;

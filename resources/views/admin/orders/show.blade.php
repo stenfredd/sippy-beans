@@ -400,15 +400,15 @@
                                     <div class="status-options">
                                         <div class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon">
                                             <select id="status" name="status" onchange="updateOrder('status')">
-                                                <option value="1" {{ $order->status == '0' ? 'selected' : '' }}>New
+<option value="0" {{ $order->status == '0' ? 'selected' : '' }}>New
                                                     Order</option>
-                                                <option value="2" {{ $order->status == '1' ? 'selected' : '' }}>In
+<option value="1" {{ $order->status == '1' ? 'selected' : '' }}>In
                                                     Progress</option>
-                                                <option value="3" {{ $order->status == '2' ? 'selected' : '' }}>Shipped
+<option value="2" {{ $order->status == '2' ? 'selected' : '' }}>Shipped
                                                 </option>
-                                                <option value="4" {{ $order->status == '3' ? 'selected' : '' }}>
+<option value="3" {{ $order->status == '3' ? 'selected' : '' }}>
                                                     Completed</option>
-                                                <option value="5" {{ $order->status == '4' ? 'selected' : '' }}>
+<option value="4" {{ $order->status == '4' ? 'selected' : '' }}>
                                                     Cancelled</option>
                                             </select>
                                             <i class="dropdown icon text-orange"></i>
@@ -426,7 +426,7 @@
                                                     <span class="font-small-4 font-weight-bold">SELECT Technician</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="1"
-                                                    onclick="$('#status').val(0).trigger('change')">
+onclick="$('#status').val('0')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-lighgreen">
                                                             <div class="filloption bg-lighgreen"></div>
@@ -436,7 +436,7 @@
                                                         New Order</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="2"
-                                                    onclick="$('#status').val(1).trigger('change')">
+onclick="$('#status').val('1')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-purple">
                                                             <div class="filloption bg-purple"></div>
@@ -446,7 +446,7 @@
                                                         In Progress</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="3"
-                                                    onclick="$('#status').val(2).trigger('change')">
+onclick="$('#status').val('2')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-info">
                                                             <div class="filloption bg-info"></div>
@@ -455,7 +455,7 @@
                                                     <span class="font-small-3 font-weight-bold text-info">Shipped</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="4"
-                                                    onclick="$('#status').val(3).trigger('change')">
+onclick="$('#status').val('3')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-success">
                                                             <div class="filloption bg-success"></div>
@@ -465,7 +465,7 @@
                                                         Completed</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="5"
-                                                    onclick="$('#status').val(4).trigger('change')">
+onclick="$('#status').val('4')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-danger">
                                                             <div class="filloption bg-danger"></div>

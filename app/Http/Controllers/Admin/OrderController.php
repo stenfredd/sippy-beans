@@ -125,7 +125,7 @@ class OrderController extends Controller
             // ->find($id) ?? [];
             ->findOrFail($id);
         if (!empty($order)) {
-            $order->total_discount = ($order->discount_type == 'percentage' ? (($order->subtotal / 100) * $order->discount_amount) : $order->discount_amount) + $order->promocode_discount;
+            $order->total_discount = ($order->discount_type == 'percentage' ? (($order->subtotal / 100) * $order->discount_amount) : $order->discount_amount) + $order->promocode_amount;
             foreach ($order->details as $detail) {
                 $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
             }
@@ -241,6 +241,9 @@ class OrderController extends Controller
                 ]);
             }
         }
+        if (isset($request->status) && is_null($request->status)) {
+            $request_data['status'] = '0';
+        }
         $order->update($request_data);
         if (isset($request->status) && !empty($request->status) && $request->status == 4) {
 
@@ -255,7 +258,7 @@ class OrderController extends Controller
                 ->find($order->id);
             $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
             $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
-            $order->total_discount = $order->promocode_discount ?? 0;
+            $order->total_discount = $order->promocode_amount ?? 0;
             if (!empty($order->discount_type) && !empty($order->discount_amount)) {
                 $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
                 $order->total_discount = $order->total_discount + $discount_amount;
@@ -283,7 +286,7 @@ class OrderController extends Controller
             Mail::to($order->user->email)->queue(new CustomerOrderCancelled($order));
         }
 
-        if (isset($request->status) && !empty($request->status)) {
+        if (isset($request->status) && $request->status > -1) {
             $push_msg = "Your Order#" . $order->order_number . " is being processed.";
             if ($request->status == 2) {
                 $push_msg = "Your Order#" . $order->order_number . " has shipped and will be delivered soon.";
@@ -292,7 +295,11 @@ class OrderController extends Controller
             } else if ($request->status == 4) {
                 $push_msg = "Your Order#" . $order->order_number . " has been cancelled.";
             }
-            \OneSignal::sendNotificationToUser($push_msg, $order->user()->first()->device_token, null, ['order_id' => $order->id]);
+            try {
+                \OneSignal::sendNotificationToUser($push_msg, $order->user()->first()->device_token, null, ['order_id' => $order->id]);
+            } catch (\Exception $e) {
+                info('Onesignal api error: ' . $e->getMessage());
+            }
         }
 
         return response()->json(['status' => true, 'message' => 'Order details updated successfully.']);
@@ -320,7 +327,11 @@ class OrderController extends Controller
         } else {
             $push_msg = 'Item(s) from your Order#' . $order_data->order_number . ' has been cancelled.';
         }
-        OneSignal::sendNotificationToUser($push_msg, $order_data->user()->first()->device_token, null, ['order_id' => $order_data->id]);
+        try {
+            \OneSignal::sendNotificationToUser($push_msg, $order_data->user()->first()->device_token, null, ['order_id' => $order_data->id]);
+        } catch (\Exception $e) {
+            info('Onesignal api error: ' . $e->getMessage());
+        }
 
         $order = Order::with([
             'user', 'address', 'details',
@@ -332,7 +343,7 @@ class OrderController extends Controller
             ->find($order_id);
         $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
         $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
-        $order->total_discount = $order->promocode_discount ?? 0;
+        $order->total_discount = $order->promocode_amount ?? 0;
         if (!empty($order->discount_type) && !empty($order->discount_amount)) {
             $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
             $order->total_discount = $order->total_discount + $discount_amount;

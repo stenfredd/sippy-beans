@@ -484,7 +484,7 @@
                         <h4 class="mb-0 text-bold-700 card-title">SALES ORDERS - NEW ORDERS</h4>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <a href='{{ url(' admin/orders') }}'
+<a href='{{ url('admin/orders') }}'
                             class="float-right btn btn-primary font-weight-bold btn-lg waves-effect waves-light px-1">VIEW
                             ALL - NEW ORDERS</a>
                     </div>

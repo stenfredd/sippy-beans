@@ -227,7 +227,7 @@ class HomeController extends Controller
         $data = [];
         $total = 0;
         if ($request->data_type == 'users') {
-            $data = User::selectRaw('DATE(created_at), count(*) as total')
+            $data = User::where('user_type', '!=', 'admin')->selectRaw('DATE(created_at), count(*) as total')
                 ->groupBy(DB::raw('DATE(created_at)'));
             if (!empty($start_date) && !empty($end_date)) {
                 $data = $data->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date);

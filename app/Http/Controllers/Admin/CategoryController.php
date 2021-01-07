@@ -171,4 +171,22 @@ class CategoryController extends Controller
         $response = ['status' => true, 'message' => 'Product sorting order applied successfully.'];
         return response()->json($response);
     }
+
+    public function removeProduct(Request $request) {
+        $request->validate([
+            'id' => 'required'
+        ]);
+
+        $id = $request->id ?? 0;
+        $is_equipment = $request->is_equipment ?? 0;
+
+        if (isset($is_equipment) && $is_equipment == 1) {
+            Equipment::find($id)->update(['category_id' => null]);
+        } else {
+            Product::find($id)->update(['category_id' => null]);
+        }
+
+        $response = ['status' => true, 'message' => 'Product removed from category successfully.'];
+        return response()->json($response);
+    }
 }

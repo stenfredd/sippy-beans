@@ -66,6 +66,21 @@
                                             placeholder="Price" value="{{ number_format($equipment->price,2) ?? '' }}">
                                     </div>
                                 </div>
+<div class="col-md-12">
+    <div class="form-group">
+        <label>CATEGORY</label>
+
+        <select class="ui search dropdown w-100" id="category_id" name="category_id">
+            <option value="">Select Category</option>
+            @foreach ($categories as $category)
+            <option value="{{ $category->id }}"
+                {{ ($equipment->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                {{ $category->category_title }}
+            </option>
+            @endforeach
+        </select>
+    </div>
+</div>
                                 {{-- <div class="col-md-6">
                                     <div class="form-group">
                                         <label>TAX RATE</label>

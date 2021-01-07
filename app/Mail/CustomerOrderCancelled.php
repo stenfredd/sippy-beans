@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Grind;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -32,6 +33,9 @@ class CustomerOrderCancelled extends Mailable
     public function build()
     {
         $order = $this->order;
+        foreach ($order->details as $detail) {
+            $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
+        }
         $detail_ids = $this->detail_ids;
         return $this->view('emails.customer-order-cancelled', compact('order', 'detail_ids'));
     }

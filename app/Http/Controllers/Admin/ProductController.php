@@ -60,8 +60,11 @@ class ProductController extends Controller
                     $date = $banner->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
                     return $date . ('<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>');
                 })
-                ->addColumn('action', function ($product) {
+                ->addColumn('action', function ($product) use ($request) {
                     $action = '<a href="' . url('admin/products/' . $product->id) . '"><i class="feather icon-eye"></i></a>';
+                if (isset($request->category_id) && !empty($request->category_id)) {
+                    $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $product->id . ')"><i class="feather icon-trash"></i></a>';
+                }
                     return $action;
                 })
                 ->editColumn('status', function ($product) {
@@ -290,5 +293,22 @@ class ProductController extends Controller
             $response = ['status' => true, 'message' => 'Variant details added successfully.'];
         }
         return response()->json($response);
+    }
+
+    public function deleteVariant(Request $request)
+    {
+        $request->validate([
+            'variant_id' => 'required',
+            'grind_id' => 'required'
+        ]);
+        $variant = Variant::find($request->variant_id);
+        $variant_grind_ids = explode(',', $variant->grind_ids);
+        $ids = array_diff($variant_grind_ids, [$request->grind_id]);
+        $variant->grind_ids = implode(',', $ids);
+        $save = $variant->save();
+        if ($save) {
+            return response()->json(['status' => true, 'message' => 'Variant deleted successfully.']);
+        }
+        return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
     }
 }

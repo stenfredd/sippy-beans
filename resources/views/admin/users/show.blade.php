@@ -12,7 +12,7 @@
                         </div>
                         <div class="profile-img-container d-flex align-items-center justify-content-left">
                             <div class="profile-img-div">
-                                <img src="{{ $user->profile_image ?? asset('assets/images/profilePicture.png')}}" class="img-responsive"
+<img src="{{ $user->profile_image ?? asset('assets/images/sippyLogo.png')}}" class="img-responsive"
                                     alt="Card image" style="height: 100%;">
                             </div>
                             <h2>{{ $user->name }}</h2>

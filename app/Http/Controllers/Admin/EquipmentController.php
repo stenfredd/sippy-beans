@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Equipment;
 use App\Models\Seller;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\CoffeeType;
 use App\Models\Image;
 use Yajra\DataTables\Facades\DataTables;
@@ -49,8 +50,11 @@ class EquipmentController extends Controller
                     $date = $banner->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
                     return $date . ('<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>');
                 })
-                ->addColumn('action', function ($equipment) {
+                ->addColumn('action', function ($equipment) use ($request) {
                     $action = '<a href="' . url('admin/equipments/' . $equipment->id) . '"><i class="feather icon-eye"></i></a>';
+                if (isset($request->category_id) && !empty($request->category_id)) {
+                    $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $equipment->id . ')"><i class="feather icon-trash"></i></a>';
+                }
                     return $action;
                 })
                 ->editColumn('status', function ($equipment) {
@@ -70,7 +74,7 @@ class EquipmentController extends Controller
     public function save(Request $request)
     {
         $validation = [
-            'status' => 'required',
+            // 'status' => 'required',
             'title' => 'required',
             'short_description' => 'required',
             'quantity' => 'required',
@@ -78,7 +82,7 @@ class EquipmentController extends Controller
             'brand_id' => 'required',
             'seller_id' => 'required',
             'description' => 'required',
-            'tags' => 'required'
+            // 'tags' => 'required'
         ];
         $this->validate($request, $validation);
 
@@ -151,8 +155,9 @@ class EquipmentController extends Controller
         $brands = Brand::whereStatus(1)->get();
         $sellers = Seller::whereStatus(1)->get();
         $coffeeTypes = CoffeeType::whereStatus(1)->orderBy('display_order', 'asc')->get();
+        $categories = Category::whereStatus(1)->get();
 
         view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Equipment' : 'Add New Equipment'));
-        return view('admin.equipments.show', compact('equipment', 'brands', 'sellers', 'coffeeTypes'));
+        return view('admin.equipments.show', compact('equipment', 'brands', 'sellers', 'coffeeTypes', 'categories'));
     }
 }

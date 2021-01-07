@@ -250,7 +250,7 @@ class HomeController extends Controller
             }
             $data = $data->get()->pluck('total') ?? [];
             if (!empty($data)) {
-                $total = number_format(array_sum($data->toArray()), 2) ?? [];
+                $total = $this->app_settings['currency_code'] . ' ' . number_format(array_sum($data->toArray()), 2) ?? [];
                 $data = array_map(function ($num) {
                     return number_format($num, 2);
                 }, $data->toArray());
@@ -266,7 +266,7 @@ class HomeController extends Controller
             if ($total > 0) {
                 $total = array_sum($data->toArray()) / Order::count();
             }
-            $total = number_format($total, 2) ?? [];
+            $total = $this->app_settings['currency_code'] . ' ' . number_format($total, 2) ?? [];
             $data = array_map(function ($num) {
                 return number_format($num, 2);
             }, $data->toArray());

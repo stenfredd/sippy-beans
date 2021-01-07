@@ -412,7 +412,7 @@
                                 </div>
                                 </td> --}}
                                 <td>
-                                    <a href="javascript:" class="edit-variants-btn" data-id="{{ $k }}">
+<a href="javascript:" class="edit-variants-btn" data-id="{{ $k }}" data-grind_id="{{ $variant->grind_id }}">
                                         <img src="{{ asset('assets/images/extra-icon-orange.svg')}}" width="7">
                                     </a>
                                 </td>
@@ -628,6 +628,7 @@
             <form action="edit-variant-form" id="edit-variant-form" name="edit-variant-form" onsubmit="return false;" method="post">
                 @csrf
                 <input type="hidden" name="variant_id" id="variant_id" value="">
+<input type="hidden" name="grind_id" id="variant_grind_id" value="">
                 <div class="modal-body">
                     <div class="row">
                         {{-- <div class="col-md-12">
@@ -678,8 +679,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-{{-- <button type="button"
-                        class="btn btn-outline-primary mr-1  waves-effect waves-light btn-lg font-weight-bold">DELETE</button> --}}
+<button type="button" class="btn btn-outline-primary mr-1  waves-effect waves-light btn-lg font-weight-bold"
+    onclick="deleteVariant()">DELETE</button>
                     <button type="button" class="btn btn-primary font-weight-bold btn-lg px-1" onclick="updateVariant()">UPDATE</button>
                 </div>
             </form>
@@ -728,6 +729,7 @@ let variants = JSON.parse('@json($product->variants ?? [])');
             $("#variant_price").val(info.price);
             $("#variant_quantity").val(info.quantity);
             $("#variant_reward").val(info.reward_point);
+$("#variant_grind_id").val($(this).data("grind_id"));
             $('#edit-variants').modal('show');
         });
 
@@ -820,5 +822,30 @@ let variants = JSON.parse('@json($product->variants ?? [])');
                 }
             });
         }
+function deleteVariant() {
+let formData = new FormData($("#edit-variant-form")[0]);
+$.ajax({
+url: BASE_URL + 'products/variants/delete',
+data: formData,
+contentType: false,
+processData: false,
+type: 'POST',
+success: function(response) {
+if(response.status === true) {
+$("#edit-variants").modal('hide');
+toastr.success(response.message, 'Success', toastrOptions);
+setTimeout(() => {
+location.reload();
+}, 2000);
+}
+else {
+toastr.error(response.message, 'Error', toastrOptions);
+}
+},
+error: function(err) {
+console.log(err);
+}
+});
+}
 </script>
 @endsection

@@ -361,7 +361,7 @@
                                  </div>
                                   <i class="d-inline-block fontawesome fa fa-sort-desc ml-50 text-orange drop-arrow"></i>
                               </div> -->
-                                        <input type="number" name="reward_points" id="reward_points" min="0"
+<input class="form-control" type="number" name="reward_points" id="reward_points" min="0"
                                             value="{{ $order->reward_points }}" onchange="updateOrder('reward_points')">
                                         {{-- <div --}}
                                         {{-- class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon hide-no"> --}}
@@ -413,13 +413,45 @@
                                             </select>
                                             <i class="dropdown icon text-orange"></i>
                                             <div class="default text mr-50">
-                                                {{-- <div class="d-inline-block selected mr-25">
-                                                    <div class="color-option border-lighgreen">
-                                                        <div class="filloption bg-lighgreen"></div>
-                                                    </div>
-                                                </div>
-                                                <span class="font-small-3  font-weight-bold text-lighgreen">
-                                                    New Order</span> --}}
+@if($order->status == '0')
+<div class="d-inline-block selected mr-25">
+    <div class="color-option border-lighgreen">
+        <div class="filloption bg-lighgreen"></div>
+    </div>
+</div>
+<span class="font-small-3  font-weight-bold text-lighgreen">New Order</span>
+@elseif($order->status == '1')
+<div class="d-inline-block selected mr-25">
+    <div class="color-option border-purple">
+        <div class="filloption bg-purple"></div>
+    </div>
+</div>
+<span class="font-small-3  font-weight-bold text-purple">
+    In Progress</span>
+@elseif($order->status == '2')
+<div class="d-inline-block selected mr-25">
+    <div class="color-option border-info">
+        <div class="filloption bg-info"></div>
+    </div>
+</div>
+<span class="font-small-3 font-weight-bold text-info">Shipped</span>
+@elseif($order->status == '3')
+<div class="d-inline-block selected mr-25">
+    <div class="color-option border-success">
+        <div class="filloption bg-success"></div>
+    </div>
+</div>
+<span class="font-small-3 font-weight-bold text-success">
+    Completed</span>
+@elseif($order->status == '4')
+<div class="d-inline-block selected mr-25">
+    <div class="color-option border-danger">
+        <div class="filloption bg-danger"></div>
+    </div>
+</div>
+<span class="font-small-3 font-weight-bold text-danger">
+    Cancelled</span>
+@endif
                                             </div>
                                             <div class="menu p-1 w-250">
                                                 <div class="header font-small-4 font-weight-bold">
@@ -519,7 +551,7 @@ onclick="$('#status').val('4')">
                                                     @endif
                                                     @if($order->payment_status == '2' ? 'selected' : '')
                                                     <div class="Partial-option">
-                                                        <div class="Partial-div d-inline-block mr-25">
+<div class="Partial-div d-inline-block mr-25" style="border: 0 !important;">
                                                             <i class="fa fa-circle font-small-3 text-success mr-50"></i>
                                                         </div>
                                                         <span class="font-small-3 font-weight-bold">

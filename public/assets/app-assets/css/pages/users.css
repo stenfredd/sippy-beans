@@ -62,7 +62,8 @@
 #user-profile .cover-container{position: relative;}
 #user-profile .cover-container:after {
     content: "";
-    position: absolute;
+    /* position: absolute; */
+    position: initial;
     top: 0;
     left: 0;
     width: 100%;

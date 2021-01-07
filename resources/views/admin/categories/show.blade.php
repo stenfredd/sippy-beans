@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('content')
 <section>
-    <form id="category-form" name="category-form" action="{{ url('admin/categories/save') }}" method="post" enctype="multipart/form-data">
+    <form id="category-form" name="category-form" action="{{ url('admin/categories/save') }}" method="post"
+        enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="category_id" id="category_id" value="{{ $category->id ?? '' }}">
         <div class="row">
@@ -17,14 +18,16 @@
                                     <div class="form-group">
                                         <label>CATEGORY TITLE</label>
                                         <input type="text" class="form-control" name="title" id="title"
-                                            placeholder="Add a title for the category" value="{{ $category->category_title ?? '' }}">
+                                            placeholder="Add a title for the category"
+                                            value="{{ $category->category_title ?? '' }}">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>CATEGORY SUBTITLE</label>
                                         <input type="text" class="form-control" name="description" id="
-                                        description" placeholder="Enter the subtitle for the category" value="{{ $category->description ?? '' }}">
+                                        description" placeholder="Enter the subtitle for the category"
+                                            value="{{ $category->description ?? '' }}">
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +77,8 @@
                                     <div class="col-lg-7 col-md-7">
                                         <form>
                                             <fieldset class="form-group position-relative has-icon-right mb-1">
-                                                <input type="text" class="form-control form-control-lg" id="search_product"
+                                                <input type="text" class="form-control form-control-lg"
+                                                    id="search_product"
                                                     placeholder="Search by product name, product#, brand, seller">
                                                 <div class="form-control-position">
                                                     <i class="feather icon-search px-1"></i>
@@ -84,7 +88,8 @@
                                     </div>
                                     <div class="col-lg-5 col-md-5">
                                         <div class="d-flex justify-content-between align-items-top w-100">
-                                            <button type="button" class="btn btn-orange mr-1 mb-1 waves-effect waves-light btn-block btn-lg"
+                                            <button type="button"
+                                                class="btn btn-orange mr-1 mb-1 waves-effect waves-light btn-block btn-lg"
                                                 id="search_btn">SEARCH</button>
                                             <a href="{{ url('admin/products/create') }}" type="button"
                                                 class="btn btn-outline-orange mr-1 mb-1 waves-effect waves-light btn-block btn-lg mt-0">ADD
@@ -122,7 +127,8 @@
             <div class="col-md-6">
                 <button type="submit" class="btn btn-primary font-weight-bold btn-lg w-100 waves-effect waves-light"
                     data-dismiss="modal">SAVE</button>
-                <button type="button" class="btn font-weight-bold btn-lg w-100 waves-effect waves-light btn-outline-primary mt-1"
+                <button type="button"
+                    class="btn font-weight-bold btn-lg w-100 waves-effect waves-light btn-outline-primary mt-1"
                     onclick="deleteCategory()">DELETE</button>
             </div>
         </div>
@@ -268,7 +274,7 @@
 
 @section('scripts')
 <script type="text/javascript">
-$(document).ready(function() {
+    $(document).ready(function() {
         $("#search_product").keyup(function() {
             productsTable.ajax.reload();
         });
@@ -425,7 +431,7 @@ $(document).ready(function() {
         let formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('sorting_products', JSON.stringify(sorting_products));
-formData.append('is_equipment', '{{ $is_equipment ?? 0 }}');
+        formData.append('is_equipment', '{{ $is_equipment ?? 0 }}');
 
         $.ajax({
             url: "{{ url('admin/categories/update-products-sort-orders') }}",
@@ -457,6 +463,67 @@ formData.append('is_equipment', '{{ $is_equipment ?? 0 }}');
                 // console.log(error);
             }
         });
+    }
+
+    function removeProduct(id) {
+        if(id.toString().length === 0) {
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to remove this product from category?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!',
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-danger ml-1',
+            buttonsStyling: false,
+        })
+        .then(function(result) {
+            if (result.value) {
+                let formData = new FormData();
+                formData.append('id', id);
+                formData.append('_token', "{{ csrf_token() }}");
+                formData.append('is_equipment', '{{ $is_equipment ?? 0 }}');
+
+                $.ajax({
+                    url: "{{ url('admin/categories/remove-product') }}",
+                    type: "post",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === true) {
+                            Swal.fire({
+                                type: "success",
+                                title: 'Deleted!',
+                                text: response.message,
+                                confirmButtonClass: 'btn btn-success',
+                            });
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+                        else {
+                            toastr.error(response.message, 'Error', {
+                                "closeButton": true,
+                                "progressBar": true,
+                                "showMethod": "slideDown",
+                                "hideMethod": "slideUp",
+                                "timeOut": 2000
+                            });
+                        }
+                    },
+                    error: function(error) {
+                        // console.log(error);
+                    }
+                });
+            }
+        })
     }
 </script>
 @endsection

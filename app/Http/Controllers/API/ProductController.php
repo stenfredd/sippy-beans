@@ -21,6 +21,7 @@ class ProductController extends Controller
         $characteristic_id = $request->input('characteristic_id') ?? "";
         $best_for_id = $request->input('best_for_id') ?? "";
         $type_id = $request->input('type_id') ?? "";
+        $coffee_type_id = $request->input('coffee_type_id') ?? "";
         $level_id = $request->input('level_id') ?? "";
         $process_id = $request->input('process_id') ?? "";
         $weight_id = $request->input('weight_id') ?? "";
@@ -54,6 +55,9 @@ class ProductController extends Controller
         if(!empty($best_for_id)) {
             $products = $products->whereIn('best_for_id', explode(',', $best_for_id));
         }
+        if(!empty($coffee_type_id)) {
+            $products = $products->whereIn('coffee_type_id', explode(',', $coffee_type_id));
+        }
         if(!empty($type_id)) {
             $products = $products->whereIn('type_id', explode(',', $type_id));
         }
@@ -78,12 +82,15 @@ class ProductController extends Controller
         $products = $products->with(['images', 'variants', 'variants.images', 'weights'])->offset($start)->limit($limit)->orderBy('display_order', 'asc')->get();
         $total_pages = (ceil($total_products / $limit)) ?? 1;
         foreach($products as $product) {
-            $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get() ?? [];
+            $product_grind_ids = [];
+            // $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get() ?? [];
             if(!empty($product->variants)) {
                 foreach($product->variants as $variant) {
                     $variant->available_quantity = $variant->quantity ?? 0;
+                    $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
                 }
             }
+            $product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
         }
 
         $response = [

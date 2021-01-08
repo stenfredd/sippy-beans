@@ -212,12 +212,12 @@ class HomeController extends Controller
             $end_date = date('Y-m-d 00:00:00');
         }
         if ($request->type == 3) {
-            $start_date = \Carbon\Carbon::now()->subMonth()->format('Y-m-01 00:00:00');
-            $end_date = \Carbon\Carbon::now()->subMonth()->format('Y-m-t 00:00:00');
-        }
-        if ($request->type == 4) {
             $start_date = \Carbon\Carbon::now()->format('Y-m-01 00:00:00');
             $end_date = \Carbon\Carbon::now()->format('Y-m-t 00:00:00');
+        }
+        if ($request->type == 4) {
+            $start_date = \Carbon\Carbon::now()->subMonth()->format('Y-m-01 00:00:00');
+            $end_date = \Carbon\Carbon::now()->subMonth()->format('Y-m-t 00:00:00');
         }
         if ($request->type == 5) {
             $start_date = \Carbon\Carbon::now()->format('Y-01-01 00:00:00');

@@ -398,7 +398,12 @@ class OrderController extends Controller
             Cart::whereUserId($user_id)->delete();
 
             Mail::to($order->user->email)->queue(new CustomerNewOrder($order));
-            Mail::to(env('APP_ORDER_EMAIL'))->queue(new AppNewOrder($order));
+            try {
+                Mail::to(env('APP_ORDER_EMAIL', 'mohitodhrani@gmail.com'))->queue(new AppNewOrder($order));
+            }
+            catch(\Exception $e) {
+                info($e->getMessage());
+            }
 
             $seller_details = [];
             foreach ($order->details as $detail) {

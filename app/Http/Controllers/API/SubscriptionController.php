@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
         $subscription = Subscription::first();
         $subscription->brand_name = "SIPPY";
         $subscription->title = strtoupper($subscription->title);
-        $grinds = Grind::whereGrindType(1)->get();
+        $grinds = Grind::whereIn('id', explode(',', $subscription->grind_ids))->get();
         $user_subscription = UserSubscription::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionStatus(1)->first();
 
         $cart_data = Cart::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionId($subscription->id);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BestFor;
 use App\Models\Brand;
 use App\Models\Characteristic;
+use App\Models\CoffeeType;
 use App\Models\Level;
 use App\Models\Origin;
 use App\Models\Price;
@@ -22,7 +23,9 @@ class FilterController extends Controller
         $brands = Brand::selectRaw('id, name as title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $characteristic = Characteristic::select('id', 'title')->whereStatus(1)->orderBy('id', 'asc')->get();
         $best_fors = BestFor::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
+        // $types = Type::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $types = Type::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
+        $coffeeTypes = CoffeeType::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $levels = Level::selectRaw('id, level_title as title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $processes = Process::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $weights = Weight::select('id', 'title')->whereStatus(1)->orderBy('id', 'asc')->get();
@@ -49,8 +52,12 @@ class FilterController extends Controller
                 'values' => $best_fors
             ],
             [
-                'title' => 'Type',
+                'title' => 'Roaster Type',
                 'values' => $types
+            ],
+            [
+                'title' => 'Product Type',
+                'values' => $coffeeTypes
             ],
             [
                 'title' => 'Levels',

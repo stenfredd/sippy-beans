@@ -248,7 +248,7 @@
                 "type": "POST",
                 "data": function(data) {
                     data._token = '{{ csrf_token() }}';
-                    data.status = 0;
+                    data.status = '0';
                     data.search = $("#search_order").val();
                 }
             },
@@ -303,7 +303,7 @@
                 "type": "POST",
                 "data": function(data) {
                     data._token = '{{ csrf_token() }}';
-                    data.status = 1;
+                    data.status = '1';
                     data.search = $("#search_order").val();
                 }
             },
@@ -358,7 +358,7 @@
                 "type": "POST",
                 "data": function(data) {
                     data._token = '{{ csrf_token() }}';
-                    data.status = 2;
+                    data.status = '2';
                     data.search = $("#search_order").val();
                 }
             },
@@ -413,7 +413,7 @@
                 "type": "POST",
                 "data": function(data) {
                     data._token = '{{ csrf_token() }}';
-                    data.status = 3;
+                    data.status = '3';
                     data.search = $("#search_order").val();
                 }
             },
@@ -468,7 +468,7 @@
                 "type": "POST",
                 "data": function(data) {
                     data._token = '{{ csrf_token() }}';
-                    data.status = 4;
+                    data.status = '4';
                     data.search = $("#search_order").val();
                 }
             },

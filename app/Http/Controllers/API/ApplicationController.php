@@ -56,17 +56,20 @@ class ApplicationController extends Controller
             }
 
             foreach ($products as $product) {
-                $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
+                $product_grind_ids = [];
                 $product->is_equipment = false;
                 if (!empty($product->variants)) {
                     foreach ($product->variants as $variant) {
                         $variant->available_quantity = $variant->quantity ?? 0;
+                        $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
                     }
                 }
+                $product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
             }
             $category_info = [
                 'id' => null,
-                'icon' => asset(env('SUGGEST_CATEGORY_ICON')),
+                'icon' => asset(env('SUGGEST_CATEGORY_ICON', 'uploads/types/suggested.png')),
+                'is_equipment' => false,
                 'title' => 'Suggested for You',
                 'description' => 'Top picks based on your taste.',
                 'products' => $products
@@ -86,16 +89,19 @@ class ApplicationController extends Controller
                 foreach ($products as $product) {
                     $product->is_equipment = $equipment;
                     if ($equipment === false) {
-                        $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
+                        $product_grind_ids = [];
                         if (!empty($product->variants)) {
                             foreach ($product->variants as $variant) {
                                 $variant->available_quantity = $variant->quantity ?? 0;
+                                $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
                             }
                         }
+                        $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
                     }
                 }
                 $category_info = [
                     'id' => $db_category->id,
+                    'is_equipment' => $equipment,
                     'icon' => asset($db_category->image_url),
                     'title' => $db_category->category_title,
                     'description' => $db_category->description,
@@ -157,13 +163,15 @@ class ApplicationController extends Controller
         $products = $products->with(['images', 'variants', 'variants.images', 'weights'])->orderBy('id', 'asc')->groupBy('id')->paginate(10);
 
         foreach ($products as $product) {
-            $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
+            $product_grind_ids = [];
             $product->is_product = true;
             if (!empty($product->variants)) {
                 foreach ($product->variants as $variant) {
                     $variant->available_quantity = $variant->quantity ?? 0;
+                    $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
                 }
             }
+            $product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
         }
 
         $equipments = Equipment::whereStatus(1)->latest();

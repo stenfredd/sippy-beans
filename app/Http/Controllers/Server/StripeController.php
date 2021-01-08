@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\Server;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AppNewOrder;
+use App\Mail\CustomerNewOrder;
+use App\Mail\MerchantNewOrder;
+use App\Models\Grind;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Seller;
 use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\UserSubscription;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class StripeController extends Controller
 {
@@ -103,21 +109,112 @@ class StripeController extends Controller
                         $order->payment_received = $subscription->price;
                         $order->save();
 
-                        $subscription_data = [
-                            'order_id' => $order->id,
-                            'order_data' => $order
-                        ];
-                        \OneSignal::sendNotificationToUser("Your subscription order has been generated", $user->device_token, null, $subscription_data);
+                        // $subscription_data = [
+                        //     'order_id' => $order->id,
+                        //     'order_data' => $order
+                        // ];
+                        // \OneSignal::sendNotificationToUser("Your subscription order has been generated", $user->device_token, null, $subscription_data);
+
+                        ////////////////////////////////////////////////////////////
+
+                        $order = Order::with([
+                            'user', 'address', 'details',
+                            'details.product', 'details.variant', 'details.equipment', 'details.subscription',
+                            'details.product.seller', 'details.equipment.seller',
+                            'details.product.images', 'details.equipment.images'
+                        ])
+                            ->find($order->id);
+
+                        $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
+                        $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
+                        $order->total_discount = $order->promocode_amount ?? 0;
+                        if (!empty($order->discount_type) && !empty($order->discount_amount)) {
+                            $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
+                            $order->total_discount = $order->total_discount + $discount_amount;
+                        }
+                        $order->created_at_text = $order->created_at->timezone($this->app_settings['timezone'])->format("M d, Y, h:iA") ?? $order->created_at;
+                        $order->product_names = null;
+                        if ($order->order_type == 'subscription') {
+                            $order->product_names = $order->subscription->title ?? '';
+                        }
+                        else {
+                            foreach ($order->details as $detail) {
+                                if (!empty($detail->product) && isset($detail->product->product_name)) {
+                                    $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->product->product_name;
+                                }
+                            }
+                            // if(empty($order->product_names)) {
+                            foreach ($order->details as $detail) {
+                                if (!empty($detail->equipment) && isset($detail->equipment->title)) {
+                                    $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->equipment->title;
+                                }
+                            }
+                            // }
+                        }
+                        foreach ($order->details as $detail) {
+                            $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
+                        }
+                        $order->delivery_time = $order->address->city()->first()->delivery_time ?? '1-3 Business days';
+
+                        Mail::to($order->user->email)->queue(new CustomerNewOrder($order));
+                        try {
+                            Mail::to(env('APP_ORDER_EMAIL', 'mohitodhrani@gmail.com'))->queue(new AppNewOrder($order));
+                        }
+                        catch (\Exception $e) {
+                            info($e->getMessage());
+                        }
+
+                        $seller_details = [];
+                        foreach ($order->details as $detail) {
+                            if (!empty($detail->subscription_id)) {
+                                continue;
+                            }
+                            if (!empty($detail->equipment_id)) {
+                                $commission_fee = 0;
+                                if ($detail->equipment->commission_type === 'percentage') {
+                                    $commission_fee = ($detail->subtotal / 100) * $detail->equipment->commission_fee;
+                                }
+                                else {
+                                    $commission_fee = $detail->equipment->commission_fee * $detail->quantity;
+                                }
+                                $detail->seller_price = $detail->subtotal - $commission_fee;
+                                $seller_details[$detail->equipment->seller->id][] = $detail;
+                            }
+                            if (!empty($detail->product_id)) {
+                                $commission_fee = 0;
+                                if ($detail->product->commission_type === 'percentage') {
+                                    $commission_fee = ($detail->subtotal / 100) * $detail->product->commission_fee;
+                                }
+                                else {
+                                    $commission_fee = $detail->product->commission_fee * $detail->quantity;
+                                }
+                                $detail->seller_price = $detail->subtotal - $commission_fee;
+                                $seller_details[$detail->product->seller->id][] = $detail;
+                            }
+                        }
+
+                        if (!empty($seller_details)) {
+                            foreach ($seller_details as $seller_id => $details) {
+                                $seller = Seller::find($seller_id);
+                                $order->seller_total = array_sum(array_column($details, "seller_price"));
+                                Mail::to($seller->seller_email)->queue(new MerchantNewOrder($order, $details, $seller));
+                            }
+                        }
+
+                        ////////////////////////////////////////////////////////////
 
                         return response()->json(['status' => true]);
-                    } else {
-                        info("Database orde create error");
+                    }
+                    else {
+                        info("Database order create error");
                         info(print_r($order_data, true));
                     }
-                } else {
+                }
+                else {
                     info("Stripe invaild subscription - " . $stripe_subscription['id']);
                 }
-            } else {
+            }
+            else {
                 info("Stripe id missing");
             }
         }

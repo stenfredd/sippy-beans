@@ -200,15 +200,15 @@ class ProductController extends Controller
             'brand_id' => 'required',
             'type_id' => 'required',
             'seller_id' => 'required',
-            'origin_id' => 'required',
-            'varietal' => 'required',
-            'flavor_note' => 'required',
-            'characteristic_id' => 'required',
-            'best_for_id' => 'required',
-            'level_id' => 'required',
-            'altitude' => 'required',
-            'process_id' => 'required',
-            'tags' => 'required'
+            // 'origin_id' => 'required',
+            // 'varietal' => 'required',
+            // 'flavor_note' => 'required',
+            // 'characteristic_id' => 'required',
+            // 'best_for_id' => 'required',
+            // 'level_id' => 'required',
+            // 'altitude' => 'required',
+            // 'process_id' => 'required',
+            // 'tags' => 'required'
         ];
         $this->validate($request, $validation);
 

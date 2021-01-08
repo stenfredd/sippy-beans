@@ -14,7 +14,8 @@
                                 <div class="text-center pr-50  pl-0 col">
                                     <small class="gray font-small-2 text-bold-500"><b>Order Value</b></small>
                                     <p class="mb-0 font-small-2 font-weight-bold">
-                                        {{ $app_settings['currency_code'] .' '. number_format(($order->total_amount ?? 0),2) }}</p>
+                                        {{ $app_settings['currency_code'] .' '. number_format(($order->total_amount ?? 0),2) }}
+                                    </p>
                                 </div>
                                 <div class="text-center pr-50  pl-0 col">
                                     <small class="gray font-small-2 text-bold-500">Payment</small>
@@ -32,7 +33,7 @@
                                     <small class="gray font-small-2 text-bold-500">Gateway</small>
                                     @if (strtolower($order->payment_type ?? '') == 'card')
                                     <p class="mb-0 font-small-2 font-weight-bold">
-                                        <img src="{{ asset('assets/images/slack-logo.png') }}" height="15px"/>
+                                        <img src="{{ asset('assets/images/slack-logo.png') }}" height="15px" />
                                     </p>
                                     @else
                                     <p class="mb-0 font-small-2 font-weight-bold">-</p>
@@ -74,7 +75,7 @@
                                     <div class="default text"></div>
                                     <div class="menu" tabindex="-1">
                                         <div class="header font-small-4 font-weight-bold">
-                                            <span class="font-small-4 font-weight-bold">SELECT SERVICE LOCATION</span>
+                                            <span class="font-small-4 font-weight-bold">SELECT DELIVERY LOCATION</span>
                                         </div>
 
                                         @if (!empty($order->user->addresses))
@@ -111,7 +112,8 @@
                                         <td class="font-weight-bold font-small-3 customer-select">
                                             <div class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon hide-no"
                                                 tabindex="0">
-                                                <select id="user_id" name="user_id" {{ !empty($order) ? 'disabled' : '' }}>
+                                                <select id="user_id" name="user_id"
+                                                    {{ !empty($order) ? 'disabled' : '' }}>
                                                     <option value="">Select Customer</option>
                                                     @foreach ($users as $user)
 
@@ -127,7 +129,8 @@
                                                 @if(empty($order))
                                                 <i class="dropdown icon text-orange px-0"></i>
                                                 @endif
-                                                <div class="default text">{{ $order->user->name ?? 'Select Customer' }}</div>
+                                                <div class="default text">{{ $order->user->name ?? 'Select Customer' }}
+                                                </div>
                                                 <div class="menu">
                                                     <div class="ui icon search input">
                                                         <i class="icon feather icon-search"></i>
@@ -212,7 +215,8 @@
                             class="card-header d-flex justify-content-between align-items-center pb-2 pt-2 border-bottom">
                             <h4 class="mb-0 text-bold-700">ORDER DETAILS</h4>
                             <div class="ui pointing floating labeled icon dropdown hover-icon top right">
-                                <select id="item_cancelltion" name="item_cancelltion" onchange="cancelItem()" class="form-control">
+                                <select id="item_cancelltion" name="item_cancelltion" onchange="cancelItem()"
+                                    class="form-control">
                                     <option value="cancel">Cancelled</option>
                                 </select>
                                 <div class="text">
@@ -277,16 +281,17 @@
                                             <tr>
                                                 <td>
                                                     @if ($item->is_cancelled != 1)
-                                                        <fieldset>
-                                                            <div class="vs-checkbox-con vs-checkbox-primary">
-                                                                <input type="checkbox" value="{{ $item->id }}" class="item_select">
-                                                                <span class="vs-checkbox vs-checkbox-sm">
-                                                                    <span class="vs-checkbox--check">
-                                                                        <i class="vs-icon feather icon-check"></i>
-                                                                    </span>
+                                                    <fieldset>
+                                                        <div class="vs-checkbox-con vs-checkbox-primary">
+                                                            <input type="checkbox" value="{{ $item->id }}"
+                                                                class="item_select">
+                                                            <span class="vs-checkbox vs-checkbox-sm">
+                                                                <span class="vs-checkbox--check">
+                                                                    <i class="vs-icon feather icon-check"></i>
                                                                 </span>
-                                                            </div>
-                                                        </fieldset>
+                                                            </span>
+                                                        </div>
+                                                    </fieldset>
                                                     @endif
                                                 </td>
                                                 <td scope="row" class="font-weight-bold font-small-3">{{ $k + 1 }}</td>
@@ -316,10 +321,12 @@
                                                     @endif
                                                 </td>
                                                 <td class="font-weight-bold font-small-3">
-                                                    {{ $app_settings['currency_code'] .' '. number_format($item->amount,2) }}</td>
+                                                    {{ $app_settings['currency_code'] .' '. number_format($item->amount,2) }}
+                                                </td>
                                                 <td class="font-weight-bold font-small-3">{{ $item->quantity }}</td>
                                                 <td class="font-weight-bold font-small-3">
-                                                    {{ $app_settings['currency_code'].' '. number_format($item->subtotal,2) }}</td>
+                                                    {{ $app_settings['currency_code'].' '. number_format($item->subtotal,2) }}
+                                                </td>
                                                 <td class="font-weight-bold font-small-3">
                                                     {{ $item->is_cancelled == 1 ? 'YES' : 'NO' }}
                                                 </td>
@@ -361,8 +368,9 @@
                                  </div>
                                   <i class="d-inline-block fontawesome fa fa-sort-desc ml-50 text-orange drop-arrow"></i>
                               </div> -->
-<input class="form-control" type="number" name="reward_points" id="reward_points" min="0"
-                                            value="{{ $order->reward_points }}" onchange="updateOrder('reward_points')">
+                                        <input class="form-control" type="number" name="reward_points"
+                                            id="reward_points" min="0" value="{{ $order->reward_points }}"
+                                            onchange="updateOrder('reward_points')">
                                         {{-- <div --}}
                                         {{-- class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon hide-no"> --}}
                                         {{-- <i class="dropdown icon text-orange"></i> --}}
@@ -400,65 +408,66 @@
                                     <div class="status-options">
                                         <div class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon">
                                             <select id="status" name="status" onchange="updateOrder('status')">
-<option value="0" {{ $order->status == '0' ? 'selected' : '' }}>New
+                                                <option value="0" {{ $order->status == '0' ? 'selected' : '' }}>New
                                                     Order</option>
-<option value="1" {{ $order->status == '1' ? 'selected' : '' }}>In
+                                                <option value="1" {{ $order->status == '1' ? 'selected' : '' }}>In
                                                     Progress</option>
-<option value="2" {{ $order->status == '2' ? 'selected' : '' }}>Shipped
+                                                <option value="2" {{ $order->status == '2' ? 'selected' : '' }}>Shipped
                                                 </option>
-<option value="3" {{ $order->status == '3' ? 'selected' : '' }}>
+                                                <option value="3" {{ $order->status == '3' ? 'selected' : '' }}>
                                                     Completed</option>
-<option value="4" {{ $order->status == '4' ? 'selected' : '' }}>
+                                                <option value="4" {{ $order->status == '4' ? 'selected' : '' }}>
                                                     Cancelled</option>
                                             </select>
                                             <i class="dropdown icon text-orange"></i>
                                             <div class="default text mr-50">
-@if($order->status == '0')
-<div class="d-inline-block selected mr-25">
-    <div class="color-option border-lighgreen">
-        <div class="filloption bg-lighgreen"></div>
-    </div>
-</div>
-<span class="font-small-3  font-weight-bold text-lighgreen">New Order</span>
-@elseif($order->status == '1')
-<div class="d-inline-block selected mr-25">
-    <div class="color-option border-purple">
-        <div class="filloption bg-purple"></div>
-    </div>
-</div>
-<span class="font-small-3  font-weight-bold text-purple">
-    In Progress</span>
-@elseif($order->status == '2')
-<div class="d-inline-block selected mr-25">
-    <div class="color-option border-info">
-        <div class="filloption bg-info"></div>
-    </div>
-</div>
-<span class="font-small-3 font-weight-bold text-info">Shipped</span>
-@elseif($order->status == '3')
-<div class="d-inline-block selected mr-25">
-    <div class="color-option border-success">
-        <div class="filloption bg-success"></div>
-    </div>
-</div>
-<span class="font-small-3 font-weight-bold text-success">
-    Completed</span>
-@elseif($order->status == '4')
-<div class="d-inline-block selected mr-25">
-    <div class="color-option border-danger">
-        <div class="filloption bg-danger"></div>
-    </div>
-</div>
-<span class="font-small-3 font-weight-bold text-danger">
-    Cancelled</span>
-@endif
+                                                @if($order->status == '0')
+                                                <div class="d-inline-block selected mr-25">
+                                                    <div class="color-option border-lighgreen">
+                                                        <div class="filloption bg-lighgreen"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="font-small-3  font-weight-bold text-lighgreen">New
+                                                    Order</span>
+                                                @elseif($order->status == '1')
+                                                <div class="d-inline-block selected mr-25">
+                                                    <div class="color-option border-purple">
+                                                        <div class="filloption bg-purple"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="font-small-3  font-weight-bold text-purple">
+                                                    In Progress</span>
+                                                @elseif($order->status == '2')
+                                                <div class="d-inline-block selected mr-25">
+                                                    <div class="color-option border-info">
+                                                        <div class="filloption bg-info"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="font-small-3 font-weight-bold text-info">Shipped</span>
+                                                @elseif($order->status == '3')
+                                                <div class="d-inline-block selected mr-25">
+                                                    <div class="color-option border-success">
+                                                        <div class="filloption bg-success"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="font-small-3 font-weight-bold text-success">
+                                                    Completed</span>
+                                                @elseif($order->status == '4')
+                                                <div class="d-inline-block selected mr-25">
+                                                    <div class="color-option border-danger">
+                                                        <div class="filloption bg-danger"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="font-small-3 font-weight-bold text-danger">
+                                                    Cancelled</span>
+                                                @endif
                                             </div>
                                             <div class="menu p-1 w-250">
                                                 <div class="header font-small-4 font-weight-bold">
                                                     <span class="font-small-4 font-weight-bold">SELECT Technician</span>
                                                 </div>
-                                                <div class="item border-bottom" data-value="1"
-onclick="$('#status').val('0')">
+                                                <div class="item border-bottom" data-value="0"
+                                                    onclick="$('#status').val('0')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-lighgreen">
                                                             <div class="filloption bg-lighgreen"></div>
@@ -467,8 +476,8 @@ onclick="$('#status').val('0')">
                                                     <span class="font-small-3  font-weight-bold text-lighgreen">
                                                         New Order</span>
                                                 </div>
-                                                <div class="item border-bottom" data-value="2"
-onclick="$('#status').val('1')">
+                                                <div class="item border-bottom" data-value="1"
+                                                    onclick="$('#status').val('1')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-purple">
                                                             <div class="filloption bg-purple"></div>
@@ -477,8 +486,8 @@ onclick="$('#status').val('1')">
                                                     <span class="font-small-3  font-weight-bold text-purple">
                                                         In Progress</span>
                                                 </div>
-                                                <div class="item border-bottom" data-value="3"
-onclick="$('#status').val('2')">
+                                                <div class="item border-bottom" data-value="2"
+                                                    onclick="$('#status').val('2')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-info">
                                                             <div class="filloption bg-info"></div>
@@ -486,8 +495,8 @@ onclick="$('#status').val('2')">
                                                     </div>
                                                     <span class="font-small-3 font-weight-bold text-info">Shipped</span>
                                                 </div>
-                                                <div class="item border-bottom" data-value="4"
-onclick="$('#status').val('3')">
+                                                <div class="item border-bottom" data-value="3"
+                                                    onclick="$('#status').val('3')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-success">
                                                             <div class="filloption bg-success"></div>
@@ -496,8 +505,8 @@ onclick="$('#status').val('3')">
                                                     <span class="font-small-3 font-weight-bold text-success">
                                                         Completed</span>
                                                 </div>
-                                                <div class="item border-bottom" data-value="5"
-onclick="$('#status').val('4')">
+                                                <div class="item border-bottom" data-value="4"
+                                                    onclick="$('#status').val('4')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-danger">
                                                             <div class="filloption bg-danger"></div>
@@ -522,21 +531,26 @@ onclick="$('#status').val('4')">
 
                                     <div class="status-options">
                                         <div class="ui dropdown selection pointing selection-dropdown pl-0 hover-icon ">
-                                            <select id="payment_status" name="payment_status" onchange="updateOrder('payment_status')">
+                                            <select id="payment_status" name="payment_status"
+                                                onchange="updateOrder('payment_status')">
                                                 {{-- <option value="1"
                                                     {{ $order->total_amount == $order->payment_received ? 'selected' : '' }}>
-                                                    Payment Received</option>
+                                                Payment Received</option>
                                                 <option value="2"
                                                     {{ $order->total_amount > $order->payment_received ? 'selected' : '' }}>
                                                     Payment Pending</option>
                                                 <option value="3"
                                                     {{ $order->payment_received == 0 && ($order->status == 3 || $order->status == 4) ? 'selected' : '' }}>
                                                     Refunded</option> --}}
-                                                    <option value="">Payment Status</option>
-                                                    <option value="1" {{ $order->payment_status == '1' ? 'selected' : '' }}>Payment Pending</option>
-                                                    <option value="2" {{ $order->payment_status == '2' ? 'selected' : '' }}>Payment Received</option>
-                                                    <option value="3" {{ $order->payment_status == '3' ? 'selected' : '' }}>Partial Refund</option>
-                                                    <option value="4" {{ $order->payment_status == '4' ? 'selected' : '' }}>Refunded</option>
+                                                <option value="">Payment Status</option>
+                                                <option value="1" {{ $order->payment_status == '1' ? 'selected' : '' }}>
+                                                    Payment Pending</option>
+                                                <option value="2" {{ $order->payment_status == '2' ? 'selected' : '' }}>
+                                                    Payment Received</option>
+                                                <option value="3" {{ $order->payment_status == '3' ? 'selected' : '' }}>
+                                                    Partial Refund</option>
+                                                <option value="4" {{ $order->payment_status == '4' ? 'selected' : '' }}>
+                                                    Refunded</option>
                                             </select>
                                             <i class="dropdown icon text-orange"></i>
                                             <div class="default text mr-50">
@@ -551,7 +565,8 @@ onclick="$('#status').val('4')">
                                                     @endif
                                                     @if($order->payment_status == '2' ? 'selected' : '')
                                                     <div class="Partial-option">
-<div class="Partial-div d-inline-block mr-25" style="border: 0 !important;">
+                                                        <div class="Partial-div d-inline-block mr-25"
+                                                            style="border: 0 !important;">
                                                             <i class="fa fa-circle font-small-3 text-success mr-50"></i>
                                                         </div>
                                                         <span class="font-small-3 font-weight-bold">
@@ -586,7 +601,8 @@ onclick="$('#status').val('4')">
                                                 <div class="header font-small-4 font-weight-bold">
                                                     <span class="font-small-4 font-weight-bold">Payment Status</span>
                                                 </div>
-                                                <div class="item border-bottom" onclick="$('#payment_status').val(1).trigger('change')">
+                                                <div class="item border-bottom"
+                                                    onclick="$('#payment_status').val(1).trigger('change')">
                                                     <div
                                                         class="d-inline-block {{ $order->payment_status == '1' ? 'selected' : '' }} mr-25">
                                                         <i class="fa fa-circle font-small-3 text-warning mr-50"></i>
@@ -595,7 +611,8 @@ onclick="$('#status').val('4')">
                                                         Payment Pending</span>
                                                 </div>
 
-                                                <div class="item border-bottom" onclick="$('#payment_status').val(2).trigger('change')">
+                                                <div class="item border-bottom"
+                                                    onclick="$('#payment_status').val(2).trigger('change')">
                                                     <div
                                                         class="d-inline-block {{ $order->payment_status == '2' ? 'selected' : '' }} mr-25">
                                                         <i class="fa fa-circle font-small-3 text-success mr-50"></i>
@@ -603,7 +620,8 @@ onclick="$('#status').val('4')">
                                                     <span class="font-small-3 font-weight-bold">
                                                         Payment Received</span>
                                                 </div>
-                                                <div class="item border-bottom" onclick="$('#payment_status').val(3).trigger('change')">
+                                                <div class="item border-bottom"
+                                                    onclick="$('#payment_status').val(3).trigger('change')">
                                                     <div
                                                         class="d-inline-block {{ $order->payment_status == '3' ? 'selected' : '' }} mr-25">
                                                         <div class="Partial-option">
@@ -615,8 +633,10 @@ onclick="$('#status').val('4')">
                                                     <span class="font-small-3 font-weight-bold">
                                                         Partial Refunded</span>
                                                 </div>
-                                                <div class="item border-bottom" onclick="$('#payment_status').val(4).trigger('change')">
-                                                    <div class="d-inline-block {{ $order->payment_status == '4' ? 'selected' : '' }} mr-25">
+                                                <div class="item border-bottom"
+                                                    onclick="$('#payment_status').val(4).trigger('change')">
+                                                    <div
+                                                        class="d-inline-block {{ $order->payment_status == '4' ? 'selected' : '' }} mr-25">
                                                         <i class="fa fa-circle font-small-3 text-danger mr-50"></i>
                                                     </div>
                                                     <span class="font-small-3 font-weight-bold">
@@ -776,14 +796,16 @@ onclick="$('#status').val('4')">
                                             <p class="pr-1 font-small-3 gray text-bold-500">
                                                 {{ $transaction->created_at->timezone($app_settings['timezone'])->format('M d, Y g:iA') }}
                                             </p>
-                                            <a href="javascript:" class="gray" onclick="deleteTransaction('{{ $transaction->id }}')"><i class="fa fa-ellipsis-v"></i></a>
+                                            <a href="javascript:" class="gray"
+                                                onclick="deleteTransaction('{{ $transaction->id }}')"><i
+                                                    class="fa fa-ellipsis-v"></i></a>
                                         </div>
                                     </div>
                                     @endforeach
                                     @if (empty($order->transactions) || count($order->transactions) == 0)
-                                        <div class="text-center pt-2 pb-2">
-                                            No payment log details found.
-                                        </div>
+                                    <div class="text-center pt-2 pb-2">
+                                        No payment log details found.
+                                    </div>
                                     @endif
                                 </div>
                             </div>
@@ -891,9 +913,10 @@ onclick="$('#status').val('4')">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ url('admin/orders/add-transaction') }}" name="addEditTransactionForm" id="addEditTransactionForm" method="post" onsubmit="return false;">
+            <form action="{{ url('admin/orders/add-transaction') }}" name="addEditTransactionForm"
+                id="addEditTransactionForm" method="post" onsubmit="return false;">
                 @csrf
-                <input type="hidden" name="order_id" id="order_id" value="{{ $order->id }}"/>
+                <input type="hidden" name="order_id" id="order_id" value="{{ $order->id }}" />
                 <div class="modal-body">
                     <label>TRANSACTION TYPE</label>
                     <div class="form-group">
@@ -919,7 +942,8 @@ onclick="$('#status').val('4')">
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <label>TRANSACTION ID</label>
-                            <input type="text" placeholder="Reference Code" class="form-control" name="payment_id" id="payment_id">
+                            <input type="text" placeholder="Reference Code" class="form-control" name="payment_id"
+                                id="payment_id">
                         </div>
                     </div>
                 </div>
@@ -1001,7 +1025,6 @@ onclick="$('#status').val('4')">
 
 @section('scripts')
 <script type="text/javascript">
-
     $(document).ready(function() {
         $("#all_select").change(function() {
             $(".item_select").prop('checked', this.checked);

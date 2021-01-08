@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'key' => env('STRIPE_KEY'),
+    'key' => env('STRIPE_KEY', 'pk_test_51HyJkNKaffsendfzdp6AxYcNMyLh1Db6EiENtAigDbgsXqTHR5d3gx6cuwYFfbdCiLBttJWcnLYpXHBkPy2OZlWj000lKXipou'),
 
-    'secret' => env('STRIPE_SECRET'),
+    'secret' => env('STRIPE_SECRET', 'sk_test_51HyJkNKaffsendfzwMknXwr9DSSFAaHGnD4NR1dzKINhmbfgIxRHCLKBVXDvORNqYbzv5S3sPrt9JvAT9BIirUF500sQfJrmXw'),
 
     /*
     |--------------------------------------------------------------------------
@@ -124,6 +124,6 @@ return [
     |
     */
 
-    'logger' => env('CASHIER_LOGGER'),
+    'logger' => env('CASHIER_LOGGER', 'stack'),
 
 ];

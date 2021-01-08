@@ -295,7 +295,7 @@
                     </div>
                     <h2 class="text-bold-700 mt-1 mb-25" id="avg_sales_revenue_total">{{ $app_settings['currency_code'] .' '. number_format($summary['average_order_amount'],2) ?? 0 }}
                     </h2>
-                    <p class="mb-0 text-bold-500">Average Service Value</p>
+                    <p class="mb-0 text-bold-500">Average Cart Value</p>
                 </div>
                 <div class="card-content">
                     <div id="average-service-value-chart"></div>
@@ -317,14 +317,14 @@
                                 <h2 class="text-bold-400">
                                     <span class="text-success">{{ $app_settings['currency_code'] }}</span>
                                     <span class="text-success text-bold-700">{{
-                                        number_format($summary['last_month_revenue'],2) }}</span>
+                                        number_format($summary['cur_month_revenue'],2) }}</span>
                                 </h2>
                             </div>
                             <div>
                                 <p class="mb-50 text-bold-600">Last Month</p>
                                 <h2 class="text-bold-400">
                                     <span>{{ $app_settings['currency_code'] }}</span>
-                                    <span class="text-bold-700">{{ number_format($summary['cur_month_revenue'],2)
+                                    <span class="text-bold-700">{{ number_format($summary['last_month_revenue'],2)
                                         }}</span>
                                 </h2>
                             </div>

@@ -23,7 +23,7 @@
                                         <tr>
                                             <td class="font-medium-4">{{ $k + 1 }}</td>
                                             <td class="service-category-img text-center">
-                                                <img src="{{ asset($item->image_url ?? 'assets/images/coffee-cup-icon.svg')}}" width="100"
+                                                <img src="{{ asset($item->image_url ?? 'assets/images/coffee-cup-icon.svg')}}" width="60"
                                                     height="60">
                                             </td>
                                             <td>

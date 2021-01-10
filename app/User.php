@@ -86,25 +86,42 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::created(function ($user) {
-            if ($user->user_type !== 'admin') {
-                $stripe = new StripeClient(env("STRIPE_SECRET", 'sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY'));
-                $customers = $stripe->customers->all();
-                if (isset($customers['data']) && !empty($customers['data'])) {
-                    $customer_emails = array_column($customers['data'], 'email');
-                    if (in_array($user->email, $customer_emails)) {
-                        $key = array_search($user->email, $customer_emails);
-                        $customer = $customers['data'][$key];
-                        $user->stripe_id = $customer->id;
-                    } else {
+            try {
+                if ($user->user_type !== 'admin') {
+                    $stripe = new StripeClient(env("STRIPE_SECRET", 'sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY'));
+                    $customers = $stripe->customers->all();
+                    if (isset($customers['data']) && !empty($customers['data'])) {
+                        $customer_emails = array_column($customers['data'], 'email');
+                        if (in_array($user->email, $customer_emails)) {
+                            $key = array_search($user->email, $customer_emails);
+                            $customer = $customers['data'][$key];
+                            $user->stripe_id = $customer->id;
+                        }
+                        else {
+                            $customer = $stripe->customers->create([
+                                'name' => $user->name,
+                                'phone' => $user->phone,
+                                'email' => $user->email
+                            ]);
+                            $user->stripe_id = $customer->id;
+                        }
+                        $user->save();
+                    }
+                    else {
                         $customer = $stripe->customers->create([
                             'name' => $user->name,
                             'phone' => $user->phone,
                             'email' => $user->email
                         ]);
                         $user->stripe_id = $customer->id;
+                        $user->save();
                     }
-                    $user->save();
                 }
+            }
+            catch(\Exception $e) {
+                info("Stripe error: " . $e->getMessage());
+                $user->delete();
+                return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again']);
             }
         });
     }

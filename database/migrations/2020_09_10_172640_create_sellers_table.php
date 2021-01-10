@@ -20,7 +20,7 @@ class CreateSellersTable extends Migration
             $table->string("seller_image")->nullable();
             $table->string("seller_address")->nullable();
             $table->string("seller_phone", 50)->nullable();
-            $table->string("seller_email", 50)->nullable()->unique();
+            $table->string("seller_email", 50)->nullable();
             $table->tinyInteger('display_order')->nullable()->default(0);
             $table->tinyInteger("status")->nullable()->default(0)->comment("0=Inactive, 1=Active");
             $table->timestamps();

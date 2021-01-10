@@ -100,19 +100,46 @@ class EquipmentController extends Controller
             $image_file = $request->file('image_0');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/equipments'), $imageName);
-            $update = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(1)->update(['image_path' => 'uploads/equipments/' . $imageName]);
+            $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(1)->first();
+            if(empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'equipment';
+                $img->content_id = $equipment_id;
+                $img->display_order = 1;
+            }
+            $img->image_path = 'uploads/equipments/' . $imageName;
+            $img->save();
+            // Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(1)->update(['image_path' => 'uploads/equipments/' . $imageName]);
         }
         if ($request->hasFile('image_1')) {
             $image_file = $request->file('image_1');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/equipments'), $imageName);
-            Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/equipments/' . $imageName]);
+            // Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/equipments/' . $imageName]);
+            $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(2)->first();
+            if (empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'equipment';
+                $img->content_id = $equipment_id;
+                $img->display_order = 2;
+            }
+            $img->image_path = 'uploads/equipments/' . $imageName;
+            $img->save();
         }
         if ($request->hasFile('image_2')) {
             $image_file = $request->file('image_2');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/equipments'), $imageName);
-            Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/equipments/' . $imageName]);
+            // Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/equipments/' . $imageName]);
+            $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(3)->first();
+            if (empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'equipment';
+                $img->content_id = $equipment_id;
+                $img->display_order = 3;
+            }
+            $img->image_path = 'uploads/equipments/' . $imageName;
+            $img->save();
         }
 
         $msg = isset($request_data['equipment_id']) && !empty($request_data['equipment_id']) ? 'updated' : 'created';

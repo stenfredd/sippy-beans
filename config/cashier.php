@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'key' => env('STRIPE_KEY', 'pk_test_51HyJkNKaffsendfzdp6AxYcNMyLh1Db6EiENtAigDbgsXqTHR5d3gx6cuwYFfbdCiLBttJWcnLYpXHBkPy2OZlWj000lKXipou'),
+    'key' => env('STRIPE_KEY', 'pk_test_51I3hM1JH6V8eSiuB3ca7qsCcBokf8K6GtIEfR0li6vXk1zyMaDDkGtwm9S1SRE6gdasIch1PkJ88sv35hozi9bbs00zP4zwnLh'),
 
-    'secret' => env('STRIPE_SECRET', 'sk_test_51HyJkNKaffsendfzwMknXwr9DSSFAaHGnD4NR1dzKINhmbfgIxRHCLKBVXDvORNqYbzv5S3sPrt9JvAT9BIirUF500sQfJrmXw'),
+    'secret' => env('STRIPE_SECRET', 'sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY'),
 
     /*
     |--------------------------------------------------------------------------

@@ -15,7 +15,7 @@ class Variant extends Model
         'price',
         'quantity',
         'is_default',
-        'reward_points',
+        'reward_point',
         'status'
     ];
 

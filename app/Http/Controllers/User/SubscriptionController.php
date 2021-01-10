@@ -15,7 +15,7 @@ class SubscriptionController extends Controller
         $user = User::find($user_id);
 
         $stripe = new \Stripe\StripeClient(
-            env("STRIPE_SECRET")
+            env("STRIPE_SECRET", "sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY")
         );
         $payment = $stripe->prices->create([
             'unit_amount' => 10,
@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
         ]);
 
         $stripe = new \Stripe\StripeClient(
-            env("STRIPE_SECRET")
+            env("STRIPE_SECRET", "sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY")
         );
         $stripe->subscriptions->create([
             'customer' => "cus_IH4502QvPVkFr4",

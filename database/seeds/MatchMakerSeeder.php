@@ -29,12 +29,19 @@ class MatchMakerSeeder extends Seeder
                 'price'
             ];
 
-            $images = [
+            /* $images = [
                 'coffee.svg',
                 'taste.png',
                 'prefer-icon.svg',
                 'coffee.svg',
                 'price-icon.svg'
+            ]; */
+            $images = [
+                'bestFor.png',
+                'preferredTaste.png',
+                'coffeePrefer.png',
+                'roastLevel.png',
+                'priceRange.png'
             ];
 
             foreach ($questions as $key => $question) {

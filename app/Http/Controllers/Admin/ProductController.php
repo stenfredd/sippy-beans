@@ -124,24 +124,31 @@ class ProductController extends Controller
         $request->validate([
             'product_name' => 'required|max:150',
             'description' => 'required',
-            'varietal' => 'required',
-            'altitude' => 'required',
-            'sku' => 'required',
-            // 'reward_point' => 'required',
-            'quantity' => 'required',
-            'flavor_note' => 'required',
-            'type_id' => 'required',
-            'origin_id' => 'required',
+
             'brand_id' => 'required',
-            'brand_type_id' => 'required',
-            'characteristic_id' => 'required',
-            'best_for_id' => 'required',
-            'coffee_type_id' => 'required',
-            'level_id' => 'required',
-            'process_id' => 'required',
+            'type_id' => 'required',
             'seller_id' => 'required',
+
+            // 'varietal' => 'required',
+            // 'altitude' => 'required',
+            // 'sku' => 'required',
+            // 'reward_point' => 'required',
+            // 'quantity' => 'required',
+            // 'flavor_note' => 'required',
+            // 'type_id' => 'required',
+            // 'origin_id' => 'required',
+            // 'brand_id' => 'required',
+            // 'brand_type_id' => 'required',
+            // 'characteristic_id' => 'required',
+            // 'best_for_id' => 'required',
+            // 'coffee_type_id' => 'required',
+            // 'level_id' => 'required',
+            // 'process_id' => 'required',
+            // 'seller_id' => 'required',
             // 'tax_class_id' => 'required',
         ]);
+
+        dd($request->all());
 
         $data = $request->except(['grind_id', 'weight_id']);
         $data['status'] = isset($data['status']) && $data['status'] == 'on' ? 1 : 0;
@@ -149,7 +156,8 @@ class ProductController extends Controller
             $product = Product::find($data['id']);
             $product->save();
             $product = $product->fresh();
-        } else {
+        }
+        else {
             $product = Product::create($data);
         }
 
@@ -213,6 +221,7 @@ class ProductController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->except(['image_0', 'image_1', 'image_2']);
+        // dd($request_data);
         /* if ($request->hasFile('image_url')) {
             $image_file = $request->file('image_url');
             $imageName = time() . '.' . $image_file->extension();
@@ -233,24 +242,76 @@ class ProductController extends Controller
             $image_file = $request->file('image_0');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
-            Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(1)->update(['image_path' => 'uploads/products/' . $imageName]);
+            // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(1)->update(['image_path' => 'uploads/products/' . $imageName]);
+            $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(1)->first();
+            if (empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'product';
+                $img->content_id = $product_id;
+                $img->display_order = 1;
+            }
+            $img->image_path = 'uploads/products/' . $imageName;
+            $img->save();
         }
         if ($request->hasFile('image_1')) {
             $image_file = $request->file('image_1');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
-            Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/products/' . $imageName]);
+            // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/products/' . $imageName]);
+            $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->first();
+            if (empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'product';
+                $img->content_id = $product_id;
+                $img->display_order = 2;
+            }
+            $img->image_path = 'uploads/products/' . $imageName;
+            $img->save();
         }
         if ($request->hasFile('image_2')) {
             $image_file = $request->file('image_2');
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
-            Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/products/' . $imageName]);
+            // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/products/' . $imageName]);
+            $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->first();
+            if (empty($img) || !isset($img->id)) {
+                $img = new Image();
+                $img->type = 'product';
+                $img->content_id = $product_id;
+                $img->display_order = 3;
+            }
+            $img->image_path = 'uploads/products/' . $imageName;
+            $img->save();
         }
 
         $msg = isset($request_data['product_id']) && !empty($request_data['product_id']) ? 'updated' : 'created';
         $msg1 = isset($request_data['product_id']) && !empty($request_data['product_id']) ? 'Updating' : 'Creating';
         if ($product) {
+
+            if(!empty($request->input('add_variant'))) {
+                $add_variant = $request->input('add_variant');
+                $request_data['add_variant'] = json_decode($add_variant, true);
+                $post_data = $request_data['add_variant'];
+
+                if (!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
+                    $grind_ids = implode(',', $post_data['grind_ids']);
+                    foreach ($post_data['weight_ids'] as $weight_id) {
+                        $weight_title = Weight::find($weight_id)->title ?? '';
+                        $variant = [
+                            'product_id' => $product_id,
+                            'weight_id' => $weight_id,
+                            'grind_ids' => $grind_ids,
+                            'price' => $post_data['add_variant'][$weight_id]['price'],
+                            'quantity' => $post_data['add_variant'][$weight_id]['quantity'],
+                            'reward_point' => $post_data['add_variant'][$weight_id]['reward_point'],
+                            'sku' => str_replace(' ', '-', $request->product_name) . '-' . $weight_title,
+                            'status' => 1
+                        ];
+                        Variant::create($variant);
+                    }
+                }
+            }
+
             session()->flash('success', 'Product details ' . $msg . ' successfully.');
             return redirect(url('admin/products/' . $product_id));
         } else {
@@ -279,6 +340,7 @@ class ProductController extends Controller
         if (!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
             $grind_ids = implode(',', $post_data['grind_ids']);
             foreach ($post_data['weight_ids'] as $weight_id) {
+                $weight_title = Weight::find($weight_id)->title ?? '';
                 $variant = [
                     'product_id' => $request->product_id,
                     'weight_id' => $weight_id,
@@ -286,6 +348,7 @@ class ProductController extends Controller
                     'price' => $post_data['add_variant'][$weight_id]['price'],
                     'quantity' => $post_data['add_variant'][$weight_id]['quantity'],
                     'reward_point' => $post_data['add_variant'][$weight_id]['reward_point'],
+                    'sku' => str_replace(' ', '-', $request->product_name) . '-' . $weight_title,
                     'status' => 1
                 ];
                 Variant::create($variant);

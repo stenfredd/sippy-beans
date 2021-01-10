@@ -63,7 +63,7 @@
                                     <div class="form-group">
                                         <label>PRICE</label>
                                         <input type="text" class="form-control" name="price" id="price"
-                                            placeholder="Price" value="{{ number_format($equipment->price,2) ?? '' }}">
+                                            placeholder="Price" value="{{ number_format($equipment->price ?? 0,2) ?? '' }}">
                                     </div>
                                 </div>
 <div class="col-md-12">
@@ -182,8 +182,13 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-                                @if (!empty($equipment->images))
-                                @foreach ($equipment->images as $key => $image)
+                                {{-- @if (!empty($equipment->images)) --}}
+                                {{-- @foreach ($equipment->images as $key => $image) --}}
+                                @for($i = 0; $i < 3; $i++)
+                                @php
+                                    $key = $i;
+                                    $image = $equipment->images[$key] ?? [];
+                                @endphp
                                 <div class="col-md-4  text-center border-right">
                                     <div class="form-group mb-0">
                                         <div class="add-new-banner-div">
@@ -199,8 +204,9 @@
                                         </p>
                                     </div>
                                 </div>
-                                @endforeach
-                                @endif
+                                @endfor
+                                {{-- @endforeach --}}
+                                {{-- @endif --}}
                             </div>
                         </div>
                     </div>

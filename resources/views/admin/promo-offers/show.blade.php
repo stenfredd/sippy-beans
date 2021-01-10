@@ -121,10 +121,21 @@
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label>ONE TIME USE PER USER</label>
+                                        <div class="custom-control custom-switch custom-switch-primary mr-2 mb-1 text-left">
+                                            <input type="checkbox" class="custom-control-input" id="one_time_user" name="one_time_user" value="1"
+                                                {{ !empty($promocode) && $promocode->one_time_user == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="one_time_user">
+                                                <span class="switch-text-left"></span>
+                                                <span class="switch-text-right"></span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Used Limit / User</label>
+                                        <label>Used Limit</label>
                                         <input type="number" class="form-control" name="used_limit" id="used_limit"
                                             placeholder="Value (#)"
                                             value="{{ $promocode->used_limit ?? old('used_limit') }}">

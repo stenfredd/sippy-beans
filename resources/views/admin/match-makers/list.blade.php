@@ -46,7 +46,8 @@
                                                                 <option value="origin" {{ $item->type == 'origin' ? 'selected' : '' }}>Origin</option>
                                                                 <option value="process" {{ $item->type == 'process' ? 'selected' : '' }}>Process</option>
                                                                 <option value="seller" {{ $item->type == 'seller' ? 'selected' : '' }}>Seller</option>
-                                                                <option value="price" {{ $item->type == 'price' ? 'selected' : '' }}>Price</option>
+                                                                <option value="price" {{ $item->type == 'price'? 'selected' : '' }}>Price</option>
+                                                                <option value="type" {{ $item->type == 'type' ? 'selected' : '' }}>Roaster Type</option>
                                                             </select>
                                                         </div>
                                                     </div>

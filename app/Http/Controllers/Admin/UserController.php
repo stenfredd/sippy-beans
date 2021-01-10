@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use App\Exports\UserExport;
+use App\Models\UserMatchMaker;
 use App\UserReward;
 
 class UserController extends Controller
@@ -134,10 +135,9 @@ class UserController extends Controller
                 $q->where('user_id', $user_id);
             })
             ->where('match_makers.status', 1);
-        $last_update_match = $match_makers;
 
         $match_makers = $match_makers->get();
-        $last_update_match = $last_update_match->latest()->first()->created_at ?? null;
+        $last_update_match = UserMatchMaker::whereUserId($user_id)->orderBy('updated_at', 'desc')->first()->updated_at ?? null;
 
         if (!empty($match_makers) && count($match_makers) > 0) {
             foreach ($match_makers as $match_maker) {

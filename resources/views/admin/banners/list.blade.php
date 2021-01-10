@@ -32,7 +32,7 @@
       </div>
       <div class="card-content">
          <div class="table-responsive">
-            <table class="table data-list-view service-category-list" id="tblBanners">
+            <table class="table service-category-list" id="tblBanners">
                <thead>
                   <tr>
                      <th></th>
@@ -47,35 +47,6 @@
                   </tr>
                </thead>
                <tbody>
-                  <tr id="1">
-                     <td class="text-center"><img src="{{ asset('assets/images/sort-icon.png')}}" class="handle"></td>
-                     <td class="product-name index text-center font-medium-3">1</td>
-                     <td class="service-category-img text-center">
-                        <img src="{{ asset('assets/images/cover.jpg')}}" class="handle" width="100" height="60">
-                     </td>
-                     <td class="font-small-3 text-bold-700">
-                        <p class="font-small-3 text-bold-700 mb-0">Welcome Banner</p>
-                      </td>
-
-                     <td class="font-small-3 text-bold-700">No</td>
-                     <td class="font-small-3 text-bold-700">In App</td>
-                    <td>
-                        <div class="custom-control custom-switch custom-switch-success mr-2 mb-1 text-center">
-                           <input type="checkbox" class="custom-control-input" id="customSwitch101">
-                           <label class="custom-control-label" for="customSwitch101">
-                           <span class="switch-text-left"></span>
-                           <span class="switch-text-right"></span>
-                           </label>
-                        </div>
-                     </td>
-                     <td class="font-small-3 text-bold-700">
-                        Sept 5, 2020
-                        <span class="d-block gray">11:30AM</span>
-                     </td>
-                     <td>
-                        <a href="{{ url('admin/banners/1') }}" class="font-large-1"><i class="feather icon-eye"></i></a>
-                     </td>
-                  </tr>
                 </tbody>
             </table>
          </div>
@@ -115,7 +86,7 @@
                 },
                 {
                     "data": "display_order",
-                    "class": "product-name index text-center font-medium-3"
+                    "class": "product-name index text-center font-small-3"
                 },
                 {
                     "data": "image_url",

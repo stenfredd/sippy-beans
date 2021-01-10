@@ -19,9 +19,10 @@ class BestforSeeder extends Seeder
                 'All Brewing Methods', 'Milkbased'
             ];
 
-            foreach ($best_fors as $best_for) {
+            foreach ($best_fors as $k => $best_for) {
                 BestFor::create([
                     'title' => $best_for,
+                    'display_order' => ($k + 1),
                     'status' => 1
                 ]);
             }

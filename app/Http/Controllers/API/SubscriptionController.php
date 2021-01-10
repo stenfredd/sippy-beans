@@ -48,7 +48,7 @@ class SubscriptionController extends Controller
 
         if ($save) {
             try {
-                $stripe = new \Stripe\StripeClient(env("STRIPE_SECRET"));
+                $stripe = new \Stripe\StripeClient(env("STRIPE_SECRET", "sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY"));
                 $stripe->subscriptions->cancel(
                     $user_subscription->stripe_subscription_id,
                     []

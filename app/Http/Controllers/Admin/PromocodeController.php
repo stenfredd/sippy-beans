@@ -101,7 +101,7 @@ class PromocodeController extends Controller
             // 'user_ids' => 'required',
             'discount_type' => 'required',
             'discount_amount' => 'required',
-            'status' => 'required',
+            // 'status' => 'required',
         ];
         $this->validate($request, $validation);
 
@@ -116,6 +116,10 @@ class PromocodeController extends Controller
 
         $request_data['user_ids'] = (isset($request_data['user_ids']) && !empty($request_data['user_ids'])) ? array_filter($request_data['user_ids']) : [];
         $request_data['promocode_type'] = (isset($request_data['user_ids']) && !empty($request_data['user_ids'])) ? 'user' : 'all';
+
+        $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
+        $request_data['one_time_user'] = isset($request_data['one_time_user']) ? $request_data['one_time_user'] : 0;
+
         if (isset($request_data['promocode_id']) && !empty($request_data['promocode_id'])) {
             $promocode = Promocode::find($request_data['promocode_id'])->update($request_data);
             $promocode_id = $request_data['promocode_id'];

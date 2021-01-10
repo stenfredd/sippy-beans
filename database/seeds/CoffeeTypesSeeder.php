@@ -14,7 +14,7 @@ class CoffeeTypesSeeder extends Seeder
     {
         if (CoffeeType::count() == 0) {
             $types = [
-                'Local Roaster', 'International Roaster'
+                'Local Roaster', 'International Roaster', 'Limited Addition Roaster'
             ];
 
             foreach ($types as $key => $type) {

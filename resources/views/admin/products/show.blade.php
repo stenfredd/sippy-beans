@@ -10,6 +10,7 @@
         method="POST">
         @csrf
         <input type="hidden" name="product_id" id="product_id" value="{{ $product->id ?? '' }}">
+        <input type="hidden" name="add_variant" id="add_variant" value="">
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -117,12 +118,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ROASTER TYPE</label>
-                                        <select class="ui search dropdown w-100" id="coffee_type_id"
-                                            name="coffee_type_id">
+                                        <select class="ui search dropdown w-100" id="type_id"
+                                            name="type_id">
                                             <option value="">Select Roaster Type</option>
                                             @foreach ($coffeeTypes as $type)
                                             <option value="{{ $type->id }}"
-                                                {{ ($product->coffee_type_id ?? '') == $type->id ? 'selected' : '' }}>
+                                                {{ ($product->type_id ?? '') == $type->id ? 'selected' : '' }}>
                                                 {{ $type->title }}
                                             </option>
                                             @endforeach
@@ -324,11 +325,11 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>PRODUCT TYPE</label>
-                                                <select class="ui search dropdown w-100" name="type_id" id="type_id">
+                                                <select class="ui search dropdown w-100" name="coffee_type_id" id="coffee_type_id">
                                                     <option value="">Select Product Type</option>
-                                                    @foreach ($types as $type)
+                                                    @foreach ($coffeeTypes as $type)
                                                     <option value="{{ $type->id }}"
-                                                        {{ $type->id == ($product->type_id ?? '') ? 'selected' : '' }}>
+                                                        {{ $type->id == ($product->coffee_type_id ?? '') ? 'selected' : '' }}>
                                                         {{ $type->title }}</option>
                                                     @endforeach
                                                 </select>
@@ -449,6 +450,7 @@
             <form action="#" onsubmit="return false;" id="add-variant-form" name="add-variant-form">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id ?? '' }}">
+                <input type="hidden" name="product_name" value="{{ $product->product_name ?? '' }}">
                 <div class="modal-body">
                     <div id="variants-add">
                         <label>GRIND (SELECT ALL GRIND VARIANTS)</label>
@@ -692,6 +694,7 @@
 
 @section('scripts')
 <script type="text/javascript">
+let addVariantData = {};
 let variants = JSON.parse('@json($product->variants ?? [])');
     $('#image_0').change(function(e) {
             var fileName = e.target.files[0].name;
@@ -729,7 +732,7 @@ let variants = JSON.parse('@json($product->variants ?? [])');
             $("#variant_price").val(info.price);
             $("#variant_quantity").val(info.quantity);
             $("#variant_reward").val(info.reward_point);
-$("#variant_grind_id").val($(this).data("grind_id"));
+            $("#variant_grind_id").val($(this).data("grind_id"));
             $('#edit-variants').modal('show');
         });
 
@@ -772,29 +775,53 @@ $("#variant_grind_id").val($(this).data("grind_id"));
         }
 
         function addVariant() {
-            let formData = new FormData($("#add-variant-form")[0]);
-            $.ajax({
-                url: BASE_URL + 'products/variants/create',
-                data: formData,
-                contentType: false,
-                processData: false,
-                type: 'POST',
-                success: function(response) {
-                    if(response.status === true) {
-                        $("#add-variants").modal('hide');
-                        toastr.success(response.message, 'Success', toastrOptions);
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    }
-                    else {
-                        toastr.error(response.message, 'Error', toastrOptions);
-                    }
-                },
-                error: function(err) {
-                    console.log(err);
+            let product_id = '{{ $product->id ?? "" }}';
+            if(product_id.toString().length === 0) {
+                // let data = $("#add-variant-form").serializeArray();
+                addVariantData.grind_ids = $("#grind_ids").val();
+                addVariantData.weight_ids = $("#weight_ids").val();
+                if(addVariantData.add_variant === undefined) {
+                    addVariantData.add_variant = [];
                 }
-            });
+                $.each(addVariantData.weight_ids, function(index, weight_id) {
+                    $.each(addVariantData.grind_ids, function(index, grind_id) {
+                        addVariantData.add_variant[weight_id] = {};
+                        addVariantData.add_variant[weight_id].price = $("#variant_price_" + weight_id).val();
+                        addVariantData.add_variant[weight_id].quantity = $("#variant_quantity_" + weight_id).val();
+                        addVariantData.add_variant[weight_id].reward_point = $("#variant_reward_points_" + weight_id).val();
+                    });
+                });
+                $("#add_variant").val(JSON.stringify(addVariantData));
+                console.log(addVariantData);
+                console.log($("#add_variant").val());
+                // return false;
+                $("#add-variants").modal('hide');
+            }
+            else {
+                let formData = new FormData($("#add-variant-form")[0]);
+                $.ajax({
+                    url: BASE_URL + 'products/variants/create',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(response) {
+                        if(response.status === true) {
+                            $("#add-variants").modal('hide');
+                            toastr.success(response.message, 'Success', toastrOptions);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+                        else {
+                            toastr.error(response.message, 'Error', toastrOptions);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+            }
         }
 
         function updateVariant() {

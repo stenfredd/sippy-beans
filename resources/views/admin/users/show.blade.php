@@ -12,7 +12,7 @@
                         </div>
                         <div class="profile-img-container d-flex align-items-center justify-content-left">
                             <div class="profile-img-div">
-<img src="{{ $user->profile_image ?? asset('assets/images/sippyLogo.png')}}" class="img-responsive"
+<img src="{{ $user->profile_image ?? asset('assets/images/userProfile.png')}}" class="img-responsive"
                                     alt="Card image" style="height: 100%;">
                             </div>
                             <h2>{{ $user->name }}</h2>
@@ -200,9 +200,14 @@
                             <div>
                                 <p><strong>MATCHMAKER</strong></p>
                             </div>
-                            <p class="gray font-small-3">Updated:
-                                {{ $last_update_match->timezone($app_settings['timezone'])->format('M d,Y') ?? '-' }} at
-                                {{ $last_update_match->timezone($app_settings['timezone'])->format('g:iA') ?? '' }}</p>
+                            <p class="gray font-small-3">
+                                Updated:
+                                @if(!empty($last_update_match))
+                                    {{ $last_update_match->timezone($app_settings['timezone'])->format('M d,Y') ?? '-' }} at
+                                    {{ $last_update_match->timezone($app_settings['timezone'])->format('g:iA') ?? '' }}</p>
+                                @else
+                                    Not Available
+                                @endif
                         </div>
                         <div class="card-content">
                             <div class="card-body">

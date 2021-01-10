@@ -136,7 +136,7 @@ class ProductsSeeder extends Seeder
                     'status' => 1,
                     'variants' => [
                         [
-                            'weight_id' => null,
+                            'weight_id' => 1,
                             'title' => '5 sachets',
                             'sku' => strtolower(str_replace(" ", "-", 'Colombia Washed')) . ' - 5 sachets',
                             'price' => '75',
@@ -172,7 +172,7 @@ class ProductsSeeder extends Seeder
                     'status' => 1,
                     'variants' => [
                         [
-                            'weight_id' => null,
+                            'weight_id' => 1,
                             'title' => '5 sachets',
                             'sku' => strtolower(str_replace(" ", "-", 'Rwanda Natural')) . ' - 5 sachets',
                             'price' => '75',

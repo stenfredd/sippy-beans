@@ -10,22 +10,35 @@ class AttributeController extends Controller
 {
     public function index(Request $request)
     {
+        $attributes_title = [
+            'Origin',
+            'Roaster Type',
+            'Roaster Level',
+            'Process',
+            'Characteristics',
+            'Product Type',
+            'Best For',
+            'Brand',
+            'Seller',
+            'Weight'
+        ];
         $attributes = [
             'origins',
-            'brands',
-            'characteristics',
-            'best_fors',
             'types',
             'levels',
             'processes',
+            'characteristics',
+            'coffee_types',
+            'best_fors',
+            'brands',
             'sellers',
             'weights'
         ];
         $db_attributes = [];
-        foreach ($attributes as $attribute) {
+        foreach ($attributes as $index => $attribute) {
             $db_attributes[] = [
                 'key' => $attribute,
-                'title' => ucfirst(str_replace('_', ' ', $attribute)),
+                'title' => $attributes_title[$index], // ucfirst(str_replace('_', ' ', $attribute)),
                 'counts' => DB::table($attribute)->whereStatus(1)->count()
             ];
         }
@@ -42,13 +55,13 @@ class AttributeController extends Controller
         $request->validate($validation);
 
         $key = 'title';
-        if ($request->attribute_type == 'brand') {
+        if ($request->attribute_type == 'brands') {
             $key = 'name';
         }
         if ($request->attribute_type == 'coffee_flavor') {
             $key = 'flavor_name';
         }
-        if ($request->attribute_type == 'level') {
+        if ($request->attribute_type == 'levels') {
             $key = 'level_title';
         }
         if ($request->attribute_type == 'origins') {
@@ -63,7 +76,13 @@ class AttributeController extends Controller
             $request->attributes_emails = array_filter($request->attributes_emails);
         }
         foreach ($request->attributes_list as $k => $item) {
+            if($key == 'seller_name') {
+                $item = $request->attributes_list_old[$k];
+            }
             if (DB::table($request->attribute_type)->where($key, $item)->count() === 0) {
+                if ($key == 'seller_name') {
+                    $item = $request->attributes_list[$k];
+                }
                 $data_insert = [
                     $key => $item,
                     'display_order' => ($k + 1),
@@ -82,6 +101,7 @@ class AttributeController extends Controller
                     'updated_at' => date("Y-m-d H:i:s")
                 ];
                 if ($request->attribute_type == 'sellers') {
+                    $update_data['seller_name'] = $request->attributes_list[$k];
                     $update_data['seller_email'] = $request->attributes_emails[$k];
                 }
                 DB::table($request->attribute_type)->where($key, $item)->update($update_data);

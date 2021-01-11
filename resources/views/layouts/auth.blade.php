@@ -8,7 +8,7 @@
       <meta name="description" content="Vuexy admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
       <meta name="keywords" content="admin template, Vuexy admin template, dashboard template, flat admin template, responsive admin template, web app">
       <meta name="author" content="PIXINVENT">
-      <title>Dashboard analytics - YogiFixes</title>
+      <title>Login - Sippy Beans</title>
 
       <link rel="apple-touch-icon" href="{{ asset('assets/app-assets/images/ico/apple-icon-120.png') }}">
       <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.png') }}">

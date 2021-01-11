@@ -76,7 +76,7 @@
                                         </td>
                                         <td>
                                             <div class="form-group mb-0">
-                                                <input type="text" name="attributes_list[]" class="form-control"
+                                                <input type="text" name="attributes_list[{{ $attribute->id }}]" class="form-control"
                                                     placeholder="Input Attribute" id="title-{{ $attribute->id }}" value="{{
 ($attribute->title ?? '' ) .
 ($attribute->name ?? '' ) .
@@ -85,7 +85,7 @@
 ($attribute->seller_name ?? '' ) .
 ($attribute->origin_name ?? '' )
 }}">
-                                                <input type="hidden" name="attributes_list_old[]" class="form-control"
+                                                <input type="hidden" name="attributes_list_old[{{ $attribute->id }}]" class="form-control"
                                                     placeholder="Input Attribute" id="title-{{ $attribute->id }}" value="{{
 ($attribute->title ?? '' ) .
 ($attribute->name ?? '' ) .
@@ -98,7 +98,7 @@
                                         </td>
                                         @if(request()->segment(count(request()->segments())) == 'sellers')
                                         <td>
-                                            <input type="text" name="attributes_emails[]" class="form-control"
+                                            <input type="text" name="attributes_emails[{{ $attribute->id }}]" class="form-control"
                                                 placeholder="Input Attribute" id="email-{{ $attribute->id }}" value="{{
                                                                                                     ($attribute->seller_email ?? '' )
                                                                                                 }}">

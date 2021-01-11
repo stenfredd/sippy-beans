@@ -75,8 +75,29 @@ class AttributeController extends Controller
         if ($request->attribute_type == 'sellers') {
             $request->attributes_emails = array_filter($request->attributes_emails);
         }
+
+        $i = 1;
         foreach ($request->attributes_list as $k => $item) {
-            if($key == 'seller_name') {
+            $dbData = [
+                $key => $item,
+                'display_order' => $i,
+                'status' => 1,
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
+            if ($request->attribute_type == 'sellers') {
+                $dbData['seller_email'] = $request->attributes_emails[$k];
+            }
+            $i++;
+
+            $attr = DB::table($request->attribute_type)->where('id', $k)->first();
+            if(!empty($attr) && isset($attr->id)) {
+                DB::table($request->attribute_type)->where('id', $k)->update($dbData);
+            }
+            else {
+                $dbData['created_at'] = date("Y-m-d H:i:s");
+                DB::table($request->attribute_type)->insert($dbData);
+            }
+            /*if($key == 'seller_name') {
                 $item = $request->attributes_list_old[$k];
             }
             if (DB::table($request->attribute_type)->where($key, $item)->count() === 0) {
@@ -105,7 +126,7 @@ class AttributeController extends Controller
                     $update_data['seller_email'] = $request->attributes_emails[$k];
                 }
                 DB::table($request->attribute_type)->where($key, $item)->update($update_data);
-            }
+            }*/
         }
 
         session()->flash('success', 'Attribute details updated successfully.');

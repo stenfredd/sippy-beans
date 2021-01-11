@@ -464,10 +464,10 @@
                                             </div>
                                             <div class="menu p-1 w-250">
                                                 <div class="header font-small-4 font-weight-bold">
-                                                    <span class="font-small-4 font-weight-bold">SELECT Technician</span>
+                                                    <span class="font-small-4 font-weight-bold">SELECT STATUS</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="0"
-                                                    onclick="$('#status').val('0')">
+                                                    onclick="$('#status').val('0').trigger('change')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-lighgreen">
                                                             <div class="filloption bg-lighgreen"></div>
@@ -477,7 +477,7 @@
                                                         New Order</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="1"
-                                                    onclick="$('#status').val('1')">
+                                                    onclick="$('#status').val('1').trigger('change')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-purple">
                                                             <div class="filloption bg-purple"></div>
@@ -487,7 +487,7 @@
                                                         In Progress</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="2"
-                                                    onclick="$('#status').val('2')">
+                                                    onclick="$('#status').val('2').trigger('change')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-info">
                                                             <div class="filloption bg-info"></div>
@@ -496,7 +496,7 @@
                                                     <span class="font-small-3 font-weight-bold text-info">Shipped</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="3"
-                                                    onclick="$('#status').val('3')">
+                                                    onclick="$('#status').val('3').trigger('change')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-success">
                                                             <div class="filloption bg-success"></div>
@@ -506,7 +506,7 @@
                                                         Completed</span>
                                                 </div>
                                                 <div class="item border-bottom" data-value="4"
-                                                    onclick="$('#status').val('4')">
+                                                    onclick="$('#status').val('4').trigger('change')">
                                                     <div class="d-inline-block selected mr-25">
                                                         <div class="color-option border-danger">
                                                             <div class="filloption bg-danger"></div>

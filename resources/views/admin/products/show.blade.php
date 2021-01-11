@@ -2,9 +2,9 @@
 @section('content')
 <section>
     @if($errors->any())
-    <ul class="bg-danger p-1 pl-3" style="border-radius: 5px;">
-    {!! implode('', $errors->all('<li class="text-white">:message</li>')) !!}
-    </ul>
+        <ul class="bg-danger p-1 pl-3" style="border-radius: 5px;">
+            {!! implode('', $errors->all('<li class="text-white">:message</li>')) !!}
+        </ul>
     @endif
     <form id="product-form" name="product-form" action="{{ url('admin/products/save') }}" enctype="multipart/form-data"
         method="POST">
@@ -367,7 +367,7 @@
                         <div class="card-content">
                             <div>
                                 <div class="table-responsive pagenation-row">
-                                    <table class="table  table-striped table-borderless table-pagenation-section">
+                                    <table class="table  table-striped table-borderless table-pagenation-section" id="variants-table">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
@@ -695,7 +695,12 @@
 @section('scripts')
 <script type="text/javascript">
 let addVariantData = {};
+
+let grinds = JSON.parse('@json($grinds ?? [])');
+let weights = JSON.parse('@json($weights ?? [])');
 let variants = JSON.parse('@json($product->variants ?? [])');
+
+
     $('#image_0').change(function(e) {
             var fileName = e.target.files[0].name;
 
@@ -792,9 +797,68 @@ let variants = JSON.parse('@json($product->variants ?? [])');
                     });
                 });
                 $("#add_variant").val(JSON.stringify(addVariantData));
-                console.log(addVariantData);
-                console.log($("#add_variant").val());
-                // return false;
+                if(addVariantData !== undefined && addVariantData.weight_ids !== undefined && addVariantData.weight_ids.length > 0) {
+                    $("#variants-table tbody").html('');
+                    let variant_index = 0;
+                    $.each(addVariantData.weight_ids, function(weight_index, weight_id) {
+                        $.each(addVariantData.grind_ids, function(grind_index, grind_id) {
+
+                            let html = '<tr>\
+                                    <td class="text-center font-small-3 text-bold-500">'+(parseInt(variant_index) + 1)+'</td>\
+                                    <td class="font-small-3 text-bold-500">\
+                                        <p class="font-small-3 text-bold-700 mb-0">GRIND_TITLE</p>\
+                                    </td>\
+                                    <td class="font-small-3 text-bold-500">\
+                                        WEIGHT_TITLE\
+                                    </td>\
+                                    <td class="font-small-3 text-bold-500">QUANTITY</td>\
+                                    <td class="font-small-3 text-bold-500">REWARD_POINT\
+                                    </td>\
+                                    <td class="font-small-3 text-bold-500">\
+                                        CURRENCY_CODE VARIANT_PRICE\
+                                    </td>\
+                                    <td></td>\
+                                </tr>';
+                                /*
+                                \
+                                <span class="font-small-1 text-bold-500 mb-0 gray">SKU: SKU_CODE</span>\
+                                <a href="javascript:" class="edit-variants-btn" data-id="VARIANT_WEIGHT_ID" data-grind_id="VARIANT_GRIND_ID">\
+                                    <img src="SORT_ICON" width="7">\
+                                </a>\ */
+
+                            html = html.replace("SORT_ICON", '/public/assets/images/extra-icon-orange.svg');
+
+                            grind_title = grinds.filter(e => e.id == grind_id);
+                            if(grind_title !== undefined && grind_title.length > 0) {
+                                grind_title = grind_title[0].title;
+                            }
+                            weight_title = weights.filter(e => e.id == weight_id);
+                            if(weight_title !== undefined && weight_title.length > 0) {
+                                weight_title = weight_title[0].title;
+                            }
+
+                            html = html.replace("GRIND_TITLE", grind_title);
+                            // html = html.replace("SKU_CODE", '');
+                            html = html.replace("WEIGHT_TITLE", weight_title);
+
+                            html = html.replace("CURRENCY_CODE", '{{ $app_settings["currency_code"] ?? "" }}');
+                            html = html.replace("QUANTITY", addVariantData.add_variant[weight_id].quantity);
+                            html = html.replace("REWARD_POINT", addVariantData.add_variant[weight_id].reward_point);
+                            html = html.replace("VARIANT_PRICE", addVariantData.add_variant[weight_id].price);
+
+                            html = html.replace("VARIANT_WEIGHT_ID", weight_id);
+                            html = html.replace("VARIANT_GRIND_ID", grind_id);
+
+                            $("#variants-table tbody").append(html);
+                            variant_index++;
+                        });
+                    });
+                    $("#variants-table_info").html("Showing 1 to "+variant_index+" of "+variant_index+" entries");
+                }
+                $("#add-variant-form")[0].reset();
+                $("#variants-price").html('');
+                $("#variants-price").hide();
+                $("#variants-add").show();
                 $("#add-variants").modal('hide');
             }
             else {

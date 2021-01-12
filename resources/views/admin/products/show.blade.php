@@ -325,11 +325,11 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>PRODUCT TYPE</label>
-                                                <select class="ui search dropdown w-100" name="coffee_type_id" id="coffee_type_id">
+                                                <select class="ui search dropdown w-100" name="coffee_type_id[]" id="coffee_type_id" multiple>
                                                     <option value="">Select Product Type</option>
                                                     @foreach ($coffeeTypes as $type)
                                                     <option value="{{ $type->id }}"
-                                                        {{ $type->id == ($product->coffee_type_id ?? '') ? 'selected' : '' }}>
+                                                        {{ isset($product->coffee_type_id) && !empty($product->coffee_type_id) && (in_array($type->id, explode(',', $product->coffee_type_id))) ? 'selected' : '' }}>
                                                         {{ $type->title }}</option>
                                                     @endforeach
                                                 </select>
@@ -367,7 +367,7 @@
                         <div class="card-content">
                             <div>
                                 <div class="table-responsive pagenation-row">
-                                    <table class="table  table-striped table-borderless table-pagenation-section" id="variants-table">
+                                    <table class="table  table-striped table-borderless" id="variants-table">
                                         <thead>
                                             <tr>
                                                 <th>#</th>

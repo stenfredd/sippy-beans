@@ -221,6 +221,8 @@ class ProductController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->except(['image_0', 'image_1', 'image_2']);
+        $request_data['coffee_type_id'] = isset($request_data['coffee_type_id']) && !empty($request_data['coffee_type_id']) ? implode(',', $request_data['coffee_type_id']) : null;
+
         // dd($request_data);
         /* if ($request->hasFile('image_url')) {
             $image_file = $request->file('image_url');

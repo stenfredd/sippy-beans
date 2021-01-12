@@ -56,7 +56,10 @@ class ProductController extends Controller
             $products = $products->whereIn('best_for_id', explode(',', $best_for_id));
         }
         if(!empty($coffee_type_id)) {
-            $products = $products->whereIn('coffee_type_id', explode(',', $coffee_type_id));
+            // $products = $products->whereIn('coffee_type_id', explode(',', $coffee_type_id));
+            foreach($coffee_type_id as $ct_id) {
+                $products = $products->whereRaw('FIND_IN_SET(coffee_type_id) > 0', [$ct_id]);
+            }
         }
         if(!empty($type_id)) {
             $products = $products->whereIn('type_id', explode(',', $type_id));

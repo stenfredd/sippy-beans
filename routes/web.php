@@ -102,6 +102,11 @@ Route::any('stripe/callback', 'Server\StripeController@webhookCallback');
 
 
 Route::any('test-email', function() {
+
+    \OneSignal::sendNotificationToUser("test", "357FB70B-F2C9-4E98-9B89-6CB86EC79A74", null, ['order_id' => 1]);
+    die;
+
+
     $order = Order::inRandomOrder()
         ->with([
             'user', 'address', 'details',

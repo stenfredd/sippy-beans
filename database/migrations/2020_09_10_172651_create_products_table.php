@@ -33,7 +33,8 @@ class CreateProductsTable extends Migration
             $table->foreignId('brand_type_id')->nullable()->constrained('brand_types');
             $table->foreignId('characteristic_id')->nullable()->constrained('characteristics');
             $table->foreignId('best_for_id')->nullable()->constrained('best_fors');
-            $table->foreignId('coffee_type_id')->nullable()->constrained('coffee_types');
+            // $table->foreignId('coffee_type_id')->nullable()->constrained('coffee_types');
+            $table->string('coffee_type_id', 255)->nullable();
             $table->foreignId('level_id')->nullable()->constrained('levels');
             $table->foreignId('process_id')->nullable()->constrained('processes');
             $table->foreignId('seller_id')->nullable()->constrained('sellers');

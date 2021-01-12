@@ -399,7 +399,7 @@
                                                         </div>
                                                         <div class="col-2" style="width: 33%;display: inline-block;vertical-align: middle;text-align: right;">
                                                             <div class="product-price" style="font-size:18px; color:#1d1d1d;">
-                                                                {{ ($app_settings['currency_code'] ?? 'AED') .' '. number_format($item->seller_price,2) }}
+                                                                {{ ($app_settings['currency_code'] ?? 'AED') .' '. number_format($item->amount,2) }}
                                                             </div>
                                                             <div class="product-qty">Qty: {{ $item->quantity }}</div>
                                                         </div>
@@ -447,21 +447,28 @@
 
                                                                                 </td>
                                                                             </tr>
-                                                                            <tr>
+                                                                            {{-- <tr>
                                                                                 <td align="left" valign="top">Delivery
                                                                                     Fee</td>
                                                                                 <td align="right" valign="top">
                                                                                     {{ $order->delivery_fee > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->delivery_fee, 2)) : 'Free' }}
                                                                                 </td>
-                                                                            </tr>
+                                                                            </tr> --}}
                                                                             <tr>
+                                                                                <td align="left" valign="top">SIPPY COMMISSION</td>
+                                                                                <td align="right" valign="top">
+                                                                                    {{-- {{ $order->sippy_commission > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->commission_fee, 2)) : '-' }} --}}
+                                                                                    {{ ($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->sippy_commission ?? 0, 2) }}
+                                                                                </td>
+                                                                            </tr>
+                                                                            {{-- <tr>
                                                                                 <td align="left" valign="top">Discount
                                                                                 </td>
                                                                                 <td align="right" valign="top">
                                                                                     {{ $app_settings['currency_code'] ?? 'AED' }}
                                                                                     {{ number_format($order->total_discount, 2) }}
                                                                                 </td>
-                                                                            </tr>
+                                                                            </tr> --}}
                                                                         </table>
                                                                     </td>
                                                                 </tr>

@@ -397,8 +397,8 @@ class OrderController extends Controller
             ];
             Cart::whereUserId($user_id)->delete();
 
-            Mail::to($order->user->email)->queue(new CustomerNewOrder($order));
             try {
+                Mail::to($order->user->email)->queue(new CustomerNewOrder($order));
                 Mail::to(env('APP_ORDER_EMAIL', 'hello@hypeten.com'))->queue(new AppNewOrder($order));
             }
             catch(\Exception $e) {
@@ -418,6 +418,7 @@ class OrderController extends Controller
                         $commission_fee = $detail->equipment->commission_fee * $detail->quantity;
                     }
                     $detail->seller_price = $detail->subtotal - $commission_fee;
+                    $detail->commission_fee = $commission_fee;
                     $seller_details[$detail->equipment->seller->id][] = $detail;
                 }
                 if (!empty($detail->product_id)) {
@@ -428,6 +429,7 @@ class OrderController extends Controller
                         $commission_fee = $detail->product->commission_fee * $detail->quantity;
                     }
                     $detail->seller_price = $detail->subtotal - $commission_fee;
+                    $detail->commission_fee = $commission_fee;
                     $seller_details[$detail->product->seller->id][] = $detail;
                 }
             }
@@ -436,6 +438,7 @@ class OrderController extends Controller
                 foreach ($seller_details as $seller_id => $details) {
                     $seller = Seller::find($seller_id);
                     $order->seller_total = array_sum(array_column($details, "seller_price"));
+                    $order->sippy_commission = array_sum(array_column($details, "commission_fee")) ?? 0;
                     Mail::to($seller->seller_email)->queue(new MerchantNewOrder($order, $details, $seller));
                 }
             }

@@ -220,7 +220,7 @@
             "serverSide": true,
             "lengthChange": false,
             "searching": false,
-            "pageLength": 20,
+            "pageLength": 30,
             "order": [],
             "ajax": {
                 "url": "{{ url('admin/promo-offers') }}",

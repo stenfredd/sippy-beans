@@ -70,7 +70,7 @@
             "processing": true,
             "serverSide": true,
             "lengthChange": false,
-            "pageLength": 20,
+            "pageLength": 30,
             "searching": false,
             "order": [],
             "ajax": {

@@ -82,7 +82,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
         Route::match(['get', 'post'], 'match-makers', 'Admin\MatchMakerController@index');
         Route::post('match-makers/save', 'Admin\MatchMakerController@save');
-        Route::post('match-makers/delete', 'Admin\MatchMakerController@delete');
+        // Route::post('match-makers/delete', 'Admin\MatchMakerController@delete');
 
         Route::match(['get', 'post'], 'delivery-areas', 'Admin\PageController@deliveryAreas');
         Route::post('delivery-areas/update-sort-orders', 'Admin\PageController@updateAreasSortOrders');

@@ -74,7 +74,10 @@ class CategoryController extends Controller
         $products = Product::whereCategoryId($id)->count();
         $is_equipment = 0;
         if ($products == 0) {
-            $products = Equipment::whereCategoryId($category->id)->count();
+            $products = Equipment::whereCategoryId($id)->count();
+            if($products > 0) {
+                
+            }
             $is_equipment = 1;
         }
         view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Category' : 'Add New Category'));

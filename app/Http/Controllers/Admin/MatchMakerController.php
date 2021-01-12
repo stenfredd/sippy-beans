@@ -18,6 +18,19 @@ class MatchMakerController extends Controller
     public function save(Request $request)
     {
         $validation = [
+            'match_maker' => 'required'
+        ];
+        $this->validate($request, $validation);
+
+        $match_makers = $request->match_maker;
+        foreach($match_makers as $match_maker) {
+            MatchMakers::where("id", $match_maker['id'])->update($match_maker);
+        }
+
+        session()->flash('success', 'Match makers details updated successfully.');
+        return redirect(url('admin/match-makers'));
+
+        /*$validation = [
             'question' => 'required',
             'type' => 'required',
             'min_select' => 'required|min:0|max:20|numeric',
@@ -36,7 +49,7 @@ class MatchMakerController extends Controller
             $msg = isset($request_data['match_maker_id']) && !empty($request_data['match_maker_id']) ? 'updated' : 'created';
             $response = ['status' => true, 'message' => 'MatchMakers ' . $msg . ' successfully.'];
         }
-        return response()->json($response);
+        return response()->json($response);*/
     }
     public function delete(Request $request)
     {

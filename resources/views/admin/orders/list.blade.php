@@ -12,7 +12,7 @@
                         </h4>
                         <div id="ecommerce-searchbar">
                             <div class="row mt-1 justify-content-between align-items-top">
-                                <div class="col-lg-9 col-md-8">
+                                <div class="col-lg-7 col-md-6">
 
                                     <fieldset class="form-group position-relative has-icon-right mb-1 mr-0">
                                         <input type="text" class="form-control form-control-lg" id="search_order"
@@ -23,11 +23,13 @@
                                     </fieldset>
 
                                 </div>
-                                <div class="col-lg-3 col-md-4">
+                                <div class="col-lg-5 col-md-6">
                                     <div class="d-flex justify-content-between align-items-top w-100">
                                         <button type="button"
                                             class="btn btn-orange mr-1 mb-1 waves-effect waves-light px-5 btn-lg"
                                             id="search_btn">SEARCH</button>
+                                        <a href="javascript:" class="btn btn-outline-orange mb-1 waves-effect waves-light px-5 btn-lg"
+                                                data-toggle="modal" data-target="#export-modal">EXPORT</a>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +82,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -103,7 +106,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -126,7 +130,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -149,7 +154,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -172,7 +178,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -195,7 +202,8 @@
                                                     <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                     <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                    <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                    {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                    <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                     <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                     <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                 </tr>
@@ -214,6 +222,44 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade text-left" id="export-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EXPORT ORDERS</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>STATUS</label>
+                    <select id="export_status" name="export_status" class="form-control">
+                        <option value="">All</option>
+                        <option value="0">New</option>
+                        <option value="1">In Progress</option>
+                        <option value="2">Shipped</option>
+                        <option value="3">Completed</option>
+                        <option value="4">Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>START DATE</label>
+                    <input name="export_start_date" id="export_start_date" type="date" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>END DATE</label>
+                    <input name="export_end_date" id="export_end_date" type="date" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="exportBtn" class="btn btn-primary font-weight-bold btn-lg w-30">EXPORT</button>
+            </div>>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -235,6 +281,14 @@
                 completedOrdersTable.ajax.reload();
                 cancelledOrdersTable.ajax.reload();
                 allOrdersTable.ajax.reload();
+            });
+
+            $("#exportBtn").click(function() {
+                let status = $("#export_status").val();
+                let start_date = $("#export_start_date").val();
+                let end_date = $("#export_end_date").val();
+                $("#export-modal").modal('hide');
+                window.location.href = BASE_URL + 'orders/export?status='+status+'&start_date='+start_date+'&end_date='+end_date;
             });
         });
         let newOrdersTable = $('#tblNewOrders').DataTable({
@@ -278,7 +332,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -333,7 +387,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -388,7 +442,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -443,7 +497,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -498,7 +552,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -552,7 +606,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {

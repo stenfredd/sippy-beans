@@ -47,13 +47,22 @@
                             <div>
                                 <p class="mb-75"><strong>USER INFORMATION </strong></p>
                             </div>
-                            <p><strong>STATUS:
-                                    @if ($user->status == 1)
+                            <p>
+                                <strong>STATUS:
+                                    {{-- @if ($user->status == 1)
                                     <span class="success">ACTIVE</span>
                                     @else
                                     <span class="danger">INACTIVE</span>
-                                    @endif
-                                </strong></p>
+                                    @endif --}}
+                                </strong>
+                                <select class="form-control-sm" id="user_status" onchange="saveUser('status')">
+                                    <option value="1" {{ ($user->status == 1 ? 'selected' : '') }}>Active</option>
+                                    <option value="2" {{ ($user->status == 2 ? 'selected' : '') }}>Inactive</option>
+                                </select>
+                                <button class="btn btn-warning btn-sm p-1" title="Edit User" data-toggle="modal" data-target="#edit-user">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                            </p>
                         </div>
                         <div class="card-content">
                             <div class="card-body">
@@ -156,9 +165,11 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center border-bottom pb-1">
                             <div>
-                                <p class="mb-75"><strong>ADDRESSES </strong></p>
+                                <p><strong>ADDRESSES</strong></p>
                             </div>
+                            <button class="btn btn-warning btn-sm" onclick="showAddressModal()" id="addAddressBtn">Add New</button>
                         </div>
+
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="row">
@@ -170,7 +181,14 @@
                                                     alt="avtar img holder" height="45" width="45">
                                             </div>
                                             <div class="user-page-info">
-                                                <p class="mb-0 font-small-4"><strong>{{ $address->title }}</strong></p>
+                                                <p class="mb-0 font-small-4">
+                                                    <strong>
+                                                        {{ $address->title }}
+                                                        <span class="text-right pull-right text-warning" onclick="showAddressModal({{ $address->id }})">
+                                                            <i class="fa fa-edit"></i>
+                                                        </span>
+                                                    </strong>
+                                                </p>
                                                 <span class="mb-0 font-small-3">
                                                     {{ $address->address_line_1 . ',' ?? '' }}
                                                     {{ $address->address_line_2 . ',' ?? '' }}
@@ -321,7 +339,7 @@
                                             <p class="font-small-3 font-bold-500 mb-0">
                                                 {{ 'Last Updated: ' . (!empty($last_user_reward) ? $last_user_reward->created_at->timezone($app_settings['timezone'])->format("F d, Y g:iA") : '-') }}</p>
                                             <p class="font-small-3 font-bold-500 mb-0">
-                                                Updated Via: {{ !empty($last_user_reward->order_id) ? 'Mobile App - Order' : 'Admin' }}
+                                                Updated Via: {{ !empty($last_user_reward->user_id) ? 'Mobile App - Order' : 'Admin' }}
                                             </p>
                                         </div>
                                     </div>
@@ -345,7 +363,7 @@
                                 </h4>
                                 <div id="ecommerce-searchbar">
                                     <div class="row mt-1 justify-content-between align-items-top">
-                                        <div class="col-lg-8 col-md-7">
+                                        <div class="col-lg-7 col-md-7">
 
                                             <fieldset class="form-group position-relative has-icon-right mb-1 mr-0">
                                                 <input type="text" class="form-control form-control-lg" id="search_order"
@@ -356,10 +374,12 @@
                                             </fieldset>
 
                                         </div>
-                                        <div class="col-lg-4 col-md-5">
+                                        <div class="col-lg-5 col-md-5">
                                             <div class="d-flex justify-content-between align-items-top w-100">
                                                 <button type="button"
                                                     class="btn btn-orange mr-1 mb-1 waves-effect waves-light px-5 btn-lg" id="search_btn">SEARCH</button>
+                                                <a href="javascript:" class="btn btn-outline-orange mr-1 mb-1 waves-effect waves-light px-5 btn-lg"
+                                                    id="exportBtn">EXPORT</a>
                                             </div>
                                         </div>
                                     </div>
@@ -412,7 +432,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -435,7 +456,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -458,7 +480,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -481,7 +504,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -504,7 +528,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -527,7 +552,8 @@
                                                         <th class="w-13 font-small-3 text-bold-700">STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">TOTAL</th>
                                                         <th class="w-12 font-small-3 text-bold-700">PAYMENT</th>
-                                                        <th class="w-12 font-small-3 text-bold-700">POINTS</th>
+                                                        {{-- <th class="w-12 font-small-3 text-bold-700">POINTS</th> --}}
+                                                        <th class="w-12 font-small-3 text-bold-700">PAYMENT<br>STATUS</th>
                                                         <th class="w-12 font-small-3 text-bold-700">ORDERED AT</th>
                                                         <th class="w-5 font-small-3 text-bold-700 no_sorting_asc"></th>
                                                     </tr>
@@ -544,6 +570,105 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="edit-user" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EDIT USER DETAILS</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="javascript:" name="editUserForm"
+                id="editUserForm" method="post" onsubmit="return false;">
+                @csrf
+                {{-- <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}" /> --}}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>FULL NAME</label>
+                        <input name="full_name" id="full_name" class="form-control" value="{{ $user->name }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>EMAIL</label>
+                        <input name="email" id="email" class="form-control" value="{{ $user->email }}" />
+                    </div>
+                    <div class="form-group">
+                        <label>PUSH TOKEN</label>
+                        <input name="device_token" id="device_token" class="form-control" value="{{ $user->device_token }}" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="saveUser()" class="btn btn-primary font-weight-bold btn-lg w-30">SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="add-edit-address" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">USER ADDRESS DETAILS</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="javascript:" name="editAddressForm" id="editAddressForm" method="post" onsubmit="return false;">
+                @csrf
+                {{-- <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}" /> --}}
+                <input type="hidden" name="address_id" id="address_id" value="" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>COUNTRY</label>
+                                {{-- <input name="country_id" id="country_id" class="form-control" value="" /> --}}
+                                <select name="country_id" id="country_id" class="form-control" required>
+                                    <option value="">Select Country</option>
+                                    @foreach ($countries as $country)
+                                        <option value="{{ $country->id }}">{{ $country->country_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>CITY</label>
+                                {{-- <input name="city_id" id="city_id" class="form-control" value="" /> --}}
+                                <select name="city_id" id="city_id" class="form-control"required>
+                                    <option value="">Select City</option>
+                                    @foreach ($countries as $country)
+                                        @foreach ($country->cities as $city)
+                                            <option class="country-{{ $country->id }}" value="{{ $city->id }}">{{ $city->name }}</option>
+                                        @endforeach
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>TITLE</label>
+                        <input name="title" id="address_title" class="form-control" value="" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>ADDRESS LINE 1</label>
+                        <input name="address_line_1" id="address_line_1" class="form-control" value="" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>ADDRESS LINE 2</label>
+                        <input name="address_line_2" id="address_line_2" class="form-control" value="" required/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="saveAddress()"
+                        class="btn btn-primary font-weight-bold btn-lg w-30">SAVE</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -568,6 +693,16 @@
                 completedOrdersTable.ajax.reload();
                 cancelledOrdersTable.ajax.reload();
                 allOrdersTable.ajax.reload();
+            });
+            $("#country_id").change(function() {
+                $("#city_id").val('');
+                $("#city_id").find("option").hide();
+                $("#city_id").find("option:first").show();
+                $("#city_id").find("option.country-" + $(this).val()).show();
+            });
+
+            $("#exportBtn").click(function() {
+                location.href = BASE_URL + 'orders/export?user_id={{ $user->id }}';
             });
         });
         let newOrdersTable = $('#tblNewOrders').DataTable({
@@ -611,7 +746,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -666,7 +801,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -721,7 +856,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -776,7 +911,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -831,7 +966,7 @@
 					"class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
                 {
@@ -885,7 +1020,7 @@
                     "class": "font-small-3 text-bold-500",
                 },
                 {
-                    "data": "reward_points",
+                    "data": "payment_status_text",
 					"class": "font-small-3 text-bold-500",
                 },
 
@@ -926,6 +1061,94 @@
                 },
                 error: function(error) {}
             });
+        }
+
+        function saveUser(type) {
+            let formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('user_id', '{{ $user->id }}');
+            if(type !== null && type == 'status') {
+                formData.append('status', $("#user_status").val());
+            }
+            else {
+                formData.append('name', $("#full_name").val());
+                formData.append('email', $("#email").val());
+                formData.append('device_token', $("#device_token").val());
+            }
+
+            $.ajax({
+                url: "{{ url('admin/users/update') }}",
+                type: "post",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status === true) {
+                        toastr.success(response.message, 'Success', toastrOptions);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                    else {
+                        toastr.error(response.message, 'Error', toastrOptions);
+                    }
+                },
+                error: function(error) {}
+            });
+        }
+
+        function saveAddress() {
+            let formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('user_id', '{{ $user->id }}');
+            formData.append('address_id', $("#address_id").val());
+            formData.append('country_id', $("#country_id").val());
+            formData.append('city_id', $("#city_id").val());
+            formData.append('title', $("#address_title").val());
+            formData.append('address_line_1', $("#address_line_1").val());
+            formData.append('address_line_2', $("#address_line_2").val());
+
+            $.ajax({
+                url: "{{ url('admin/users/addresses/save') }}",
+                type: "post",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status === true) {
+                        toastr.success(response.message, 'Success', toastrOptions);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                    else {
+                        toastr.error(response.message, 'Error', toastrOptions);
+                    }
+                },
+                error: function(error) {}
+            });
+        }
+
+        function showAddressModal(id) {
+            $("#address_id").val('');
+            let addresses = JSON.parse('@json($user->addresses)');
+            let curAddress;
+            $("#editAddressForm")[0].reset();
+            if(id !== undefined && id !== null && id.toString().length > 0) {
+                $("#address_id").val(id);
+                curAddress = addresses.filter(x => parseInt(x.id) === parseInt(id))[0];
+                $("#country_id").val(curAddress.country_id);
+
+                $("#city_id").find("option").hide();
+                $("#city_id").find("option:first").show();
+                $("#city_id").find("option.country-" + curAddress.country_id).show();
+
+                $("#city_id").val(curAddress.city_id);
+                $("#address_title").val(curAddress.title);
+                $("#address_line_1").val(curAddress.address_line_2);
+                $("#address_line_2").val(curAddress.address_line_1);
+            }
+            $("#add-edit-address").modal("show");
         }
 </script>
 @endsection

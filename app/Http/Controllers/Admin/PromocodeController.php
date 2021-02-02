@@ -21,7 +21,7 @@ class PromocodeController extends Controller
                     $promocodes = $promocodes->where('start_date', '<=', date("Y-m-d H:i:s"))->where('end_date', '>=', date("Y-m-d H:i:s"));
                 }
                 if ($request->promo_type == 2) {
-                    $promocodes = $promocodes->where('start_date', '>=', date("Y-m-d H:i:s"));
+                    $promocodes = $promocodes->where('start_date', '>=', date("Y-m-d H:i:s"))->where('end_date', '>=', date("Y-m-d H:i:s"));
                 }
                 if ($request->promo_type == 3) {
                     $promocodes = $promocodes->where('end_date', '<=', date("Y-m-d H:i:s"));
@@ -36,6 +36,7 @@ class PromocodeController extends Controller
                 });
             }
             $promocodes = $promocodes->get();
+            // dd($promocodes->toSql(), $promocodes->getBindings());
             return DataTables::of($promocodes)
                 ->addIndexColumn()
                 ->editColumn('promocode_type', function ($promocode) {
@@ -84,7 +85,7 @@ class PromocodeController extends Controller
         }
 
         $active_promocodes = Promocode::select('*')->orderBy('id', 'desc')->where('start_date', '<=', date("Y-m-d H:i:s"))->where('end_date', '>=', date("Y-m-d H:i:s"))->count();
-        $upcoming_promocodes = Promocode::select('*')->orderBy('id', 'desc')->where('start_date', '>=', date("Y-m-d H:i:s"))->count();
+        $upcoming_promocodes = Promocode::select('*')->orderBy('id', 'desc')->where('start_date', '>=', date("Y-m-d H:i:s"))->where('end_date', '>=', date("Y-m-d H:i:s"))->count();
 
         view()->share('page_title', 'Promo/Offers');
         return view('admin.promo-offers.list', compact('active_promocodes', 'upcoming_promocodes'));

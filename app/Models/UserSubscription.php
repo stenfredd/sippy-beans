@@ -18,4 +18,9 @@ class UserSubscription extends Model
         'cancelled_at',
         'status',
     ];
+
+    public function lastSubscription()
+    {
+        return $this->hasOne(UserSubscription::class, 'user_id', 'user_id')->orderBy('id', 'desc');
+    }
 }

@@ -270,6 +270,8 @@
                                                 </th>
                                                 <th scope="col" class="font-weight-bold font-small-3 border-top-0">Qty
                                                 </th>
+                                                <th scope="col" class="font-weight-bold font-small-3 border-top-0">Cancel Qty
+                                                </th>
                                                 <th scope="col" class="font-weight-bold font-small-3 border-top-0">
                                                     AMOUNT</th>
                                                 <th scope="col" class="font-weight-bold font-small-3 border-top-0">
@@ -280,11 +282,11 @@
                                             @foreach ($order->details as $k => $item)
                                             <tr>
                                                 <td>
-                                                    @if ($item->is_cancelled != 1)
+                                                    @if ($item->is_cancelled != 1 || $item->quantity > $item->cancel_quantity)
                                                     <fieldset>
                                                         <div class="vs-checkbox-con vs-checkbox-primary">
                                                             <input type="checkbox" value="{{ $item->id }}"
-                                                                class="item_select">
+                                                                class="item_select"/>
                                                             <span class="vs-checkbox vs-checkbox-sm">
                                                                 <span class="vs-checkbox--check">
                                                                     <i class="vs-icon feather icon-check"></i>
@@ -324,10 +326,13 @@
                                                     {{ $app_settings['currency_code'] .' '. number_format($item->amount,2) }}
                                                 </td>
                                                 <td class="font-weight-bold font-small-3">{{ $item->quantity }}</td>
+                                                <td class="font-weight-bold font-small-3">{{ $item->cancel_quantity ?? 0 }}</td>
                                                 <td class="font-weight-bold font-small-3">
                                                     {{ $app_settings['currency_code'].' '. number_format($item->subtotal,2) }}
                                                 </td>
-                                                <td class="font-weight-bold font-small-3">
+                                                <td class="font-weight-bold font-small-3"
+                                                    data-cancel_qty='{{ $item->cancel_quantity ?? 0 }}'
+                                                    data-qty='{{ $item->quantity ?? 0 }}'>
                                                     {{ $item->is_cancelled == 1 ? 'YES' : 'NO' }}
                                                 </td>
                                             </tr>
@@ -689,7 +694,7 @@
                                     <tr class="Subtotal border-top">
                                         <td class="font-small-3">Subtotal</td>
                                         <td class="font-small-3 text-right">{{ $app_settings['currency_code'] }}
-                                            {{ number_format($order->subtotal, 2) ?? 0 }}</td>
+                                            {{ number_format($order->subtotal - $order->total_discount, 2) ?? 0 }}</td>
                                         <td class="w-5"></td>
                                     </tr>
                                     <tr class="Subtotal">
@@ -701,7 +706,8 @@
                                     <tr class="Subtotal border-top">
                                         <td class="font-small-3">Total</td>
                                         <td class="font-small-3 text-right">{{ $app_settings['currency_code'] }}
-                                            {{ number_format($order->total_amount, 2) ?? 0 }}</td>
+                                            {{ number_format($order->total_amount - $order->total_discount, 2) ?? 0 }}
+                                        </td>
                                         <td></td>
                                     </tr>
                                     <tr>
@@ -993,39 +999,38 @@
         </div>
     </div>
 </div>
-<!--End Add New Service modal-->
-<!--Add Add New Transcation-->
-{{-- <div class="modal fade text-left" id="special-instructions" tabindex="-1">
+
+<div class="modal fade text-left" id="cancel-item-modal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Special Instructions</h4>
+                <h4 class="modal-title">Please enter quantity details</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="#">
-                <div class="modal-body">
-                    <label>Input special instructions here.</label>
-                    <div class="form-group">
-                        <input type="text" placeholder="Input special instructions here." class="form-control">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary font-weight-bold btn-lg w-30" data-dismiss="modal">SAVE
-                        & APPLY</button>
-                </div>
+            <form onsubmit="return false;">
+            <div class="modal-body">
+                <div id="cancel-products"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary font-weight-bold btn-lg w-30"
+                    onclick="cancelItem()">Confirm</button>
+            </div>
             </form>
         </div>
     </div>
-</div> --}}
-<!--End Add New Service modal-->
+</div>
 @endsection
 
 
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function() {
+        if($(".item_select:visible").length === 0) {
+            $("#all_select").parents('fieldset').hide();
+            $("#item_cancelltion").parent().hide();
+        }
         $("#all_select").change(function() {
             $(".item_select").prop('checked', this.checked);
         });
@@ -1152,15 +1157,43 @@
                 toastr.error("Please select atleast 1 item to cancel.", 'Warning', toastrOptions);
                 return false;
             }
+            if($("#cancel-item-modal:visible").length == 0) {
+                $("#cancel-products").html('');
+                $.each($(".item_select:checked"), function(index, item) {
+                    let proId = $(item).val();
+                    let proName = $(item).parents('tr').find("td:nth-child(3)").text();
+                    let cancelQty = $(item).parents('tr').find("td:last-child").data('cancel_qty');
+                    let maxQty = $(item).parents('tr').find("td:last-child").data('qty');
+                    $("#cancel-products").append("<div class='form-group'>\
+                        <label>"+proName+"</label>\
+                        <input name='quantities[]' class='form-control' id='pro-qty-"+proId+"' value='"+cancelQty+"' min='1' max='"+maxQty+"'/>\
+                    </div>");
+                });
+                $("#cancel-item-modal").modal('show');
+                return false;
+            }
+            let $return = true;
+            $(".item_select:checked").each(function(index, item){
+                if(parseInt($("#pro-qty-" + $(item).val()).val()) <= 0 || parseInt($("#pro-qty-" + $(item).val()).val()) > parseInt($("#pro-qty-" + $(item).val()).attr("max"))) {
+                    $return = false;
+                }
+            });
+            if(!$return) {
+                toastr.error("Please enter valid quantity", "Warning", toastrOptions);
+                return false;
+            }
             let ids = [];
+            let quantities = [];
             $(".item_select:checked").each(function(){
                 ids.push($(this).val());
+                quantities.push($("#pro-qty-" + $(this).val()).val());
             });
 
             let formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('order_id', '{{ $order->id }}');
             formData.append('detail_ids', ids);
+            formData.append('quantities', quantities);
 
             $.ajax({
                 url: "{{ url('admin/orders/cancel-items') }}",

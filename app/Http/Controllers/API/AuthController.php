@@ -114,6 +114,11 @@ class AuthController extends Controller
             }
         }
 
+        $block_user = User::whereEmail($request->email)->where('status', '!=', 1)->first();
+        if (!empty($block_user) && isset($block_user->id)) {
+            return response()->json(['status' => false, 'message' => 'You account has been inactive, Please contact administator to active.']);
+        }
+
         $user_data = $request->except('profile_image');
         if (empty($exist_email)) {
             $validation = [
@@ -189,6 +194,11 @@ class AuthController extends Controller
         $exist_email = User::whereEmail($request->email)->where('social_login', '>', 0)->first();
         if (!empty($exist_email) && isset($exist_email->id)) {
             return response()->json(['status' => false, 'message' => 'You signup using ' . ($exist_email->social_login == 1 ? 'apple' : 'google') . ' account. Please use ' . ($exist_email->social_login == 1 ? 'apple' : 'google') . ' account to login.']);
+        }
+
+        $block_user = User::whereEmail($request->email)->where('status', '!=', 1)->first();
+        if (!empty($block_user) && isset($block_user->id)) {
+            return response()->json(['status' => false, 'message' => 'You account has been inactive, Please contact administator to active.']);
         }
 
         $credentials = request(['email', 'password']);

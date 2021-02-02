@@ -23,6 +23,7 @@ class CreateOrderDetailsTable extends Migration
             $table->foreignId('grind_id')->nullable()->constrained('grinds');
             $table->foreignId('equipment_id')->nullable()->constrained('equipments');
             $table->integer('quantity')->default(0)->unsigned()->nullable();
+            $table->integer('cancel_quantity')->default(0)->unsigned()->nullable();
             $table->double('amount', 10, 2)->default(0)->nullable();
             $table->double('subtotal', 10, 2)->default(0)->nullable();
             $table->tinyInteger('is_cancelled')->default(0)->nullable()->comment("0=No, 1=Yes");

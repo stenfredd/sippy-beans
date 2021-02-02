@@ -7,6 +7,7 @@ use App\Models\Favourite;
 use App\Models\Product;
 use App\Models\Variant;
 use App\Models\Grind;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -89,7 +90,8 @@ class ProductController extends Controller
             // $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get() ?? [];
             if(!empty($product->variants)) {
                 foreach($product->variants as $variant) {
-                    $variant->available_quantity = $variant->quantity ?? 0;
+                    // $variant->available_quantity = $variant->available_quantity ?? ($variant->quantity ?? 0);
+                    $variant->available_quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->sum('quantity'));
                     $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
                 }
             }

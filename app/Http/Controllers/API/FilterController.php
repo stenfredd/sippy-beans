@@ -19,16 +19,16 @@ class FilterController extends Controller
     public function get()
     {
         $prices = Price::selectRaw('id, title, min_price, max_price')->whereStatus(1)->orderBy('id', 'asc')->get();
-        $origins = Origin::selectRaw('id, origin_name as title')->whereStatus(1)->orderBy('id', 'asc')->get();
+        $origins = Origin::selectRaw('id, origin_name as title')->whereStatus(1)->orderBy('display_order')->get();
         $brands = Brand::selectRaw('id, name as title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
-        $characteristic = Characteristic::select('id', 'title')->whereStatus(1)->orderBy('id', 'asc')->get();
+        $characteristic = Characteristic::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $best_fors = BestFor::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         // $types = Type::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $types = Type::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $coffeeTypes = CoffeeType::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $levels = Level::selectRaw('id, level_title as title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
         $processes = Process::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
-        $weights = Weight::select('id', 'title')->whereStatus(1)->orderBy('id', 'asc')->get();
+        $weights = Weight::select('id', 'title')->whereStatus(1)->orderBy('display_order', 'asc')->get();
 
         $filters = [
             [

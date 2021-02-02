@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::match(['get', 'post'], 'users', 'Admin\UserController@index');
         Route::post('users/update', 'Admin\UserController@update');
         Route::get('users/export', 'Admin\UserController@export');
+        Route::post('users/addresses/save', 'Admin\UserController@saveAddress');
         Route::get("users/{id}", "Admin\UserController@show");
 
         Route::match(['get', 'post'], 'orders', 'Admin\OrderController@index');
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::post('orders/cancel-items', 'Admin\OrderController@cancelItems');
         Route::post('orders/add-transaction', 'Admin\OrderController@addTransaction');
         Route::post('orders/delete-transaction', 'Admin\OrderController@deleteTransaction');
+        Route::get('orders/export', 'Admin\OrderController@export');
         Route::get("orders/{id}", "Admin\OrderController@show");
 
         Route::match(['get', 'post'], 'products', 'Admin\ProductController@index');
@@ -50,6 +52,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
         Route::match(['get', 'post'], 'subscription', 'Admin\SubscriptionController@index');
         Route::post('subscription/save', 'Admin\SubscriptionController@save');
+        Route::post('subscription/subscribers', 'Admin\SubscriptionController@subscribedCustomers');
+        Route::get('subscription/export', 'Admin\SubscriptionController@export');
+        Route::post('subscription/pause', 'Admin\SubscriptionController@pauseSubscription');
         Route::get("subscription/{id}", "Admin\SubscriptionController@show");
 
         Route::match(['get', 'post'], 'categories', 'Admin\CategoryController@index');

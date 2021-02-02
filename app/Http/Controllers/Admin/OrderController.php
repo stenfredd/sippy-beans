@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\OrderExport;
 use App\Http\Controllers\Controller;
 use App\Mail\CustomerOrderCancelled;
 use App\Models\Order;
@@ -93,6 +94,19 @@ class OrderController extends Controller
                     $action .= "</div>";
                     return $action;
                 })
+                ->addColumn('payment_status_text', function ($order) {
+                    $payment_status = 'Payment Pending';
+                    if($order->payment_status == 2) {
+                        $payment_status = 'Payment Received';
+                    }
+                    if($order->payment_status == 3) {
+                        $payment_status = 'Partial Refund';
+                    }
+                    if($order->payment_status == 4) {
+                        $payment_status = 'Refunded';
+                    }
+                    return $payment_status;
+                })
                 ->editColumn('payment_type', function ($order) {
                     if (strtolower($order->payment_type) == 'card')
                 $payment_type = '<img src="' . asset('assets/images/' . $order->card_type . '.png') . '" height="8px"> <span>****' . ucfirst($order->card_number) . '</span>';
@@ -132,7 +146,14 @@ class OrderController extends Controller
 
             $order->total_refund = 0;
             $order->pending_refund = 0;
-            $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
+            // $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
+            $cancelled_items_amount = 0;
+            $cancelled_items = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->get();
+            if(!empty($cancelled_items) && count($cancelled_items) > 0) {
+                foreach($cancelled_items as $cancelItem) {
+                    $cancelled_items_amount = $cancelled_items_amount + ($cancelItem->cancel_quantity * $cancelItem->amount);
+                }
+            }
             $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
             if ($cancelled_items_amount > 0) {
                 if (OrderDetail::whereOrderId($order->id)->count() == OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->count()) {
@@ -145,8 +166,11 @@ class OrderController extends Controller
                 }
                 $order->pending_refund = $cancelled_items_amount - $order->total_refund;
             }
-            $order->balance_amount = $order->total_amount - $order->payment_received - $order->total_discount - $cancelled_items_amount;
-            $order->balance_amount = $order->balance_amount - (($order->balance_amount < 0 ? '-' : '') . $order->total_refund);
+            $order->balance_amount = 0;
+            if($order->status != 4) {
+                $order->balance_amount = $order->total_amount - $order->payment_received - $order->total_discount - $cancelled_items_amount;
+                $order->balance_amount = $order->balance_amount - (($order->balance_amount < 0 ? '-' : '') . $order->total_refund);
+            }
         }
 
         $users = User::whereStatus(1)->where('user_type', '!=', 'admin')->get();
@@ -309,15 +333,20 @@ class OrderController extends Controller
     {
         $request->validate([
             'order_id' => 'required',
-            'detail_ids' => 'required'
+            'detail_ids' => 'required',
+            'quantities' => 'required'
         ]);
 
         $order_id = $request->order_id;
         $detail_ids = explode(',', $request->detail_ids);
+        $quantities = array_filter(explode(',', $request->quantities));
+        if(empty($quantities) || count($quantities) !== count($detail_ids)) {
+            return response()->json(['status' => false, 'message' => 'Please enter quantity to cancel.']);
+        }
 
         $status = false;
-        foreach ($detail_ids as $detail_id) {
-            $status = OrderDetail::find($detail_id)->update(['is_cancelled' => 1]);
+        foreach ($detail_ids as $k => $detail_id) {
+            $status = OrderDetail::find($detail_id)->update(['is_cancelled' => 1, 'cancel_quantity' => $quantities[$k]]);
         }
 
         $order_data = Order::find($order_id);
@@ -368,7 +397,12 @@ class OrderController extends Controller
             $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
         }
         $order->delivery_time = $order->address->city()->first()->delivery_time ?? '1-3 Business days';
-        Mail::to($order->user->email)->queue(new CustomerOrderCancelled($order, $detail_ids));
+        try {
+            Mail::to($order->user->email)->queue(new CustomerOrderCancelled($order, $detail_ids));
+        }
+        catch(\Exception $e) {
+            info("Code: " . $e->getCode() . ", Line: " . $e->getLine() . ", Message: " . $e->getMessage());
+        }
 
         $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
         if ($status) {
@@ -408,5 +442,10 @@ class OrderController extends Controller
             return response()->json(['status' => true, 'message' => 'Transaction details deleted successfully.']);
         }
         return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
+    }
+
+    public function export(Request $request)
+    {
+        return \Excel::download(new OrderExport, 'ordersData.xlsx');
     }
 }

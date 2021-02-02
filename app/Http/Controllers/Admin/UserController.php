@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use App\Exports\UserExport;
+use App\Models\Country;
+use App\Models\UserAddress;
 use App\Models\UserMatchMaker;
 use App\UserReward;
 
@@ -162,8 +164,10 @@ class UserController extends Controller
         $cancelled_orders = Order::whereStatus(4)->whereUserId($user->id)->count();
         $all_orders = Order::whereUserId($user->id)->count();
 
+        $countries = Country::whereStatus(1)->with('cities')->get();
+
         view()->share('page_title', 'User Profile');
-        return view('admin.users.show', compact("user", 'match_makers', 'last_update_match', 'new_orders', 'inprogress_orders', 'shipped_orders', 'completed_orders', 'cancelled_orders', 'all_orders', 'last_user_reward'));
+        return view('admin.users.show', compact("user", 'match_makers', 'last_update_match', 'new_orders', 'inprogress_orders', 'shipped_orders', 'completed_orders', 'cancelled_orders', 'all_orders', 'last_user_reward', 'countries'));
     }
 
     public function export(Request $request)
@@ -175,38 +179,75 @@ class UserController extends Controller
     {
         $request->validate([
             'user_id' => 'required',
-            'reward_points' => 'required'
+            'reward_points' => 'required_if:name,null',
+            'name' => 'required_if:reward_points,null',
+            'email' => 'required_if:reward_points,null',
+            'device_token' => 'required_if:reward_points,null',
         ]);
 
         $user = User::find($request->user_id);
 
-        $total_credit_reward = UserReward::whereRewardType('credit')->whereUserId($user->id)->sum('reward_points');
-        $total_withdraw_reward = UserReward::whereRewardType('withdraw')->whereUserId($user->id)->sum('reward_points');
-        $user_reward_points = $total_credit_reward - $total_withdraw_reward;
+        if(!empty($user->reward_points)) {
+            $total_credit_reward = UserReward::whereRewardType('credit')->whereUserId($user->id)->sum('reward_points');
+            $total_withdraw_reward = UserReward::whereRewardType('withdraw')->whereUserId($user->id)->sum('reward_points');
+            $user_reward_points = $total_credit_reward - $total_withdraw_reward;
 
-        $type = null;
-        $reward_points = null;
+            $type = null;
+            $reward_points = null;
 
-        if ($user_reward_points < $request->reward_points) {
-            $type = 'credit';
-            $reward_points = $request->reward_points - $user_reward_points;
+            if ($user_reward_points < $request->reward_points) {
+                $type = 'credit';
+                $reward_points = $request->reward_points - $user_reward_points;
+            }
+            if ($user_reward_points > $request->reward_points) {
+                $type = 'withdraw';
+                $reward_points = $user_reward_points - $request->reward_points;
+            }
+            $create = false;
+            if (!empty($type) && !empty($reward_points)) {
+                $create = UserReward::create([
+                    'user_id' => $request->user_id,
+                    'reward_type' => $type,
+                    'reward_points' => $reward_points
+                ]);
+            }
         }
-        if ($user_reward_points > $request->reward_points) {
-            $type = 'withdraw';
-            $reward_points = $user_reward_points - $request->reward_points;
-        }
-        $create = false;
-        if (!empty($type) && !empty($reward_points)) {
-            $create = UserReward::create([
-                'user_id' => $request->user_id,
-                'reward_type' => $type,
-                'reward_points' => $reward_points
-            ]);
+        else {
+            $user->fill($request->all());
+            if(!empty($request->input('name'))) {
+                $user->first_name = explode(' ', $user->name)[0] ?? '';
+                $user->last_name = explode(' ', $user->name)[1] ?? '';
+            }
+            $create = $user->save();
         }
 
         $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
         if ($create) {
             $response = ['status' => true, 'message' => 'User details updated successfully.'];
+        }
+        return response()->json($response);
+    }
+
+    public function saveAddress(Request $request)
+    {
+        $validation = [
+            'country_id' => 'required',
+            'city_id' => 'required',
+            'title' => 'required',
+            'address_line_1' => 'required',
+            'address_line_2' => 'required'
+        ];
+        $this->validate($request, $validation);
+        $request_data = $request->all();
+        if (isset($request_data['address_id']) && !empty($request_data['address_id'])) {
+            $save = UserAddress::find($request_data['address_id'])->update($request_data);
+        } else {
+            $save = UserAddress::create($request_data);
+        }
+        $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
+        if ($save) {
+            $msg = isset($request_data['address_id']) && !empty($request_data['address_id']) ? 'updated' : 'added';
+            $response = ['status' => true, 'message' => 'User address ' . $msg . ' successfully.'];
         }
         return response()->json($response);
     }

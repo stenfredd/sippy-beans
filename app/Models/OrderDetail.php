@@ -15,6 +15,7 @@ class OrderDetail extends Model
         'grind_id',
         'equipment_id',
         'quantity',
+        'cancel_quantity',
         'amount',
         'subtotal',
         'is_cancelled'

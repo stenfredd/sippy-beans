@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Order;
 use App\UserReward;
 use App\Models\UserAddress;
+use App\Models\UserSubscription;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -56,7 +57,7 @@ class User extends Authenticatable
 
     public function getRewardPointsAttribute()
     {
-        $user_id = auth('api')->user()->id ?? 0;
+        $user_id = auth('api')->user()->id ?? ($this->id ?? 0);
         $total_credit_reward = UserReward::whereRewardType('credit')->whereUserId($user_id)->sum('reward_points');
         $total_withdraw_reward = UserReward::whereRewardType('withdraw')->whereUserId($user_id)->sum('reward_points');
         $reward_points = $total_credit_reward - $total_withdraw_reward;
@@ -65,7 +66,7 @@ class User extends Authenticatable
 
     public function getRevenueAttribute()
     {
-        return '0.00';
+        return number_format(Order::whereUserId($this->id ?? 0)->sum('total_amount'), 2) ?? 0;
     }
 
     public function getStatusTextAttribute()
@@ -83,12 +84,23 @@ class User extends Authenticatable
         return $this->hasMany(UserAddress::class, 'user_id', 'id');
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(UserSubscription::class, 'user_id', 'id');
+    }
+
+    public function lastSubscription()
+    {
+        return $this->hasOne(UserSubscription::class, 'user_id', 'id')->orderBy('id', 'desc');
+    }
+
     protected static function booted()
     {
         static::created(function ($user) {
             try {
                 if ($user->user_type !== 'admin') {
-                    $stripe = new StripeClient(env("STRIPE_SECRET", 'sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY'));
+                    $app_settings = config("app_settings");
+                    $stripe = new StripeClient(env("STRIPE_SECRET", $app_settings['stripe_secret_key']));
                     $customers = $stripe->customers->all();
                     if (isset($customers['data']) && !empty($customers['data'])) {
                         $customer_emails = array_column($customers['data'], 'email');

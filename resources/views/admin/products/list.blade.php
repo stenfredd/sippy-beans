@@ -14,7 +14,7 @@
                         <div id="ecommerce-searchbar">
                             <div class="row mt-1 justify-content-between align-items-top">
                                 <div class="col-lg-7 col-md-7">
-                                    <form>
+                                    <form onsubmit="return false;">
                                         <fieldset class="form-group position-relative has-icon-right mb-1">
                                             <input type="text" class="form-control form-control-lg" id="search_product"
                                                 placeholder="Search by product name, product#, brand, seller">

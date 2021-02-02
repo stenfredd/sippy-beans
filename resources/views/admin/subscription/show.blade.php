@@ -20,7 +20,7 @@
                                                 class="custom-control custom-switch switch-lg custom-switch-success mr-1">
                                                 <input type="checkbox" class="custom-control-input"
                                                     id="subscription-status" name="status"
-                                                    {{ $subscription->status == 1 ? 'checked' : '' }} value="1">
+                                                    {{ ($subscription->status ?? 0) == 1 ? 'checked' : '' }} value="1">
                                                 <label class="custom-control-label" for="subscription-status">
                                                 </label>
                                             </div>

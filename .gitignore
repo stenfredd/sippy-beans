@@ -15,3 +15,4 @@ composer.lock
 package-lock.json
 laravel.log
 .vscode/settings.json
+/storage/framework/

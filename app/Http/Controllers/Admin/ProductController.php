@@ -16,6 +16,7 @@ use App\Models\Process;
 use App\Models\Grind;
 use App\Models\Characteristic;
 use App\Models\CoffeeType;
+use App\Models\OrderDetail;
 use App\Models\Weight;
 use App\Models\Variant;
 use Illuminate\Http\Request;
@@ -87,6 +88,9 @@ class ProductController extends Controller
                 $grind_ids = explode(',', $variant->grind_ids);
                 foreach ($grind_ids as $grind_id) {
                     $variant_grind = $variant->replicate();
+                    // $variant->available_quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->whereGrindId($grind_id)->sum('quantity'));
+                    // $variant_grind->quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->whereGrindId($grind_id)->sum('quantity'));
+                    $variant_grind->quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->sum('quantity'));
                     $variant_grind->id = $variant->id;
                     $variant_grind->grind_id = $grind_id;
                     $variant_grind->grind_title = Grind::find($grind_id)->title ?? '';
@@ -98,11 +102,10 @@ class ProductController extends Controller
 
         $brands = Brand::whereStatus(1)->orderBy('display_order', 'asc')->get();
         // $types = Type::whereStatus(1)->orderBy('display_order', 'asc')->get();
-        // $sellers = Seller::whereStatus(1)->orderBy('display_order', 'asc')->get();
-        $sellers = Seller::whereStatus(1)->get();
+        $sellers = Seller::whereStatus(1)->orderBy('display_order', 'asc')->get();
 
-        $origins = Origin::whereStatus(1)->get();
-        $characteristics = Characteristic::whereStatus(1)->get();
+        $origins = Origin::whereStatus(1)->orderBy('display_order', 'asc')->get();
+        $characteristics = Characteristic::whereStatus(1)->orderBy('display_order', 'asc')->get();
         $bestFor = BestFor::whereStatus(1)->orderBy('display_order', 'asc')->get();
         $levels = Level::whereStatus(1)->orderBy('display_order', 'asc')->get();
         $processes = Process::whereStatus(1)->orderBy('display_order', 'asc')->get();
@@ -235,6 +238,7 @@ class ProductController extends Controller
             $product = Product::find($request_data['product_id'])->update($request_data);
             $product_id = $request_data['product_id'];
         } else {
+            $request_data['status'] = 1;
             $product = Product::create($request_data);
             $product_id = $product->id;
         }

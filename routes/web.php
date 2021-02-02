@@ -1,22 +1,15 @@
 <?php
 
-use App\Mail\AppNewOrder;
-use App\Mail\CustomerNewOrder;
-use App\Mail\MerchantNewOrder;
-use App\Models\Grind;
-use App\Models\Order;
-use App\Models\Seller;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Auth::routes([
     'register' => false
 ]);
-Route::get('/', function () {
-    return redirect('admin');
-});
+// Route::get('/', function () {
+//     return redirect('admin');
+// });
+Route::get('/', 'HomeController@admin');
 
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -103,90 +96,3 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 // Stripe Callback
 Route::get('/subscription/create', 'User\SubscriptionController@index')->name('subscription.create');
 Route::any('stripe/callback', 'Server\StripeController@webhookCallback');
-
-
-
-Route::any('test-email', function() {
-
-    \OneSignal::sendNotificationToUser("test", "357FB70B-F2C9-4E98-9B89-6CB86EC79A74", null, ['order_id' => 1]);
-    die;
-
-
-    $order = Order::inRandomOrder()
-        ->with([
-            'user', 'address', 'details',
-            'details.product', 'details.variant', 'details.equipment', 'details.subscription',
-            'details.product.seller', 'details.equipment.seller',
-            'details.product.images', 'details.equipment.images'
-        ])
-        ->first();
-
-    $order->total_refund = Transaction::wherePaymentType('refund')->sum('amount');
-    $order->balance = $order->total_amount - $order->payment_received - $order->total_refund;
-    $order->total_discount = $order->promocode_amount ?? 0;
-    if (!empty($order->discount_type) && !empty($order->discount_amount)) {
-        $discount_amount = ($order->discount_type == 'percentage' ? (($order->total_amount / 100) * $order->discount_amount) : $order->discount_amount);
-        $order->total_discount = $order->total_discount + $discount_amount;
-    }
-    $order->created_at_text = $order->created_at->format("M d, Y, h:iA") ?? $order->created_at;
-    $order->product_names = null;
-    if ($order->order_type == 'subscription') {
-        $order->product_names = $order->subscription->title ?? '';
-    } else {
-        foreach ($order->details as $detail) {
-            if (!empty($detail->product) && isset($detail->product->product_name)) {
-                $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->product->product_name;
-            }
-        }
-        // if(empty($order->product_names)) {
-        foreach ($order->details as $detail) {
-            if (!empty($detail->equipment) && isset($detail->equipment->title)) {
-                $order->product_names = (!empty($order->product_names) ? ', ' : '') . $detail->equipment->title;
-            }
-        }
-        // }
-    }
-    foreach ($order->details as $detail) {
-        $detail->grind_title = Grind::find($detail->grind_id)->title ?? null;
-    }
-    $order->delivery_time = $order->address->city()->first()->delivery_time ?? '1-3 Business days';
-
-    // Mail::to('sonitejas9033@gmail.com')->queue(new CustomerNewOrder($order));
-    Mail::to('sonitejas9033@gmail.com')->queue(new AppNewOrder($order));
-    return view('emails.sippy-new-order', compact('order'));
-
-    $seller_details = [];
-    foreach ($order->details as $detail) {
-        if (!empty($detail->subscription_id)) {
-            continue;
-        }
-        if (!empty($detail->equipment_id)) {
-            $commission_fee = 0;
-            if ($detail->equipment->commission_type === 'percentage') {
-                $commission_fee = ($detail->subtotal / 100) * $detail->equipment->commission_fee;
-            } else {
-                $commission_fee = $detail->equipment->commission_fee * $detail->quantity;
-            }
-            $detail->seller_price = $detail->subtotal - $commission_fee;
-            $seller_details[$detail->equipment->seller->id][] = $detail;
-        }
-        if (!empty($detail->product_id)) {
-            $commission_fee = 0;
-            if ($detail->product->commission_type === 'percentage') {
-                $commission_fee = ($detail->subtotal / 100) * $detail->product->commission_fee;
-            } else {
-                $commission_fee = $detail->product->commission_fee * $detail->quantity;
-            }
-            $detail->seller_price = $detail->subtotal - $commission_fee;
-            $seller_details[$detail->product->seller->id][] = $detail;
-        }
-    }
-
-    if (!empty($seller_details)) {
-        foreach ($seller_details as $seller_id => $details) {
-            $seller = Seller::find($seller_id);
-            $order->seller_total = array_sum(array_column($details, "seller_price"));
-            Mail::to('sonitejas9033@gmail.com')->queue(new MerchantNewOrder($order, $details, $seller));
-        }
-    }
-});

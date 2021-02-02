@@ -24,6 +24,11 @@ class HomeController extends Controller
         view()->share("app_settings", $this->app_settings);
     }
 
+    public function admin()
+    {
+        return redirect('admin');
+    }
+
     public function index()
     {
         $page_title = 'Dashboard';

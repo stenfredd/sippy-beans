@@ -5,10 +5,33 @@
         <div class="card-header border-bottom pb-1">
 
             <h4 class="card-title">
-                <b>SERVICE AREAS</b><br>
+                <b>DELIVERY AREAS</b><br>
                 <span class="gray">{{ count($delivery_areas) }} CITY</span>
             </h4>
 
+        </div>
+        <div id="ecommerce-searchbar" class="pl-2 pr-2">
+            <div class="row mt-1 justify-content-between align-items-top">
+                <div class="col-lg-7 col-md-6">
+                    <form onsubmit="return false;">
+                        <fieldset class="form-group position-relative has-icon-right mb-1 mr-0">
+                            <input type="text" class="form-control form-control-lg" id="search_area"
+                                placeholder="Search by city/country name">
+                            <div class="form-control-position">
+                                <i class="feather icon-search px-1"></i>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <div class="d-flex justify-content-between align-items-top w-100">
+                        <button type="button"
+                            class="btn btn-orange mr-1 mb-1 waves-effect waves-light btn-block btn-lg" id="search_btn">SEARCH</button>
+                        <a href="{{ url('admin/delivery-areas/create')}}" type="button"
+                            class="btn btn-outline-orange mr-0 mb-1 waves-effect waves-light btn-block btn-lg mt-0">ADD NEW AREA</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-content">
             <div class="table-responsive pagenation-row">
@@ -99,8 +122,32 @@
             });
             $("#tblDeliveryAreas > tbody").disableSelection();
         }, 2000);
+
+        $("#search_area").on("keyup", function() {
+            searchAreas();
+        });
+        $("#search_btn").on("click", function() {
+            searchAreas();
+        });
     });
 
+    function searchAreas() {
+        let searchValue = $("#search_area").val().toLowerCase();
+        $("#tblDeliveryAreas tbody tr").hide();
+        $("#tblDeliveryAreas tbody tr.no-record").remove();
+        $("#tblDeliveryAreas tbody tr").each(function(index, tr) {
+            if($(tr).hasClass("no-record") === false) {
+                let country = $(tr).find("td:nth-child(4)").text().toLowerCase();
+                let city = $(tr).find("td:nth-child(5)").html().toLowerCase();
+                if(country.indexOf(searchValue) > -1 || city.indexOf(searchValue) > -1) {
+                    $(tr).show();
+                }
+            }
+        });
+        if($("#tblDeliveryAreas tbody tr:visible").length === 0) {
+            $("#tblDeliveryAreas tbody").append("<tr class='no-record'><td colspan='9' class='text-center'>No record available.</td></tr>");
+        }
+    }
 
     function updateSortOrders() {
         // sorting_areas

@@ -42,9 +42,15 @@ class CartController extends Controller
             }
 
             $promocode_discount_amount = 0;
+            $free_shipping_order = false;
             $promocode = RedeemPromocode::whereNull('order_id')->where('status', 0)->where('user_id', $user_id)->with('promocode_data')->first();
             if (!empty($promocode) && isset($promocode->id)) {
-                $promocode_discount_amount = $promocode->type == 'percentage' ? (($cart_total / 100) * $promocode->promocode_amount) : $promocode->promocode_amount;
+                if($promocode->type == 'free_shipping') {
+                    $free_shipping_order = true;
+                }
+                else {
+                    $promocode_discount_amount = $promocode->type == 'percentage' ? (($cart_total / 100) * $promocode->promocode_amount) : $promocode->promocode_amount;
+                }
             }
 
             $address_id = null;
@@ -65,7 +71,7 @@ class CartController extends Controller
             if (!empty($address) && isset($address->id)) {
                 $address->city_name = $address->city->name ?? null;
                 $address->country_name = $address->country->country_name ?? null;
-                $area_delivery_fee = $address->city->delivery_fee ?? 0;
+                $area_delivery_fee = $free_shipping_order === false ? ($address->city->delivery_fee ?? 0) : 0;
                 $area_delivery_time = $address->city->delivery_time ?? 0;
                 unset($address->city);
                 unset($address->country);

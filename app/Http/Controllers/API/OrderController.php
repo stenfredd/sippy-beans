@@ -45,7 +45,14 @@ class OrderController extends Controller
 
             $order->total_refund = 0;
             $order->pending_refund = 0;
-            $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
+            // $cancelled_items_amount = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->sum('subtotal');
+            $cancelled_items_amount = 0;
+            $cancelled_items_arr = OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->get();
+            if(!empty($cancelled_items_arr) && count($cancelled_items_arr) > 0) {
+                foreach ($cancelled_items_arr as $cancelItem) {
+                    $cancelled_items_amount = $cancelled_items_amount + ($cancelItem->cancel_quantity * $cancelItem->amount);
+                }
+            }
             $order->total_refund = Transaction::whereOrderId($order->id)->wherePaymentType('refund')->sum('amount');
             if ($cancelled_items_amount > 0) {
                 if (OrderDetail::whereOrderId($order->id)->count() == OrderDetail::whereOrderId($order->id)->whereIsCancelled(1)->count()) {
@@ -234,9 +241,15 @@ class OrderController extends Controller
         }
 
         $promocode_discount_amount = 0;
+        $free_shipping_order = false;
         $promocode = RedeemPromocode::whereNull('order_id')->where('status', 0)->where('user_id', $user_id)->with('promocode_data')->first();
         if (!empty($promocode) && isset($promocode->id)) {
-            $promocode_discount_amount = $promocode->type == 'percentage' ? (($cart_total / 100) * $promocode->promocode_amount) : $promocode->promocode_amount;
+            if($promocode->type == 'free_shipping') {
+                $free_shipping_order = true;
+            }
+            else {
+                $promocode_discount_amount = $promocode->type == 'percentage' ? (($cart_total / 100) * $promocode->promocode_amount) : $promocode->promocode_amount;
+            }
         }
 
         // not give point if promocode applied
@@ -245,7 +258,7 @@ class OrderController extends Controller
         }
 
         $address = UserAddress::with(['city', 'country'])->find($request->address_id);
-        $area_delivery_fee = $address->city->delivery_fee ?? 0;
+        $area_delivery_fee = $free_shipping_order === false ? ($address->city->delivery_fee ?? 0) : 0;
         $delivery_fee = (float) $area_delivery_fee; // ($this->app_settings['delivery_fee'] ?? 0);
         $subtotal = ($cart_total + $delivery_fee) - $promocode_discount_amount;
 

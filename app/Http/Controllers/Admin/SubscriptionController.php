@@ -85,7 +85,7 @@ class SubscriptionController extends Controller
                     $query->orWhere('phone', 'LIKE', "%" . $request->search . "%");
                 });
             }
-            $users = $users->withCount('subscriptions')->with('lastSubscription')->get();
+            $users = $users->withCount('subscriptions')->havingRaw('subscriptions_count > 0')->with('lastSubscription')->get();
 
             return DataTables::of($users)
                 ->addIndexColumn()

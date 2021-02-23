@@ -37,8 +37,8 @@ class ApplicationController extends Controller
 
             $product_exist_ids = [];
             RE_SYNC_DATA:
-            $products = Product::latest()->with(['variants', 'variants.images', 'images', 'weights'])
-                ->inRandomOrder();
+            $products = Product::with(['variants', 'variants.images', 'images', 'weights'])
+                ->inRandomOrder()->latest();
             foreach ($where as $k => $wh) {
                 $products = $products->whereIn($k, explode(',', $wh));
             }

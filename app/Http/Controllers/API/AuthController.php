@@ -39,7 +39,8 @@ class AuthController extends Controller
 
         $exist_phone = User::wherePhone($request->phone)->first();
         if (!empty($exist_phone) && isset($exist_phone->id)) {
-            return response()->json(['status' => false, 'message' => 'Phone already exist!']);
+            // return response()->json(['status' => false, 'message' => 'Phone already exist!']);
+            return response()->json(['status' => false, 'message' => 'Sorry this number is already registered with an account.']);
         }
 
         $user_data = $request->except('profile_image');
@@ -109,7 +110,8 @@ class AuthController extends Controller
             $exist_phone = User::wherePhone($request->phone)->first();
             if (!empty($exist_phone) && isset($exist_phone->id)) {
                 if ($exist_phone->social_login != $request->social_login) {
-                    return response()->json(['status' => false, 'message' => 'Phone already exist!']);
+                    // return response()->json(['status' => false, 'message' => 'Phone already exist!']);
+                    return response()->json(['status' => false, 'message' => 'Sorry this number is already registered with an account.']);
                 }
             }
         }
@@ -263,5 +265,13 @@ class AuthController extends Controller
             default:
                 return response()->json(['status' => false, 'message' => "Something went wrong, Please try again"]);
         }
+    }
+
+    public function checkSocialLoginExist(Request $request) {
+        $request->validate([
+            'social_id' => 'required'
+        ]);
+        $user = User::whereAppleId($request->social_id)->first();
+        return response()->json(['status' => (bool) $user, 'user' => $user]);
     }
 }

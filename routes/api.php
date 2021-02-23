@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // Authentication Routes
 Route::post('login', 'API\AuthController@login');
 Route::post('signup', 'API\AuthController@signup');
+Route::post('apple-account-exist', 'API\AuthController@checkSocialLoginExist');
 Route::post('social-login-register', 'API\AuthController@socialLoginRegister');
 Route::post('forgot-password', 'API\AuthController@forgotPassword');
 

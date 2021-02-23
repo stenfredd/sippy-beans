@@ -101,7 +101,7 @@ class PromocodeController extends Controller
             'used_limit' => 'required',
             // 'user_ids' => 'required',
             'discount_type' => 'required',
-            'discount_amount' => 'required',
+            'discount_amount' => 'required_unless:discount_type,free_shipping',
             // 'status' => 'required',
         ];
         $this->validate($request, $validation);

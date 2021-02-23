@@ -652,7 +652,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>TITLE</label>
+                        <label>NICKNAME</label>
                         <input name="title" id="address_title" class="form-control" value="" required/>
                     </div>
                     <div class="form-group">
@@ -662,6 +662,20 @@
                     <div class="form-group">
                         <label>ADDRESS LINE 2</label>
                         <input name="address_line_2" id="address_line_2" class="form-control" value="" required/>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>LATITUDE</label>
+                                <input name="latitude" id="latitude" class="form-control" value="" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>LONGITUDE</label>
+                                <input name="longitude" id="longitude" class="form-control" value="" />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1107,6 +1121,8 @@
             formData.append('title', $("#address_title").val());
             formData.append('address_line_1', $("#address_line_1").val());
             formData.append('address_line_2', $("#address_line_2").val());
+            formData.append('latitude', $("#latitude").val());
+            formData.append('longitude', $("#longitude").val());
 
             $.ajax({
                 url: "{{ url('admin/users/addresses/save') }}",
@@ -1146,7 +1162,9 @@
                 $("#city_id").val(curAddress.city_id);
                 $("#address_title").val(curAddress.title);
                 $("#address_line_1").val(curAddress.address_line_2);
-                $("#address_line_2").val(curAddress.address_line_1);
+                $("#address_line_2").val(curAddress.address_line_2);
+                $("#latitude").val(curAddress.latitude);
+                $("#longitude").val(curAddress.longitude);
             }
             $("#add-edit-address").modal("show");
         }

@@ -93,4 +93,265 @@ class PageController extends Controller
         }
         return view('admin.pages.tax_charges');
     }
+
+    public function createDeliveryAreas(Request $request)
+    {
+        view()->share('page_title', 'Add New Delivery Areas');
+        if (!empty($request->all())) {
+            $validation = [
+                'country_name' => 'required',
+                'city_name' => 'required',
+                'delivery_fee' => 'required',
+                'delivery_time' => 'required',
+                // 'currency' => 'required'
+            ];
+            $this->validate($request, $validation);
+
+            // $request_data = $request->all();
+            $country = Country::select('id')->whereCountryName($request->country_name)->first();
+            if(empty($country)) {
+
+                /* $validation = [
+                    'flag_image' => 'required',
+                    // 'currency' => 'required',
+                ];
+                $this->validate($request, $validation); */
+
+                $flag_image = '';
+                if($request->hasFile('flag_image')) {
+                    $file = $request->file('flag_image');
+                    $fileName = time() . '.' . $file->getClientOriginalExtension();
+                    $destinationPath = public_path() . '/uploads/images/';
+                    $file->move($destinationPath, $fileName);
+                    $flag_image = 'uploads/images/' . $fileName;
+                }
+
+                $country = Country::create([
+                    'country_name' => $request->country_name,
+                    'flag_image' => $flag_image,
+                    'currency' => $request->currency ?? 'AED',
+                    'status' => 1
+                ]);
+            }
+            // $area = City::find($request_data['city_id'])->update($request_data);
+            $city = City::firstOrCreate(
+                ['country_id' => $country->id, 'name' => $request->city_name],
+                [
+                    'display_order' => (City::count() + 1),
+                    'delivery_fee' => $request->delivery_fee,
+                    'delivery_time' => $request->delivery_time,
+                    'status' => 1
+                ]
+            );
+
+            if ($city) {
+                session()->flash('success', 'Delivery area details added successfully.');
+                return redirect(url('admin/delivery-areas/' . $request->city_id));
+            } else {
+                session()->flash('error', 'Adding delivery area details failed, Please try again.');
+                return redirect()->back();
+            }
+            return redirect('admin/delivery-areas');
+        }
+        $countries = [
+            'Afghanistan',
+            'Albania',
+            'Algeria',
+            'Andorra',
+            'Angola',
+            'Antigua & Deps',
+            'Argentina',
+            'Armenia',
+            'Australia',
+            'Austria',
+            'Azerbaijan',
+            'Bahamas',
+            'Bahrain',
+            'Bangladesh',
+            'Barbados',
+            'Belarus',
+            'Belgium',
+            'Belize',
+            'Benin',
+            'Bhutan',
+            'Bolivia',
+            'Bosnia Herzegovina',
+            'Botswana',
+            'Brazil',
+            'Brunei',
+            'Bulgaria',
+            'Burkina',
+            'Burundi',
+            'Cambodia',
+            'Cameroon',
+            'Canada',
+            'Cape Verde',
+            'Central African Rep',
+            'Chad',
+            'Chile',
+            'China',
+            'Colombia',
+            'Comoros',
+            'Congo',
+            'Congo {Democratic Rep}',
+            'Costa Rica',
+            'Croatia',
+            'Cuba',
+            'Cyprus',
+            'Czech Republic',
+            'Denmark',
+            'Djibouti',
+            'Dominica',
+            'Dominican Republic',
+            'East Timor',
+            'Ecuador',
+            'Egypt',
+            'El Salvador',
+            'Equatorial Guinea',
+            'Eritrea',
+            'Estonia',
+            'Ethiopia',
+            'Fiji',
+            'Finland',
+            'France',
+            'Gabon',
+            'Gambia',
+            'Georgia',
+            'Germany',
+            'Ghana',
+            'Greece',
+            'Grenada',
+            'Guatemala',
+            'Guinea',
+            'Guinea-Bissau',
+            'Guyana',
+            'Haiti',
+            'Honduras',
+            'Hungary',
+            'Iceland',
+            'India',
+            'Indonesia',
+            'Iran',
+            'Iraq',
+            'Ireland {Republic}',
+            'Israel',
+            'Italy',
+            'Ivory Coast',
+            'Jamaica',
+            'Japan',
+            'Jordan',
+            'Kazakhstan',
+            'Kenya',
+            'Kiribati',
+            'Korea North',
+            'Korea South',
+            'Kosovo',
+            'Kuwait',
+            'Kyrgyzstan',
+            'Laos',
+            'Latvia',
+            'Lebanon',
+            'Lesotho',
+            'Liberia',
+            'Libya',
+            'Liechtenstein',
+            'Lithuania',
+            'Luxembourg',
+            'Macedonia',
+            'Madagascar',
+            'Malawi',
+            'Malaysia',
+            'Maldives',
+            'Mali',
+            'Malta',
+            'Marshall Islands',
+            'Mauritania',
+            'Mauritius',
+            'Mexico',
+            'Micronesia',
+            'Moldova',
+            'Monaco',
+            'Mongolia',
+            'Montenegro',
+            'Morocco',
+            'Mozambique',
+            'Myanmar',
+            '{Burma}',
+            'Namibia',
+            'Nauru',
+            'Nepal',
+            'Netherlands',
+            'New Zealand',
+            'Nicaragua',
+            'Niger',
+            'Nigeria',
+            'Norway',
+            'Oman',
+            'Pakistan',
+            'Palau',
+            'Panama',
+            'Papua New Guinea',
+            'Paraguay',
+            'Peru',
+            'Philippines',
+            'Poland',
+            'Portugal',
+            'Qatar',
+            'Romania',
+            'Russian Federation',
+            'Rwanda',
+            'St Kitts & Nevis',
+            'St Lucia',
+            'Saint Vincent & the Grenadines',
+            'Samoa',
+            'San Marino',
+            'Sao Tome & Principe',
+            'Saudi Arabia',
+            'Senegal',
+            'Serbia',
+            'Seychelles',
+            'Sierra Leone',
+            'Singapore',
+            'Slovakia',
+            'Slovenia',
+            'Solomon Islands',
+            'Somalia',
+            'South Africa',
+            'South Sudan',
+            'Spain',
+            'Sri Lanka',
+            'Sudan',
+            'Suriname',
+            'Swaziland',
+            'Sweden',
+            'Switzerland',
+            'Syria',
+            'Taiwan',
+            'Tajikistan',
+            'Tanzania',
+            'Thailand',
+            'Togo',
+            'Tonga',
+            'Trinidad & Tobago',
+            'Tunisia',
+            'Turkey',
+            'Turkmenistan',
+            'Tuvalu',
+            'Uganda',
+            'Ukraine',
+            'United Arab Emirates',
+            'United Kingdom',
+            'United States',
+            'Uruguay',
+            'Uzbekistan',
+            'Vanuatu',
+            'Vatican City',
+            'Venezuela',
+            'Vietnam',
+            'Yemen',
+            'Zambia',
+            'Zimbabwe'
+        ];
+        return view('admin.pages.create_delivery_areas', compact('countries'));
+    }
 }

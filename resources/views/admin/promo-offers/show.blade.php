@@ -49,6 +49,8 @@
                                             <option value="amount"
                                                 {{ ($promocode->discount_type ?? '') == 'amount' ? 'selected' : '' }}>
                                                 Amount</option>
+                                            <option value="free_shipping" {{ ($promocode->discount_type ?? '') == 'free_shipping' ? 'selected' : '' }}>
+                                                Free Shipping</option>
                                         </select>
                                     </div>
                                 </div>
@@ -290,6 +292,14 @@
     $(document).ready(function() {
         $("#check_all_users").change(function() {
             $(".user_ids").prop("checked", this.checked);
+        });
+        $("#discount_type").change(function() {
+            if($(this).val() == 'free_shipping') {
+                $("#discount_amount").val('0').attr('disabled', 'disabled');
+            }
+            else {
+                $("#discount_amount").removeAttr('disabled');
+            }
         });
         $(".user_ids").change(function() {
             if ($(".user_ids").length === $(".user_ids:checked").length) {

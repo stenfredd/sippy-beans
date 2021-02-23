@@ -85,9 +85,9 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
                 }
             }
         }
-        if (!empty($product_names) && strlen($product_names) >= 40) {
+        /* if (!empty($product_names) && strlen($product_names) >= 40) {
             $product_names = substr($product_names, 0, 37) . '...';
-        }
+        } */
         return [
             'Order No' => $order->order_number,
             'Customer' => $order->customer_name ?? '-',

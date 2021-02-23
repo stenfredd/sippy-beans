@@ -1,14 +1,19 @@
 <?php
 
+use App\Mail\AppNewOrder;
+use App\Mail\CustomerNewOrder;
+use App\Mail\MerchantNewOrder;
+use App\Models\Grind;
+use App\Models\Order;
+use App\Models\Seller;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Auth::routes([
     'register' => false
 ]);
-// Route::get('/', function () {
-//     return redirect('admin');
-// });
 Route::get('/', 'HomeController@admin');
 
 Route::group(['middleware' => ['auth', 'admin']], function () {
@@ -83,6 +88,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         // Route::post('match-makers/delete', 'Admin\MatchMakerController@delete');
 
         Route::match(['get', 'post'], 'delivery-areas', 'Admin\PageController@deliveryAreas');
+        Route::match(['get', 'post'], 'delivery-areas/create', 'Admin\PageController@createDeliveryAreas');
         Route::post('delivery-areas/update-sort-orders', 'Admin\PageController@updateAreasSortOrders');
         Route::get('delivery-areas/{id}', 'Admin\PageController@editDeliveryAreass');
 

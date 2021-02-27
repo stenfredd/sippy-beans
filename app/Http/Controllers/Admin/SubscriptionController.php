@@ -171,4 +171,11 @@ class SubscriptionController extends Controller
             }
         }
     }
+
+    public function viewUsersSubscription(Request $request) {
+        $total_active_subscription = UserSubscription::selectRaw('DISTINCT user_id')->whereSubscriptionStatus(1)->groupBy('user_id')->get();
+        $total_active_subscription = count($total_active_subscription);
+        view()->share('page_title', 'Users Subscription');
+        return view('admin.subscription.users', compact('total_active_subscription'));
+    }
 }

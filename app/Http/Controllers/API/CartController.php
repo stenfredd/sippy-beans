@@ -183,6 +183,11 @@ class CartController extends Controller
             $status = Cart::destroy($request->cart_id);
         }
 
+        $cart_items = Cart::whereUserId(auth()->user()->id)->count();
+        if ($cart_items == 0) {
+            RedeemPromocode::where('status', 0)->where('user_id', auth()->user()->id)->delete();
+        }
+
         $response = [
             'status' => $status ? true : false,
             'message' => $status ? 'Item removed from cart successfully.' : 'Removing item from cart failed, Please try again'

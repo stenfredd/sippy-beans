@@ -101,8 +101,6 @@ class User extends Authenticatable
                 if ($user->user_type !== 'admin') {
                     $app_settings = config("app_settings");
                     $stripe = new StripeClient(env("STRIPE_SECRET", $app_settings['stripe_secret_key']));
-			//$stripe = new StripeClient(env("STRIPE_SECRET", 'sk_test_51I3hM1JH6V8eSiuB7r8Nr2JrthFKwmpwYOZHWBNWUJtayrQAihgPn9XSO97jDBlPjnF8QyoOXHVWnB4n7pIHwt8h00Fj8t88RY'));
-		    // $stripe = new StripeClient(env("STRIPE_SECRET", 'sk_test_51HyJkNKaffsendfzwMknXwr9DSSFAaHGnD4NR1dzKINhmbfgIxRHCLKBVXDvORNqYbzv5S3sPrt9JvAT9BIirUF500sQfJrmXw'));
                     $customers = $stripe->customers->all();
                     if (isset($customers['data']) && !empty($customers['data'])) {
                         $customer_emails = array_column($customers['data'], 'email');

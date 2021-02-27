@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::post('subscription/subscribers', 'Admin\SubscriptionController@subscribedCustomers');
         Route::get('subscription/export', 'Admin\SubscriptionController@export');
         Route::post('subscription/pause', 'Admin\SubscriptionController@pauseSubscription');
+        Route::get('subscription/users', 'Admin\SubscriptionController@viewUsersSubscription');
         Route::get("subscription/{id}", "Admin\SubscriptionController@show");
 
         Route::match(['get', 'post'], 'categories', 'Admin\CategoryController@index');

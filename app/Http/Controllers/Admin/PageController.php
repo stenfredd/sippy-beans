@@ -88,6 +88,7 @@ class PageController extends Controller
         view()->share('page_title', 'Tax Charges');
         if (isset($request->tax_charges)) {
             Setting::where('setting_key', 'tax_charges')->update(['setting_value' => $request->tax_charges]);
+            Setting::where('setting_key', 'allow_cash_payment')->update(['setting_value' => ($request->allow_cash_payment ?? 0)]);
             session()->flash('success', 'Tax details updated successfully.');
             return redirect(url('admin/tax-charges'));
         }

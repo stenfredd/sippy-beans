@@ -22,8 +22,8 @@
                                         <label>COUNTRY</label>
                                         <select name="country_name" id="country_name" class="form-control">
                                             <option value="">Select Country</option>
-                                            @foreach ($countries as $country)
-                                                <option value="{{ $country }}">{{ $country }}</option>
+                                            @foreach ($countries as $code => $country)
+                                                <option value="{{ $code }}">{{ $country }}</option>
                                             @endforeach
                                         </select>
                                     </div>

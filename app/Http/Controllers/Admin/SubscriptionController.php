@@ -93,7 +93,7 @@ class SubscriptionController extends Controller
                     return $user->lastSubscription->subscription_status ?? '0';
                 })
                 ->addColumn('subscription_status_text', function ($user) {
-                    return ($user->lastSubscription->subscription_status ?? 0) == '1' ? 'Active' : 'Inactive';
+                    return ($user->lastSubscription->subscription_status ?? 0) == '1' ? (empty($user->lastSubscription->cancelled_at) ? 'Active' : 'Cancelled') : 'Inactive';
                 })
                 /* ->addColumn("pause_subscription", function ($user) {
                     $action = '<div class="custom-control custom-switch custom-switch-primary mr-2 mb-1 text-center">
@@ -111,8 +111,8 @@ class SubscriptionController extends Controller
                 ->addColumn('pause_subscription', function ($user) {
                     $action = '<div class="custom-control custom-switch custom-switch-primary mr-2 mb-1 text-center">
                     <input type="checkbox" class="custom-control-input"
-                        ' . (($user->lastSubscription->subscription_status ?? 0) == 1 ? 'checked' : '') . '
-                        ' . (($user->lastSubscription->subscription_status ?? 0) == 0 ? 'disabled' : '') . '
+                        ' . (empty($user->lastSubscription->cancelled_at) && ($user->lastSubscription->subscription_status ?? 0) == '1' ? 'checked' : '') . '
+                        ' . (!empty($user->lastSubscription->cancelled_at) || ($user->lastSubscription->subscription_status ?? 0) == '0' ? 'disabled' : '') . '
                         id="user-status-' . ($user->id ?? 0) . '"
                         onchange="pauseSubscription(' . ($user->lastSubscription->id ?? 0) . ', '.($user->id).')"/>
                     <label class="custom-control-label" for="user-status-' . $user->id . '">
@@ -125,7 +125,7 @@ class SubscriptionController extends Controller
                 ->addColumn('next_billing_date', function ($user) {
                     $nextBillingDate = '-';
                     if (($user->lastSubscription->subscription_status ?? 0) == '1') {
-                        $nextBillingDate = Carbon::parse($user->lastSubscription->billing_date)->timezone($this->app_settings['timezone'])->format("M d, Y");
+                        $nextBillingDate = Carbon::parse($user->lastSubscription->billing_date)->addDay()->timezone($this->app_settings['timezone'])->format("M d,Y");
                     }
                     return $nextBillingDate;
                 })

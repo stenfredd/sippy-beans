@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes([
     'register' => false
 ]);
-Route::get('/', 'HomeController@admin');
+Route::get('/', function() { return redirect('admin'); }); // 'HomeController@admin');
 
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {

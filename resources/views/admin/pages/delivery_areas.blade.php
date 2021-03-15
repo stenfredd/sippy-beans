@@ -59,7 +59,7 @@
                                 {{ $area->display_order ?? '-' }}
                             </td>
                             <td class="uae-fleg text-center">
-                                <img src="{{ asset($area->country->glag_image ?? 'assets/images/uae-flag.png') }}"
+                                <img src="{{ asset($area->country->flag_image ?? 'assets/images/uae-flag.png') }}"
                                     width="100" height="60">
                             </td>
                             <td class="font-small-3 text-bold-500">

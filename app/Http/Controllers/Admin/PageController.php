@@ -57,7 +57,11 @@ class PageController extends Controller
                 return response()->json($response);
             }
         }
-        $delivery_areas = City::with('country')->orderBy('display_order')->get();
+        $delivery_areas = City::with('country')->orderBy('display_order')->get()->each(function($area) {
+            if(empty($area->country->flag_image)) {
+                $area->country->flag_image = 'assets/images/countries/' . str_replace(' ', '', strtolower($area->country->country_name)) .'.png';
+            }
+        });
         return view('admin.pages.delivery_areas', compact('delivery_areas'));
     }
 
@@ -98,6 +102,273 @@ class PageController extends Controller
     public function createDeliveryAreas(Request $request)
     {
         view()->share('page_title', 'Add New Delivery Areas');
+        $countries = array(
+"AF" => "Afghanistan",
+"AL" => "Albania",
+"DZ" => "Algeria",
+"AS" => "American Samoa",
+"AD" => "Andorra",
+"AO" => "Angola",
+"AI" => "Anguilla",
+"AQ" => "Antarctica",
+"AG" => "Antigua and Barbuda",
+"AR" => "Argentina",
+"AM" => "Armenia",
+"AW" => "Aruba",
+"AU" => "Australia",
+"AT" => "Austria",
+"AZ" => "Azerbaijan",
+"BS" => "Bahamas",
+"BH" => "Bahrain",
+"BD" => "Bangladesh",
+"BB" => "Barbados",
+"BY" => "Belarus",
+"BE" => "Belgium",
+"BZ" => "Belize",
+"BJ" => "Benin",
+"BM" => "Bermuda",
+"BT" => "Bhutan",
+"BO" => "Bolivia",
+"BA" => "Bosnia and Herzegovina",
+"BW" => "Botswana",
+"BV" => "Bouvet Island",
+"BR" => "Brazil",
+"BQ" => "British Antarctic Territory",
+"IO" => "British Indian Ocean Territory",
+"VG" => "British Virgin Islands",
+"BN" => "Brunei",
+"BG" => "Bulgaria",
+"BF" => "Burkina Faso",
+"BI" => "Burundi",
+"KH" => "Cambodia",
+"CM" => "Cameroon",
+"CA" => "Canada",
+"CT" => "Canton and Enderbury Islands",
+"CV" => "Cape Verde",
+"KY" => "Cayman Islands",
+"CF" => "Central African Republic",
+"TD" => "Chad",
+"CL" => "Chile",
+"CN" => "China",
+"CX" => "Christmas Island",
+"CC" => "Cocos [Keeling] Islands",
+"CO" => "Colombia",
+"KM" => "Comoros",
+"CG" => "Congo - Brazzaville",
+"CD" => "Congo - Kinshasa",
+"CK" => "Cook Islands",
+"CR" => "Costa Rica",
+"HR" => "Croatia",
+"CU" => "Cuba",
+"CY" => "Cyprus",
+"CZ" => "Czech Republic",
+"CI" => "Côte d’Ivoire",
+"DK" => "Denmark",
+"DJ" => "Djibouti",
+"DM" => "Dominica",
+"DO" => "Dominican Republic",
+"NQ" => "Dronning Maud Land",
+"DD" => "East Germany",
+"EC" => "Ecuador",
+"EG" => "Egypt",
+"SV" => "El Salvador",
+"GQ" => "Equatorial Guinea",
+"ER" => "Eritrea",
+"EE" => "Estonia",
+"ET" => "Ethiopia",
+"FK" => "Falkland Islands",
+"FO" => "Faroe Islands",
+"FJ" => "Fiji",
+"FI" => "Finland",
+"FR" => "France",
+"GF" => "French Guiana",
+"PF" => "French Polynesia",
+"TF" => "French Southern Territories",
+"FQ" => "French Southern and Antarctic Territories",
+"GA" => "Gabon",
+"GM" => "Gambia",
+"GE" => "Georgia",
+"DE" => "Germany",
+"GH" => "Ghana",
+"GI" => "Gibraltar",
+"GR" => "Greece",
+"GL" => "Greenland",
+"GD" => "Grenada",
+"GP" => "Guadeloupe",
+"GU" => "Guam",
+"GT" => "Guatemala",
+"GG" => "Guernsey",
+"GN" => "Guinea",
+"GW" => "Guinea-Bissau",
+"GY" => "Guyana",
+"HT" => "Haiti",
+"HM" => "Heard Island and McDonald Islands",
+"HN" => "Honduras",
+"HK" => "Hong Kong SAR China",
+"HU" => "Hungary",
+"IS" => "Iceland",
+"IN" => "India",
+"ID" => "Indonesia",
+"IR" => "Iran",
+"IQ" => "Iraq",
+"IE" => "Ireland",
+"IM" => "Isle of Man",
+"IL" => "Israel",
+"IT" => "Italy",
+"JM" => "Jamaica",
+"JP" => "Japan",
+"JE" => "Jersey",
+"JT" => "Johnston Island",
+"JO" => "Jordan",
+"KZ" => "Kazakhstan",
+"KE" => "Kenya",
+"KI" => "Kiribati",
+"KW" => "Kuwait",
+"KG" => "Kyrgyzstan",
+"LA" => "Laos",
+"LV" => "Latvia",
+"LB" => "Lebanon",
+"LS" => "Lesotho",
+"LR" => "Liberia",
+"LY" => "Libya",
+"LI" => "Liechtenstein",
+"LT" => "Lithuania",
+"LU" => "Luxembourg",
+"MO" => "Macau SAR China",
+"MK" => "Macedonia",
+"MG" => "Madagascar",
+"MW" => "Malawi",
+"MY" => "Malaysia",
+"MV" => "Maldives",
+"ML" => "Mali",
+"MT" => "Malta",
+"MH" => "Marshall Islands",
+"MQ" => "Martinique",
+"MR" => "Mauritania",
+"MU" => "Mauritius",
+"YT" => "Mayotte",
+"FX" => "Metropolitan France",
+"MX" => "Mexico",
+"FM" => "Micronesia",
+"MI" => "Midway Islands",
+"MD" => "Moldova",
+"MC" => "Monaco",
+"MN" => "Mongolia",
+"ME" => "Montenegro",
+"MS" => "Montserrat",
+"MA" => "Morocco",
+"MZ" => "Mozambique",
+"MM" => "Myanmar [Burma]",
+"NA" => "Namibia",
+"NR" => "Nauru",
+"NP" => "Nepal",
+"NL" => "Netherlands",
+"AN" => "Netherlands Antilles",
+"NT" => "Neutral Zone",
+"NC" => "New Caledonia",
+"NZ" => "New Zealand",
+"NI" => "Nicaragua",
+"NE" => "Niger",
+"NG" => "Nigeria",
+"NU" => "Niue",
+"NF" => "Norfolk Island",
+"KP" => "North Korea",
+"VD" => "North Vietnam",
+"MP" => "Northern Mariana Islands",
+"NO" => "Norway",
+"OM" => "Oman",
+"PC" => "Pacific Islands Trust Territory",
+"PK" => "Pakistan",
+"PW" => "Palau",
+"PS" => "Palestinian Territories",
+"PA" => "Panama",
+"PZ" => "Panama Canal Zone",
+"PG" => "Papua New Guinea",
+"PY" => "Paraguay",
+"YD" => "People's Democratic Republic of Yemen",
+"PE" => "Peru",
+"PH" => "Philippines",
+"PN" => "Pitcairn Islands",
+"PL" => "Poland",
+"PT" => "Portugal",
+"PR" => "Puerto Rico",
+"QA" => "Qatar",
+"RO" => "Romania",
+"RU" => "Russia",
+"RW" => "Rwanda",
+"RE" => "Réunion",
+"BL" => "Saint Barthélemy",
+"SH" => "Saint Helena",
+"KN" => "Saint Kitts and Nevis",
+"LC" => "Saint Lucia",
+"MF" => "Saint Martin",
+"PM" => "Saint Pierre and Miquelon",
+"VC" => "Saint Vincent and the Grenadines",
+"WS" => "Samoa",
+"SM" => "San Marino",
+"SA" => "Saudi Arabia",
+"SN" => "Senegal",
+"RS" => "Serbia",
+"CS" => "Serbia and Montenegro",
+"SC" => "Seychelles",
+"SL" => "Sierra Leone",
+"SG" => "Singapore",
+"SK" => "Slovakia",
+"SI" => "Slovenia",
+"SB" => "Solomon Islands",
+"SO" => "Somalia",
+"ZA" => "South Africa",
+"GS" => "South Georgia and the South Sandwich Islands",
+"KR" => "South Korea",
+"ES" => "Spain",
+"LK" => "Sri Lanka",
+"SD" => "Sudan",
+"SR" => "Suriname",
+"SJ" => "Svalbard and Jan Mayen",
+"SZ" => "Swaziland",
+"SE" => "Sweden",
+"CH" => "Switzerland",
+"SY" => "Syria",
+"ST" => "São Tomé and Príncipe",
+"TW" => "Taiwan",
+"TJ" => "Tajikistan",
+"TZ" => "Tanzania",
+"TH" => "Thailand",
+"TL" => "Timor-Leste",
+"TG" => "Togo",
+"TK" => "Tokelau",
+"TO" => "Tonga",
+"TT" => "Trinidad and Tobago",
+"TN" => "Tunisia",
+"TR" => "Turkey",
+"TM" => "Turkmenistan",
+"TC" => "Turks and Caicos Islands",
+"TV" => "Tuvalu",
+"UM" => "U.S. Minor Outlying Islands",
+"PU" => "U.S. Miscellaneous Pacific Islands",
+"VI" => "U.S. Virgin Islands",
+"UG" => "Uganda",
+"UA" => "Ukraine",
+"SU" => "Union of Soviet Socialist Republics",
+"AE" => "United Arab Emirates",
+"GB" => "United Kingdom",
+"US" => "United States",
+"ZZ" => "Unknown or Invalid Region",
+"UY" => "Uruguay",
+"UZ" => "Uzbekistan",
+"VU" => "Vanuatu",
+"VA" => "Vatican City",
+"VE" => "Venezuela",
+"VN" => "Vietnam",
+"WK" => "Wake Island",
+"WF" => "Wallis and Futuna",
+"EH" => "Western Sahara",
+"YE" => "Yemen",
+"ZM" => "Zambia",
+"ZW" => "Zimbabwe",
+"AX" => "Åland Islands",
+);
+
         if (!empty($request->all())) {
             $validation = [
                 'country_name' => 'required',
@@ -109,7 +380,7 @@ class PageController extends Controller
             $this->validate($request, $validation);
 
             // $request_data = $request->all();
-            $country = Country::select('id')->whereCountryName($request->country_name)->first();
+            $country = Country::select('id')->whereCountryName($countries[$request->country_name])->first();
             if(empty($country)) {
 
                 /* $validation = [
@@ -118,21 +389,23 @@ class PageController extends Controller
                 ];
                 $this->validate($request, $validation); */
 
-                $flag_image = '';
-                if($request->hasFile('flag_image')) {
+                $flag_image = "https://www.countryflags.io/".strtolower($request->country_name)."/flat/64.png"; // 'assets/images/countries/'.$request->country_name.'.png';
+                // dd($flag_image);
+                /*if($request->hasFile('flag_image')) {
                     $file = $request->file('flag_image');
                     $fileName = time() . '.' . $file->getClientOriginalExtension();
                     $destinationPath = public_path() . '/uploads/images/';
                     $file->move($destinationPath, $fileName);
                     $flag_image = 'uploads/images/' . $fileName;
-                }
+                }*/
 
                 $country = Country::create([
-                    'country_name' => $request->country_name,
+                    'country_name' => $countries[$request->country_name],
                     'flag_image' => $flag_image,
                     'currency' => $request->currency ?? 'AED',
                     'status' => 1
                 ]);
+                // dd($country);
             }
             // $area = City::find($request_data['city_id'])->update($request_data);
             $city = City::firstOrCreate(
@@ -154,7 +427,7 @@ class PageController extends Controller
             }
             return redirect('admin/delivery-areas');
         }
-        $countries = [
+        /*$countries = [
             'Afghanistan',
             'Albania',
             'Algeria',
@@ -352,7 +625,8 @@ class PageController extends Controller
             'Yemen',
             'Zambia',
             'Zimbabwe'
-        ];
+        ];*/
+
         return view('admin.pages.create_delivery_areas', compact('countries'));
     }
 }

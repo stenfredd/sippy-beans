@@ -35,6 +35,12 @@ class ProductController extends Controller
                     $query->orWhere('altitude', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('flavor_note', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
+                    $query->orWhereHas('brand', function($owh) use ($request) {
+                        $owh->where('name', 'LIKE', "%" . $request->input('search') . "%");
+                    });
+                    $query->orWhereHas('seller', function($owh) use ($request) {
+                        $owh->where('seller_name', 'LIKE', "%" . $request->input('search') . "%");
+                    });
                 });
             }
             if (!empty($request->input('category_id'))) {

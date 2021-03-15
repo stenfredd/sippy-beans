@@ -34,7 +34,8 @@ class StripeController extends Controller
                     return response()->json(['status' => false]);
                 }
 
-                $user_subscription = UserSubscription::where('stripe_subscription_id', $stripe_subscription['id'])->first();
+                // $user_subscription = UserSubscription::where('stripe_subscription_id', $stripe_subscription['id'])->first();
+                $user_subscription = UserSubscription::where('stripe_subscription_id', $stripe_subscription['id'])->orderBy('id', 'desc')->first();
                 if (!empty($user_subscription) && isset($user_subscription->id) && $user_subscription->subscription_status === 1) {
 
                     $subscription = Subscription::find($user_subscription->subscription_id);

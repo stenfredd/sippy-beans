@@ -24,6 +24,12 @@ class EquipmentController extends Controller
                     $query->where('title', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('short_description', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
+                    $query->orWhereHas('brand', function($owh) use ($request) {
+                        $owh->where('name', 'LIKE', "%" . $request->input('search') . "%");
+                    });
+                    $query->orWhereHas('seller', function($owh) use ($request) {
+                        $owh->where('seller_name', 'LIKE', "%" . $request->input('search') . "%");
+                    });
                 });
             }
             $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();

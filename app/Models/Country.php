@@ -8,6 +8,7 @@ class Country extends Model
 {
     protected $fillable = [
         'country_name',
+        'flag_image',
         'status'
     ];
 

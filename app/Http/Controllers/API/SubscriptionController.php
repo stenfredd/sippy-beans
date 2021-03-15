@@ -8,6 +8,7 @@ use App\Models\Grind;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
@@ -17,7 +18,11 @@ class SubscriptionController extends Controller
         $subscription->brand_name = "SIPPY";
         $subscription->title = strtoupper($subscription->title);
         $grinds = Grind::whereIn('id', explode(',', $subscription->grind_ids))->get();
-        $user_subscription = UserSubscription::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionStatus(1)->first();
+
+        $user_subscription = UserSubscription::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionStatus(1)->orderBy('id', 'desc')->first();
+        if(!empty($user_subscription) && isset($user_subscription->id)) {
+            $user_subscription->next_billing_date = Carbon::parse($user_subscription->start_date)->addDay()->format("M d,Y");
+        }
 
         $cart_data = Cart::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionId($subscription->id);
 

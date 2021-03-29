@@ -31,7 +31,7 @@
                                         <div class="form-group">
                                             <label>TYPE</label>
                                             <select id="type" name="type" class="form-control">
-                                                <option value="">Select</option>
+                                                <option value="">None</option>
                                                 <option value="product" {{ ($banner->type ?? '') == 'product' ? 'selected' : '' }}>Product</option>
                                                 <option value="equipment" {{ ($banner->type ?? '') == 'equipment' ? 'selected' : '' }}>Equipment</option>
                                             </select>

@@ -675,6 +675,14 @@
                             <label>QUANTITY</label>
                             <div class="form-group">
                                 {{-- <label for="">REWARD</label> --}}
+                                <div>
+                                    <label>
+                                        <input type="radio" name="variant_quantity_type" value="add" checked /> Add
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="variant_quantity_type" value="subtract"/> Subtract
+                                    </label>
+                                </div>
                                 <input type="number" id="variant_quantity" name="quantity" class="form-control">
                             </div>
                         </div>

@@ -21,6 +21,7 @@ use App\Models\Weight;
 use App\Models\Variant;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 class ProductController extends Controller
 {
@@ -337,7 +338,22 @@ class ProductController extends Controller
         $post_data = $request->all();
         $save = true;
         if (isset($post_data['variant_id']) && !empty($post_data['variant_id'])) {
-            $save = Variant::find($post_data['variant_id'])->update($post_data);
+            // DB::enableQueryLog();
+            $post_data['grind_id'] = $post_data['grind_id'];
+            $dbVariant = Variant::find($request->variant_id);
+            if($post_data['variant_quantity_type'] === 'add') {
+                $post_data['quantity'] = $dbVariant->quantity + ($post_data['quantity']);
+            }
+            else {
+                $post_data['quantity'] = $dbVariant->quantity - ($post_data['quantity']);
+            }
+            unset($post_data['_token']);
+            unset($post_data['variant_id']);
+            unset($post_data['grind_id']);
+            unset($post_data['variant_quantity_type']);
+
+            $save = Variant::where('id', $request->variant_id)->update($post_data);
+            // dd($save, DB::getQueryLog(), $post_data);
         }
         if ($save) {
             return response()->json(['status' => true, 'message' => 'Variant details updated successfully.']);

@@ -8,6 +8,9 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\RedeemPromocode;
 use App\Models\UserAddress;
+use App\Models\OrderDetail;
+use App\Models\Variant;
+use App\Models\Equipment;
 
 class CartController extends Controller
 {
@@ -30,8 +33,10 @@ class CartController extends Controller
                     $price = $db_cart->subscription->price; // Quantity always 1
                 } else if (!empty($db_cart->equipment_id)) {
                     $price = $db_cart->equipment->price * $db_cart->quantity;
+                    $db_cart->equipment->available_quantity = $db_cart->equipment->quantity - (OrderDetail::whereEquipmentId($db_cart->equipment->id)->sum('quantity'));
                 } else if (!empty($db_cart->variant)) {
-                    $price = $db_cart->variant->price * $db_cart->quantity;
+                    $price = $db_cart->variant->price * $db_cart->quantity;                    
+                    $db_cart->variant->available_quantity = $db_cart->variant->quantity - (OrderDetail::whereVariantId($db_cart->variant->id)->sum('quantity'));
                 } else {
                     $price = $db_cart->product->price * $db_cart->quantity;
                 }
@@ -154,6 +159,24 @@ class CartController extends Controller
                 }
             }
         }
+
+        if (!empty($request->input('equipment_id'))) {
+            if($cart->quantity > (Equipment::find($request->equipment_id)->quantity - OrderDetail::whereEquipmentId($request->equipment_id)->sum('quantity'))) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Hi there, we’ve adjusted your order to the stock available at the moment. Not to worry, we’ll have enough next time.'
+                ]);
+            }
+        }
+        if (!empty($request->input('variant_id'))) {
+            if($cart->quantity > (Variant::find($request->variant_id)->quantity - OrderDetail::whereVariantId($request->variant_id)->sum('quantity'))) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Hi there, we’ve adjusted your order to the stock available at the moment. Not to worry, we’ll have enough next time.'
+                ]);
+            }
+        }
+
         if (!empty($request->input('subscription_id'))) {
             $cart->grind_id = $request->grind_id ?? null;
         }

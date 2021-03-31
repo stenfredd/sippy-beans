@@ -119,6 +119,9 @@ class ApplicationController extends Controller
                         }
                         $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
                     }
+                    else {
+                        $product->available_quantity = ($product->quantity - (OrderDetail::where('equipment_id', $product->id)->sum('quantity'))) ?? 0;
+                    }
                 }
                 $category_info = [
                     'id' => $db_category->id,

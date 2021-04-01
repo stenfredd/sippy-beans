@@ -15,7 +15,7 @@ class CreateBannersTable extends Migration
     {
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['product', 'equipment'])->nullable();
+            $table->enum('type', ['product', 'equipment', 'subscription'])->nullable();
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('equipment_id')->nullable()->constrained('equipments');
             $table->string('title', 100)->nullable();

@@ -58,15 +58,22 @@ class ApplicationController extends Controller
 
             $product_exist_ids = [];
             RE_SYNC_DATA:
-            $products = Product::with(['variants', 'variants.images', 'images', 'weights'])
-                ->inRandomOrder()->latest();
-            foreach ($where as $k => $wh) {
-                $products = $products->whereIn($k, explode(',', $wh));
+            if(!empty(request()->input('product_ids'))) {
+                $products = Product::with(['variants', 'variants.images', 'images', 'weights']);
+                $products = $products->whereIn('id', explode(',', request()->input('product_ids')));
+                $products = $products->limit(10)->get();
             }
-            if (!empty($product_exist_ids)) {
-                $products = $products->whereNotIn('id', $product_exist_ids);
+            else {
+                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])
+                    ->inRandomOrder()->latest();
+                foreach ($where as $k => $wh) {
+                    $products = $products->whereIn($k, explode(',', $wh));
+                }
+                if (!empty($product_exist_ids)) {
+                    $products = $products->whereNotIn('id', $product_exist_ids);
+                }
+                $products = $products->limit(10)->get();
             }
-            $products = $products->limit(10)->get();
 
             if (count($products) < 10) {
                 if (!empty($products)) {

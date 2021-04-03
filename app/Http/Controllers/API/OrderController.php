@@ -182,19 +182,27 @@ class OrderController extends Controller
                         $response = ['status' => false, 'message' => 'Invalid Promo Applied.', 'is_promocode_invalid' => true];
                         return response()->json($response);
                     }
-                    $used_count = RedeemPromocode::whereUserId($user_id)->wherePromocode($db_promocode->promocode)->count();
+                    $used_count = RedeemPromocode::whereUserId($user_id)->wherePromocode($db_promocode->promocode)->whereStatus(1)->count();
                     if ($used_count >= $db_promocode->used_limit) {
                         $applied_promocode->delete();
-                        $response = ['status' => false, 'message' => 'Promocode used limit reached.', 'is_promocode_invalid' => true];
+                        $response = ['status' => false, 'message' => 'Promocode maximum usage limit reached.', 'is_promocode_invalid' => true];
                         return response()->json($response);
                     }
                 } else {
-                    $used_count = RedeemPromocode::wherePromocode($db_promocode->promocode)->count();
+                    $used_count = RedeemPromocode::wherePromocode($db_promocode->promocode)->whereStatus(1)->count();
                     if ($used_count >= $db_promocode->used_limit) {
                         $applied_promocode->delete();
                         $response = ['status' => false, 'message' => 'Promocode used limit reached.', 'is_promocode_invalid' => true];
                         return response()->json($response);
                     }
+                }
+            }
+
+            if($db_promocode->one_time_user > 0) {
+                $used_count = RedeemPromocode::wherePromocode($db_promocode->promocode)->whereUserId($user_id)->whereStatus(1)->count();
+                if($used_count > 0) {
+                    $response = ['status' => false, 'message' => 'You have already used this promocode, Please try different promocode.', 'is_promocode_invalid' => true];
+                        return response()->json($response);
                 }
             }
         }

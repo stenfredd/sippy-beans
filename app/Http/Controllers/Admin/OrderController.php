@@ -168,7 +168,7 @@ class OrderController extends Controller
             }
             $order->balance_amount = 0;
             if($order->status != 4) {
-                $order->balance_amount = $order->total_amount - $order->payment_received - $order->total_discount - $cancelled_items_amount;
+                $order->balance_amount = $order->total_amount - $order->payment_received - $cancelled_items_amount;/* $order->total_discount -  */
                 $order->balance_amount = $order->balance_amount - (($order->balance_amount < 0 ? '-' : '') . $order->total_refund);
             }
         }

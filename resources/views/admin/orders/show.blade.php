@@ -694,7 +694,7 @@
                                     <tr class="Subtotal border-top">
                                         <td class="font-small-3">Subtotal</td>
                                         <td class="font-small-3 text-right">{{ $app_settings['currency_code'] }}
-                                            {{ number_format($order->subtotal - $order->total_discount, 2) ?? 0 }}</td>
+                                            {{ number_format($order->subtotal, 2) ?? 0 }}</td>{{-- $order->total_discount --}}
                                         <td class="w-5"></td>
                                     </tr>
                                     <tr class="Subtotal">
@@ -706,7 +706,7 @@
                                     <tr class="Subtotal border-top">
                                         <td class="font-small-3">Total</td>
                                         <td class="font-small-3 text-right">{{ $app_settings['currency_code'] }}
-                                            {{ number_format($order->total_amount - $order->total_discount, 2) ?? 0 }}
+                                            {{ number_format($order->total_amount, 2) ?? 0 }}{{-- $order->total_discount --}}
                                         </td>
                                         <td></td>
                                     </tr>

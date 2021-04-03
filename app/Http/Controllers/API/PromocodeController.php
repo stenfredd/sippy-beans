@@ -28,7 +28,6 @@ class PromocodeController extends Controller
             $response = ['status' => false, 'message' => 'Promocode expired..!'];
             return response()->json($response);
         }
-
         if ($promocode->used_limit > 0) {
             $user_promocodes = UserPromocode::where('promocode_id', $promocode->id)->count();
             if ($user_promocodes > 0) {
@@ -37,17 +36,25 @@ class PromocodeController extends Controller
                     $response = ['status' => false, 'message' => 'Invalid promocode..!'];
                     return response()->json($response);
                 }
-                $used_count = RedeemPromocode::whereUserId($user_id)->wherePromocodeId($promocode->id)->count();
+                $used_count = RedeemPromocode::whereUserId($user_id)->wherePromocodeId($promocode->id)->whereStatus(1)->count();
                 if ($used_count >= $promocode->used_limit) {
-                    $response = ['status' => false, 'message' => 'Promocode used limit reached.'];
+                    $response = ['status' => false, 'message' => 'Promocode maximum usage limit reached.'];
                     return response()->json($response);
                 }
             } else {
-                $used_count = RedeemPromocode::wherePromocode($promocode->promocode)->count();
+                $used_count = RedeemPromocode::wherePromocode($promocode->promocode)->whereStatus(1)->count();
                 if ($used_count >= $promocode->used_limit) {
                     $response = ['status' => false, 'message' => 'Promocode used limit reached.'];
                     return response()->json($response);
                 }
+            }
+        }
+
+        if($promocode->one_time_user > 0) {
+            $used_count = RedeemPromocode::wherePromocode($promocode->promocode)->whereUserId($user_id)->whereStatus(1)->count();
+            if($used_count > 0) {
+                $response = ['status' => false, 'message' => 'You have already used this promocode, Please try different promocode.'];
+                    return response()->json($response);
             }
         }
 

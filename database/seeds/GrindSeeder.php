@@ -26,10 +26,11 @@ class GrindSeeder extends Seeder
                 '10 Sachets-type-2',
             ];
 
-            foreach ($grinds as $grind) {
+            foreach ($grinds as $key => $grind) {
                 Grind::create([
                     'title' => explode('-type-', $grind)[0],
                     'grind_type' => explode('-type-', $grind)[1],
+                    'display_order' => ($key + 1),
                     'status' => 1
                 ]);
             }

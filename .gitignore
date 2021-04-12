@@ -16,4 +16,5 @@ package-lock.json
 laravel.log
 .vscode/settings.json
 /storage/framework/
-public/uploads/
+/public/uploads/
+.idea/

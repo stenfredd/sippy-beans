@@ -13,14 +13,15 @@ class AttributeController extends Controller
         $attributes_title = [
             'Origin',
             'Roaster Type',
-            'Roaster Level',
+            'Roast Level',
             'Process',
             'Characteristics',
             'Product Type',
             'Best For',
             'Brand',
-            'Seller',
-            'Weight'
+            'Brand Locations',
+            'Weight',
+            'Grinds'
         ];
         $attributes = [
             'origins',
@@ -32,7 +33,8 @@ class AttributeController extends Controller
             'best_fors',
             'brands',
             'sellers',
-            'weights'
+            'weights',
+            'grinds'
         ];
         $db_attributes = [];
         foreach ($attributes as $index => $attribute) {

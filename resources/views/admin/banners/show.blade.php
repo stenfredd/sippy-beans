@@ -48,7 +48,7 @@
                                     <div class="form-group"
                                         style="display: {{ !empty($banner->product_id ?? null) ? '' : 'none' }};">
                                         <label>PRODUCT</label>
-                                        <select id="product_id" name="product_id" class="form-control">
+                                        <select id="product_id" name="product_id" class="form-control ui search dropdown w-100">
                                             <option value="">Select</option>
                                             @if (!empty($products) && count($products) > 0)
                                             @foreach ($products as $product)
@@ -62,7 +62,7 @@
                                     <div class="form-group"
                                         style="display: {{ !empty($banner->equipment_id ?? null) ? '' : 'none' }};">
                                         <label>EQUIPMENT</label>
-                                        <select id="equipment_id" name="equipment_id" class="form-control">
+                                        <select id="equipment_id" name="equipment_id" class="form-control ui search dropdown w-100">
                                             <option value="">Select</option>
                                             @if (!empty($equipments) && count($equipments) > 0)
                                             @foreach ($equipments as $equipment)

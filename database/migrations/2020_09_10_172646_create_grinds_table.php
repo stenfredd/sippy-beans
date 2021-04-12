@@ -17,6 +17,7 @@ class CreateGrindsTable extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->tinyInteger('grind_type')->nullable()->default(0)->comment("1-All, 2-Custom (Sachet)");
+            $table->tinyInteger('display_order')->nullable()->default(0);
             $table->tinyInteger('status')->nullable()->default(0)->comment("0-Default/Inactive, 1-Active");
             $table->timestamps();
         });

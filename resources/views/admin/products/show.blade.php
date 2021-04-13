@@ -121,7 +121,7 @@
                                         <select class="ui search dropdown w-100" id="type_id"
                                             name="type_id">
                                             <option value="">Select Roaster Type</option>
-                                            @foreach ($coffeeTypes as $type)
+                                            @foreach ($types as $type)
                                             <option value="{{ $type->id }}"
                                                 {{ ($product->type_id ?? '') == $type->id ? 'selected' : '' }}>
                                                 {{ $type->title }}

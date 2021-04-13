@@ -121,10 +121,13 @@ class ApplicationController extends Controller
                         if (!empty($product->variants)) {
                             foreach ($product->variants as $variant) {
                                 $variant->available_quantity = ($variant->quantity - (OrderDetail::where('variant_id', $variant->id)->sum('quantity'))) ?? 0;
-                                $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
+                                $product_grind_ids = [];
+                                if(!empty($product->variants)) {
+                                	$product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
+                                }
                             }
                         }
-                        $product->grinds = Grind::whereIn('id', (explode(',', $product->variants[0]->grind_ids) ?? []))->get();
+                        $product->grinds = Grind::whereIn('id', (explode(',', ($product->variants[0]->grind_ids ?? '')) ?? []))->get();
                     }
                     else {
                         $product->available_quantity = ($product->quantity - (OrderDetail::where('equipment_id', $product->id)->sum('quantity'))) ?? 0;

@@ -1,12 +1,5 @@
 <?php
 
-use App\Mail\AppNewOrder;
-use App\Mail\CustomerNewOrder;
-use App\Mail\MerchantNewOrder;
-use App\Models\Grind;
-use App\Models\Order;
-use App\Models\Seller;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes([
     'register' => false
 ]);
-Route::get('/', function() { return redirect('admin'); }); // 'HomeController@admin');
+Route::get('/', function() { return redirect('admin'); })->middleware('auth'); // 'HomeController@admin');
 
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {

@@ -39,7 +39,8 @@ class CreateProductsTable extends Migration
             $table->foreignId('process_id')->nullable()->constrained('processes');
             $table->foreignId('seller_id')->nullable()->constrained('sellers');
             $table->foreignId('tax_class_id')->nullable()->constrained('tax_classes');
-            $table->foreignId('category_id')->nullable()->constrained('categories');
+            // $table->foreignId('category_id')->nullable()->constrained('categories');
+            $table->string('category_id', 50)->nullable();
 
             $table->tinyInteger('grind_type')->nullable()->default(0)->comment("1-All, 2=Custom");
             $table->tinyInteger('display_order')->nullable()->default(0);

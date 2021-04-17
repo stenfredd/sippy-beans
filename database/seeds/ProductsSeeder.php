@@ -1779,6 +1779,7 @@ class ProductsSeeder extends Seeder
                         'type' => 'product',
                         'content_id' => $save->id,
                         'image_path' => 'uploads/products/' . $product['brand_type_id'] . '/' . $image_id . '.png',
+                        'display_order' => 1,
                         'status' => 1
                     ]);
 

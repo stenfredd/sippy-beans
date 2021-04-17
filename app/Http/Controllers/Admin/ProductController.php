@@ -241,6 +241,9 @@ class ProductController extends Controller
             $request_data['image_url'] = asset('uploads/subscriptions/' . $imageName);
         } */
         $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
+        if(isset($request_data['category_id']) && !empty($request_data['category_id'])) {
+            $request_data['category_id'] = implode(',', $request_data['category_id']);
+        }
         if (isset($request_data['product_id']) && !empty($request_data['product_id'])) {
             $product = Product::find($request_data['product_id'])->update($request_data);
             $product_id = $request_data['product_id'];

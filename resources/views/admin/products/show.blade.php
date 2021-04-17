@@ -79,10 +79,10 @@
                                     <div class="form-group">
                                         <label>CATEGORY</label>
 
-                                        <select class="ui search dropdown w-100" id="category_id" name="category_id">
+                                        <select class="ui search dropdown w-100" id="category_id" name="category_id[]" multiple>
                                             <option value="">Select Category</option>
                                             @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}" {{ ($product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                            <option value="{{ $category->id }}" {{ in_array($category->id, explode(',', ($product->category_id ?? ''))) ? 'selected' : '' }}>
                                                 {{ $category->category_title }}
                                             </option>
                                             @endforeach
@@ -186,7 +186,7 @@
                                     @php
                                         $key = $i;
                                         $image=$product->images[$i] ?? [];
-                                    if(empty($image) && request()->path() !== 'admin/products/create') {
+                                    if(empty($image) && request()->path() !== 'admin/products/create' && $key > 0) {
                                         continue;
                                     }
                                     if($key > 0 && empty($image) && request()->path() === 'admin/products/create') {

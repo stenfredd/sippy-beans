@@ -47,7 +47,7 @@ class ProductController extends Controller
             if (!empty($request->input('category_id'))) {
                 $products = $products->whereCategoryId($request->category_id);
             }
-            $products = $products->with("images")->orderBy('display_order', 'asc')->get();
+            $products = $products->with("images")->orderBy('id', 'desc')->get();
 
             return DataTables::of($products)
                 ->addIndexColumn()

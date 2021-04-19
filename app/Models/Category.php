@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static whereStatus( int $int )
+ */
 class Category extends Model
 {
     protected $fillable = [

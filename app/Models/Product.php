@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
 
+/**
+ * @method static whereStatus( int $int )
+ */
 class Product extends Model
 {
     protected $fillable = [

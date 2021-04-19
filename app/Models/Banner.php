@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static whereStatus( int $int )
+ */
 class Banner extends Model
 {
     protected $fillable = [

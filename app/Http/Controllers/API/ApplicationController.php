@@ -19,24 +19,24 @@ class ApplicationController extends Controller
 {
     public function home()
     {
-        $banners = Banner::whereStatus(1)->orderBy('display_order', 'asc')->get()->each(function($banner) {
-            $banner->product = null;
-            $banner->equipment = null;
-            if(!empty($banner->product_id)) {
+        $banners = Banner::whereStatus(1)->orderBy('display_order', 'asc')->get()->each(function ($banner) {
+            $banner->product = NULL;
+            $banner->equipment = NULL;
+            if (! empty($banner->product_id)) {
                 $banner->product = Product::with(['variants', 'variants.images', 'images', 'weights'])->find($banner->product_id);
                 $product_grind_ids = [];
-                $banner->product->is_equipment = false;
-                if (!empty($banner->product->variants)) {
+                $banner->product->is_equipment = FALSE;
+                if (! empty($banner->product->variants)) {
                     foreach ($banner->product->variants as $variant) {
-                        $variant->available_quantity = ($variant->quantity - (OrderDetail::where('variant_id', $variant->id)->sum('quantity'))) ?? 0;
-                        $product_grind_ids = array_merge($product_grind_ids, (explode(',', $banner->product->variants[0]->grind_ids) ?? []));
+                        $variant->available_quantity = ( $variant->quantity - ( OrderDetail::where('variant_id', $variant->id)->sum('quantity') ) ) ?? 0;
+                        $product_grind_ids = array_merge($product_grind_ids, ( explode(',', $banner->product->variants[0]->grind_ids) ?? [] ));
                     }
                 }
                 $banner->product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
             }
-            if (!empty($banner->equipment_id)) {
+            if (! empty($banner->equipment_id)) {
                 $banner->equipment = Equipment::whereStatus(1)->latest()->with('images')->find($banner->equipment_id);
-                $banner->equipment->is_equipment = true;
+                $banner->equipment->is_equipment = TRUE;
                 $banner->equipment->available_quantity = $banner->equipment->quantity ?? 0;
             }
         });
@@ -49,7 +49,7 @@ class ApplicationController extends Controller
             $where = [];
             foreach ($match_makers as $matchmaker) {
                 $user_match_maker = UserMatchMaker::whereUserId(auth('api')->user()->id)->whereMatchMakerId($matchmaker->id)->first();
-                if (!empty($matchmaker->type)) {
+                if (! empty($matchmaker->type)) {
                     if ($matchmaker->type !== 'price') {
                         $where[$matchmaker->type . '_id'] = $user_match_maker->values ?? '';
                     }
@@ -58,7 +58,7 @@ class ApplicationController extends Controller
 
             $product_exist_ids = [];
             RE_SYNC_DATA:
-            if(!empty(request()->input('product_ids'))) {
+            if (! empty(request()->input('product_ids'))) {
                 $products = Product::with(['variants', 'variants.images', 'images', 'weights']);
                 $products = $products->whereIn('id', explode(',', request()->input('product_ids')));
                 $products = $products->limit(10)->get();
@@ -69,14 +69,14 @@ class ApplicationController extends Controller
                 foreach ($where as $k => $wh) {
                     $products = $products->whereIn($k, explode(',', $wh));
                 }
-                if (!empty($product_exist_ids)) {
+                if (! empty($product_exist_ids)) {
                     $products = $products->whereNotIn('id', $product_exist_ids);
                 }
                 $products = $products->limit(10)->get();
             }
 
             if (count($products) < 10) {
-                if (!empty($products)) {
+                if (! empty($products)) {
                     $product_exist_ids = array_merge($product_exist_ids, array_column($products->toArray(), 'id'));
                 }
                 array_pop($where);
@@ -85,19 +85,19 @@ class ApplicationController extends Controller
 
             foreach ($products as $product) {
                 $product_grind_ids = [];
-                $product->is_equipment = false;
-                if (!empty($product->variants)) {
+                $product->is_equipment = FALSE;
+                if (! empty($product->variants)) {
                     foreach ($product->variants as $variant) {
-                        $variant->available_quantity = ($variant->quantity - (OrderDetail::where('variant_id', $variant->id)->sum('quantity'))) ?? 0;
-                        $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
+                        $variant->available_quantity = ( $variant->quantity - ( OrderDetail::where('variant_id', $variant->id)->sum('quantity') ) ) ?? 0;
+                        $product_grind_ids = array_merge($product_grind_ids, ( explode(',', $product->variants[0]->grind_ids) ?? [] ));
                     }
                 }
                 $product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
             }
             $category_info = [
-                'id' => null,
+                'id' => NULL,
                 'icon' => asset(env('SUGGEST_CATEGORY_ICON', 'uploads/types/suggested.png')),
-                'is_equipment' => false,
+                'is_equipment' => FALSE,
                 'title' => 'Suggested for You',
                 'description' => 'Top picks based on your taste.',
                 'products' => $products
@@ -106,31 +106,31 @@ class ApplicationController extends Controller
         }
 
         foreach ($categories_names as $category) {
-            $db_category = Category::whereStatus(1)->where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? null;
-            if (!empty($db_category) && isset($db_category->id)) {
-                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
-                $equipment = false;
+            $db_category = Category::whereStatus(1)->where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? NULL;
+            if (! empty($db_category) && isset($db_category->id)) {
+                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])->orderBy('display_order', 'asc')->whereRaw("FIND_IN_SET('" . $db_category->id . "', category_id)")->limit(20)->get();
+                $equipment = FALSE;
                 if (empty($products) || count($products) == 0) {
-                    $equipment = true;
+                    $equipment = TRUE;
                     $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
                 }
                 foreach ($products as $product) {
                     $product->is_equipment = $equipment;
-                    if ($equipment === false) {
+                    if ($equipment === FALSE) {
                         $product_grind_ids = [];
-                        if (!empty($product->variants)) {
+                        if (! empty($product->variants)) {
                             foreach ($product->variants as $variant) {
-                                $variant->available_quantity = ($variant->quantity - (OrderDetail::where('variant_id', $variant->id)->sum('quantity'))) ?? 0;
+                                $variant->available_quantity = ( $variant->quantity - ( OrderDetail::where('variant_id', $variant->id)->sum('quantity') ) ) ?? 0;
                                 $product_grind_ids = [];
-                                if(!empty($product->variants)) {
-                                	$product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
+                                if (! empty($product->variants)) {
+                                    $product_grind_ids = array_merge($product_grind_ids, ( explode(',', $product->variants[0]->grind_ids) ?? [] ));
                                 }
                             }
                         }
-                        $product->grinds = Grind::whereIn('id', (explode(',', ($product->variants[0]->grind_ids ?? '')) ?? []))->get();
+                        $product->grinds = Grind::whereIn('id', ( explode(',', ( $product->variants[0]->grind_ids ?? '' )) ?? [] ))->get();
                     }
                     else {
-                        $product->available_quantity = ($product->quantity - (OrderDetail::where('equipment_id', $product->id)->sum('quantity'))) ?? 0;
+                        $product->available_quantity = ( $product->quantity - ( OrderDetail::where('equipment_id', $product->id)->sum('quantity') ) ) ?? 0;
                     }
                 }
                 $category_info = [
@@ -146,10 +146,11 @@ class ApplicationController extends Controller
         }
 
         $response = [
-            'status' => true,
+            'status' => TRUE,
             'banners' => $banners,
             'categories' => $categories
         ];
+
         return response()->json($response);
     }
 
@@ -161,12 +162,13 @@ class ApplicationController extends Controller
         $faqs = Page::wherePage('faq')->first();
 
         $response = [
-            'status' => true,
-            'contact_us' => $contact_us->description ?? null,
-            'privacy_policies' => $policies->description ?? null,
-            'terms_conditions' => $terms_conditions->description ?? null,
-            'faqs' => $faqs->description ?? null
+            'status' => TRUE,
+            'contact_us' => $contact_us->description ?? NULL,
+            'privacy_policies' => $policies->description ?? NULL,
+            'terms_conditions' => $terms_conditions->description ?? NULL,
+            'faqs' => $faqs->description ?? NULL
         ];
+
         return response()->json($response);
     }
 
@@ -181,7 +183,7 @@ class ApplicationController extends Controller
 
         $brand_id = '0';
         $brands = Brand::where("name", "like", "%" . $search . "%")->orderBy('display_order', 'asc')->get();
-        if (!empty($brands) && count($brands) > 0) {
+        if (! empty($brands) && count($brands) > 0) {
             $brand_id = implode(',', array_column($brands->toArray(), 'id'));
         }
 
@@ -198,11 +200,11 @@ class ApplicationController extends Controller
 
         foreach ($products as $product) {
             $product_grind_ids = [];
-            $product->is_product = true;
-            if (!empty($product->variants)) {
+            $product->is_product = TRUE;
+            if (! empty($product->variants)) {
                 foreach ($product->variants as $variant) {
-                    $variant->available_quantity = ($variant->quantity - (OrderDetail::where('variant_id', $variant->id)->sum('quantity'))) ?? 0;
-                    $product_grind_ids = array_merge($product_grind_ids, (explode(',', $product->variants[0]->grind_ids) ?? []));
+                    $variant->available_quantity = ( $variant->quantity - ( OrderDetail::where('variant_id', $variant->id)->sum('quantity') ) ) ?? 0;
+                    $product_grind_ids = array_merge($product_grind_ids, ( explode(',', $product->variants[0]->grind_ids) ?? [] ));
                 }
             }
             $product->grinds = Grind::whereIn('id', $product_grind_ids)->get() ?? [];
@@ -218,15 +220,15 @@ class ApplicationController extends Controller
         $total_equipments = $equipments->orderBy('id', 'asc')->count();
         $equipments = $equipments->with('images')->paginate(10);
         foreach ($equipments as $equipment) {
-            $equipment->is_equipment = true;
-            $equipment->available_quantity = ($equipment->quantity - (OrderDetail::where('equipment_id', $equipment->id)->sum('quantity'))) ?? 0;
+            $equipment->is_equipment = TRUE;
+            $equipment->available_quantity = ( $equipment->quantity - ( OrderDetail::where('equipment_id', $equipment->id)->sum('quantity') ) ) ?? 0;
         }
 
         $total_data = $total_products > $total_equipments ? $total_products : $total_equipments;
         $total_pages = ceil($total_data / 10);
 
         $response = [
-            'status' => true,
+            'status' => TRUE,
             'cur_page' => (int) $request->page ?? 1,
             'total_pages' => $total_pages,
             'products' => $products->items(),

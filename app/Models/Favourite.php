@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static select( string $string )
+ */
 class Favourite extends Model
 {
     protected $fillable = [
@@ -13,7 +16,7 @@ class Favourite extends Model
         'equipment_id'
     ];
 
-    public function user()
+	public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }

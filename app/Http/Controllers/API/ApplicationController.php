@@ -112,7 +112,7 @@ class ApplicationController extends Controller
                 $equipment = FALSE;
                 if (empty($products) || count($products) == 0) {
                     $equipment = TRUE;
-                    $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->where("category_id", $db_category->id)->limit(20)->get();
+                    $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->whereRaw("FIND_IN_SET('" . $db_category->id . "', category_id)")->limit(20)->get();
                 }
                 foreach ($products as $product) {
                     $product->is_equipment = $equipment;

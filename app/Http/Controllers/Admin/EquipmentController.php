@@ -94,6 +94,9 @@ class EquipmentController extends Controller
 
         $request_data = $request->all();
         $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
+        if(isset($request_data['category_id']) && !empty($request_data['category_id'])) {
+            $request_data['category_id'] = implode(',', $request_data['category_id']);
+        }
         if (isset($request_data['equipment_id']) && !empty($request_data['equipment_id'])) {
             $equipment = Equipment::find($request_data['equipment_id'])->update($request_data);
             $equipment_id = $request_data['equipment_id'];

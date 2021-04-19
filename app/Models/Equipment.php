@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static whereStatus( int $int )
+ * @method static with( string[] $array )
+ */
 class Equipment extends Model
 {
     protected $table = 'equipments';

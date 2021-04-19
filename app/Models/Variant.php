@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static whereBetween( string $string, false|string[] $price )
+ * @method static where( string $string, string $weight_id )
+ */
 class Variant extends Model
 {
     protected $fillable = [

@@ -32,6 +32,12 @@ class EquipmentController extends Controller
                     });
                 });
             }
+            if (!empty($request->input('category_id'))) {
+                $equipments = $equipments->whereRaw('FIND_IN_SET('.$request->category_id.', category_id)');
+            }
+            if(!empty($request->input('length'))) {
+                $equipments = $equipments->limit($request->input('length'));
+            }
             $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
 
             return DataTables::of($equipments)

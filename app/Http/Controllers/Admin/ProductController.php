@@ -45,7 +45,10 @@ class ProductController extends Controller
                 });
             }
             if (!empty($request->input('category_id'))) {
-                $products = $products->whereCategoryId($request->category_id);
+                $products = $products->whereRaw('FIND_IN_SET('.$request->category_id.', category_id)');
+            }
+            if(!empty($request->input('length'))) {
+                $products = $products->limit($request->input('length'));
             }
             $products = $products->with("images")->orderBy('id', 'desc')->get();
 

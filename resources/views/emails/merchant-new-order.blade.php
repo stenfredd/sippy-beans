@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="viewport" content="width=device-width">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <title>Merchant New Order</title>
     <style type="text/css">
         a:hover {
@@ -93,9 +93,6 @@
             display: block
         }
 
-
-
-
         @media only screen and (max-width: 480px) {
             .padding {
                 padding: 0px 15px !important;
@@ -161,8 +158,8 @@
     <center class="wrapper">
         <div class="container">
             <table bgcolor="#f8f9fa" align="center" border="0" cellspacing="0" cellpadding="0"
-                style="font-family:'Montserrat', Arial, Helvetica, sans-serif;font-size:14px;line-height:18px;background:#f8f9fa; color:#1d1d1d; font-weight:600"
-                class="outer">
+                   style="font-family:'Montserrat', Arial, Helvetica, sans-serif;font-size:14px;line-height:18px;background:#f8f9fa; color:#1d1d1d; font-weight:600"
+                   class="outer">
                 <tr>
                     <td>
                         <!--main table-->
@@ -173,8 +170,8 @@
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td><img src="http://nopguru.com/email/sippy-header.png"
-                                                    style="max-width:100%; height:auto" width="595" height="281"
-                                                    alt="" /></td>
+                                                     style="max-width:100%; height:auto" width="595" height="281"
+                                                     alt="" /></td>
                                         </tr>
                                     </table>
                                     <!--Banner-->
@@ -189,7 +186,7 @@
                                         </tr>
                                         <tr>
                                             <td><img src="http://nopguru.com/email/sippy-logo.png" width="108"
-                                                    height="38" alt="" /></td>
+                                                     height="38" alt="" /></td>
                                         </tr>
                                         <tr>
                                             <td height="20">&nbsp;</td>
@@ -203,7 +200,9 @@
                                             <td height="15">&nbsp;</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Hey {{ $seller->seller_name }},</strong></td>
+                                            <td>
+                                                <strong>Hey {{ $seller->seller_name }},</strong>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>&nbsp;</td>
@@ -212,11 +211,12 @@
                                             <td>
                                                 <!--pera-->
                                                 <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                                    style="font-size:14px;" class="pera">
+                                                       style="font-size:14px;" class="pera">
                                                     <tr>
                                                         <td class="pera" style="color:#5c5c5c; line-height:22px;">You’ve
                                                             received a new order. Please process the order to ship to
-                                                            SIPPY LTD within 24-48 Hours. Here are the details.</td>
+                                                            SIPPY LTD within 24-48 Hours. Here are the details.
+                                                        </td>
                                                     </tr>
                                                 </table>
 
@@ -238,17 +238,19 @@
                                         <tr>
                                             <td class="two-column">
                                                 <table border="0" align="center" cellpadding="0" cellspacing="0"
-                                                    class="column">
+                                                       class="column">
                                                     <tr>
                                                         <td align="right">
                                                             <table class="content">
                                                                 <tr>
                                                                     <td>
                                                                         <table width="100%" border="0" cellspacing="0"
-                                                                            cellpadding="0">
+                                                                               cellpadding="0">
                                                                             <tr>
-                                                                                <td style="font-size:14px"><strong>Order
-                                                                                        #{{ $order->order_number }}</strong></td>
+                                                                                <td style="font-size:14px">
+                                                                                    <strong>Order
+                                                                                        #{{ $order->order_number }}</strong>
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td height="5"></td>
@@ -259,16 +261,21 @@
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td style="font-size:12px"><strong>{{ $order->user->name }}</strong></td>
+                                                                                <td style="font-size:12px">
+                                                                                    <strong>{{ $order->user->name }}</strong>
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td style="font-size:12px"><strong>{{ $order->address->title }}</strong></td>
+                                                                                <td style="font-size:12px">
+                                                                                    <strong>{{ $order->address->title }}</strong>
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td style="font-size:12px">
                                                                                     {{ $order->address->address_line_1 .' ' . $order->address->address_line_2 }}
                                                                                     <br>
-                                                                                    {{ $order->address->city()->first()->name ?? '' }},{{ $order->address->country()->first()->country_name ?? '' }}
+                                                                                    {{ $order->address->city()->first()->name ?? '' }}
+                                                                                    ,{{ $order->address->country()->first()->country_name ?? '' }}
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
@@ -280,8 +287,8 @@
                                                                 <tr>
                                                                     <td>
                                                                         <img src="http://nopguru.com/email/1px.png"
-                                                                            style="max-width:100%; height:auto"
-                                                                            alt="" />
+                                                                             style="max-width:100%; height:auto"
+                                                                             alt="" />
                                                                     </td>
                                                                 </tr>
                                                             </table>
@@ -295,19 +302,23 @@
                                                                 <tr>
                                                                     <td valign="middle">
                                                                         <table width="100%" border="0" cellspacing="0"
-                                                                            cellpadding="0" class="align-left"
-                                                                            align="left">
+                                                                               cellpadding="0" class="align-left"
+                                                                               align="left">
                                                                             <tr>
                                                                                 <td height="15">&nbsp;</td>
                                                                             </tr>
 
                                                                             <tr>
                                                                                 <td class="align-left"
-                                                                                    style="font-size:14px"><strong>Order
-                                                                                        Date</strong></td>
+                                                                                    style="font-size:14px">
+                                                                                    <strong>Order
+                                                                                        Date
+                                                                                    </strong>
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td class="align-left" style="font-size:12px">
+                                                                                <td class="align-left"
+                                                                                    style="font-size:12px">
                                                                                     {{ $order->created_at->timezone($app_settings['timezone'] ?? 'UTC')->format("M d, Y") }}</td>
                                                                             </tr>
                                                                             <tr>
@@ -318,8 +329,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td><img src="http://nopguru.com/email/1px.png"
-                                                                            style="max-width:100%; height:auto"
-                                                                            alt="" /> </td>
+                                                                             style="max-width:100%; height:auto"
+                                                                             alt="" /></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -338,7 +349,9 @@
                                 <td align="left" valign="top">
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td class="padding"><strong>Order Details</strong></td>
+                                            <td class="padding">
+                                                <strong>Order Details</strong>
+                                            </td>
                                         </tr>
                                     </table>
                                 </td>
@@ -348,70 +361,101 @@
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tbody>
                                             @foreach ($details as $item)
-                                            <tr>
-                                                <td width="25"> <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1"
-                                                        height="14" style="display: block; height: 14px;width: 15px" alt=""> </td>
-                                                <td align="center" valign="top" style="border-bottom:1px #e4e5e6 solid">
-                                                    <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
-                                                        <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
-                                                            style="display: block; height: 14px;" alt=""> </div>
-@if (!empty($item->subscription_id))
-<img src="{{ $item->subscription->image_url ?? '' }}" width="56" height="80" alt="" style="width:auto" />
-@elseif (!empty($item->equipment_id))
-<img src="{{ $item->equipment->images[0]->image_path ?? '' }}" width="56" height="80" alt="" style="width:auto" />
-@else
-<img src="{{ $item->product->images[0]->image_path ?? '' }}" width="56" height="80" alt="" style="width:auto" />
-@endif
-                                                    <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
-                                                        <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
-                                                            style="display: block; height: 14px;" alt=""> </div>
-                                                </td>
-                                                <td valign="middle" align="left" style="border-bottom:1px #e4e5e6 solid">
-                                                    <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
-                                                        <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
-                                                            style="display: block; height: 14px;" alt=""> </div>
-                                                    <div style="width: 100%;display: block;">
-                                                        <div class="col-1" style="width: 65%;display: inline-block;vertical-align: middle;">
-                                                            <div class="product-type" style="color:#ed3f27; font-size:12px;">
-                                                                @if (!empty($item->subscription_id))
-                                                                SIPPY
-                                                                @elseif (!empty($item->equipment_id))
-                                                                {{ $item->equipment->brand->title }}
-                                                                @else
-                                                                {{ $item->product->brand->name }}
-                                                                @endif
+                                                <tr>
+                                                    <td width="25"><img
+                                                            src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                            width="1"
+                                                            height="14" style="display: block; height: 14px;width: 15px"
+                                                            alt=""></td>
+                                                    <td align="center" valign="top"
+                                                        style="border-bottom:1px #e4e5e6 solid">
+                                                        <div
+                                                            style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
+                                                            <img
+                                                                src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                                width="1" height="14"
+                                                                style="display: block; height: 14px;" alt=""></div>
+                                                        @if (!empty($item->subscription_id))
+                                                            <img src="{{ $item->subscription->image_url ?? '' }}"
+                                                                 width="56" height="80" alt="" style="width:auto" />
+                                                        @elseif (!empty($item->equipment_id))
+                                                            <img
+                                                                src="{{ $item->equipment->images[0]->image_path ?? '' }}"
+                                                                width="56" height="80" alt="" style="width:auto" />
+                                                        @else
+                                                            <img src="{{ $item->product->images[0]->image_path ?? '' }}"
+                                                                 width="56" height="80" alt="" style="width:auto" />
+                                                        @endif
+                                                        <div
+                                                            style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
+                                                            <img
+                                                                src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                                width="1" height="14"
+                                                                style="display: block; height: 14px;" alt=""></div>
+                                                    </td>
+                                                    <td valign="middle" align="left"
+                                                        style="border-bottom:1px #e4e5e6 solid">
+                                                        <div
+                                                            style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;">
+                                                            <img
+                                                                src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                                width="1" height="14"
+                                                                style="display: block; height: 14px;" alt=""></div>
+                                                        <div style="width: 100%;display: block;">
+                                                            <div class="col-1"
+                                                                 style="width: 65%;display: inline-block;vertical-align: middle;">
+                                                                <div class="product-type"
+                                                                     style="color:#ed3f27; font-size:12px;">
+                                                                    @if (!empty($item->subscription_id))
+                                                                        SIPPY
+                                                                    @elseif (!empty($item->equipment_id))
+                                                                        {{ $item->equipment->brand->title }}
+                                                                    @else
+                                                                        {{ $item->product->brand->name }}
+                                                                    @endif
+                                                                </div>
+                                                                <div class="product-name"
+                                                                     style="font-size:18px; color:#1d1d1d;">
+                                                                    @if (!empty($item->subscription_id))
+                                                                        {{ $item->subscription->title }}
+                                                                    @elseif (!empty($item->equipment_id))
+                                                                        {{ $item->equipment->title }}
+                                                                    @else
+                                                                        {{ $item->product->product_name }}
+                                                                    @endif
+                                                                </div>
+                                                                <div class="product-size"
+                                                                     style="font-size:12px; color:#848484; padding-top:5px;">
+                                                                    @if (!empty($item->product_id) && !empty($item->variant_id))
+                                                                        {{ $item->variant->title }} -
+                                                                    @endif
+                                                                    {{ $item->grind_title ?? '' }}
+                                                                </div>
                                                             </div>
-                                                            <div class="product-name" style="font-size:18px; color:#1d1d1d;">
-                                                                @if (!empty($item->subscription_id))
-                                                                {{ $item->subscription->title }}
-                                                                @elseif (!empty($item->equipment_id))
-                                                                {{ $item->equipment->title }}
-                                                                @else
-                                                                {{ $item->product->product_name }}
-                                                                @endif
-                                                            </div>
-                                                            <div class="product-size" style="font-size:12px; color:#848484; padding-top:5px;">
-                                                                @if (!empty($item->product_id) && !empty($item->variant_id))
-                                                                {{ $item->variant->title }} -
-                                                                @endif
-{{ $item->grind_title ?? '' }}
+                                                            <div class="col-2"
+                                                                 style="width: 33%;display: inline-block;vertical-align: middle;text-align: right;">
+                                                                <div class="product-price"
+                                                                     style="font-size:18px; color:#1d1d1d;">
+                                                                    {{ ($app_settings['currency_code'] ?? 'AED') .' '. number_format($item->amount,2) }}
+                                                                </div>
+                                                                <div class="product-qty">
+                                                                    Qty: {{ $item->quantity }}</div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-2" style="width: 33%;display: inline-block;vertical-align: middle;text-align: right;">
-                                                            <div class="product-price" style="font-size:18px; color:#1d1d1d;">
-                                                                {{ ($app_settings['currency_code'] ?? 'AED') .' '. number_format($item->amount,2) }}
-                                                            </div>
-                                                            <div class="product-qty">Qty: {{ $item->quantity }}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;width: 100%;float: left;">
-                                                        <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1" height="14"
-                                                            style="display: block; height: 14px;" alt=""> </div>
-                                                </td>
+                                                        <div
+                                                            style="display: block; font-size: 0pt; line-height: 0pt; height: 14px;width: 100%;float: left;">
+                                                            <img
+                                                                src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                                width="1" height="14"
+                                                                style="display: block; height: 14px;" alt=""></div>
+                                                    </td>
 
-                                                <td width="15"> <img src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif" width="1"
-                                                        height="14" style="display: block; height: 14px;width: 15px" alt=""> </td>
-                                            </tr>
+                                                    <td width="15"><img
+                                                            src="https://d250wtlu7i24bo.cloudfront.net/emailtemplateassets/img/empty.gif"
+                                                            width="1"
+                                                            height="14" style="display: block; height: 14px;width: 15px"
+                                                            alt=""></td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -422,11 +466,13 @@
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td class="padding">
-                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="product-wrapper">
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                       class="product-wrapper">
                                                     <!--product item-->
                                                     <tr>
                                                         <td align="right">
-                                                            <table width="65%" border="0" cellspacing="0" cellpadding="0">
+                                                            <table width="65%" border="0" cellspacing="0"
+                                                                   cellpadding="0">
                                                                 <tr>
                                                                     <td height="1"></td>
                                                                 </tr>
@@ -436,11 +482,13 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                                                            style="line-height:24px;">
+                                                                        <table width="100%" border="0" cellspacing="0"
+                                                                               cellpadding="0"
+                                                                               style="line-height:24px;">
                                                                             <tr>
                                                                                 <td align="left" valign="top">Item
-                                                                                    Total(s)</td>
+                                                                                    Total(s)
+                                                                                </td>
                                                                                 <td align="right" valign="top">
                                                                                     {{ $app_settings['currency_code'] ?? 'AED' }}
                                                                                     {{ number_format($order->cart_total, 2) }}
@@ -455,7 +503,9 @@
                                                                                 </td>
                                                                             </tr> --}}
                                                                             <tr>
-                                                                                <td align="left" valign="top">SIPPY COMMISSION</td>
+                                                                                <td align="left" valign="top">SIPPY
+                                                                                    COMMISSION
+                                                                                </td>
                                                                                 <td align="right" valign="top">
                                                                                     {{-- {{ $order->sippy_commission > 0 ? (($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->commission_fee, 2)) : '-' }} --}}
                                                                                     {{ ($app_settings['currency_code'] ?? 'AED ') .' '. number_format($order->sippy_commission ?? 0, 2) }}
@@ -486,8 +536,9 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                                                            style="line-height:24px;">
+                                                                        <table width="100%" border="0" cellspacing="0"
+                                                                               cellpadding="0"
+                                                                               style="line-height:24px;">
                                                                             <tr>
                                                                                 <td align="left" valign="top">Subtotal
                                                                                 </td>
@@ -498,7 +549,8 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td align="left" valign="top">Taxes
-                                                                                    &amp; Charges</td>
+                                                                                    &amp; Charges
+                                                                                </td>
                                                                                 <td align="right" valign="top">
                                                                                 <td align="right" valign="top">
                                                                                     {{ $app_settings['currency_code'] ?? 'AED' }}
@@ -522,11 +574,17 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <table width="100%" border="0" cellspacing="0"
+                                                                               cellpadding="0">
                                                                             <tr>
-                                                                                <td align="left" valign="top"><strong style="font-weight:800">Total
-                                                                                        Amount</strong></td>
-                                                                                <td align="right" valign="top"><strong style="font-weight:800">
+                                                                                <td align="left" valign="top">
+                                                                                    <strong style="font-weight:800">
+                                                                                        Total
+                                                                                        Amount
+                                                                                    </strong>
+                                                                                </td>
+                                                                                <td align="right" valign="top">
+                                                                                    <strong style="font-weight:800">
                                                                                 <td align="right" valign="top">
                                                                                     {{ $app_settings['currency_code'] ?? 'AED' }}
                                                                                     {{ number_format($order->total_amount, 2) }}</strong></td>
@@ -561,9 +619,12 @@
                                                     height="38" alt="" /></td>
                                         </tr>
                                         <tr>
-                                            <td align="center" valign="top"><a href="http://www.hypeten.com/"
-                                                    target="_blank"
-                                                    style="color:#1d1d1d; font-size:10px; text-decoration:none">www.hypeten.com</a>
+                                            <td align="center" valign="top">
+                                                <a href="http://www.sippybeans.com/"
+                                                   target="_blank"
+                                                   style="color:#1d1d1d; font-size:10px; text-decoration:none">
+                                                    www.sippybeans.com
+                                                </a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -572,22 +633,25 @@
                                         <tr>
                                             <td align="center" valign="top">
                                                 <table width="110" border="0" cellspacing="0" cellpadding="0"
-                                                    align="center">
+                                                       align="center">
                                                     <tr>
-                                                        <td align="center"><a href="#"><img
+                                                        <td align="center">
+                                                            <a href="https://www.instagram.com/sippybeans"><img
                                                                     src="http://nopguru.com/email/instagram-icon.png"
-                                                                    width="18" height="18" alt="" /></a></td>
-                                                        <td align="center"><a href="#"><img
+                                                                    width="18" height="18" alt="" /></a>
+                                                        </td>
+                                                        <td align="center">
+                                                            <a href="https://www.facebook.com/sippybeans"><img
                                                                     src="http://nopguru.com/email/facebook-icon.png"
-                                                                    width="9" height="18" alt="" /></a></td>
-                                                        <td align="center"><a href="#"><img
+                                                                    width="9" height="18" alt="" /></a>
+                                                        </td>
+                                                        <td align="center">
+                                                            <a href="https://www.twitter.com/sippybeans"><img
                                                                     src="http://nopguru.com/email/twitter-icon.png"
-                                                                    width="21" height="18" alt="" /></a> </td>
+                                                                    width="21" height="18" alt="" /></a>
+                                                        </td>
                                                     </tr>
                                                 </table>
-
-
-
 
                                             </td>
                                         </tr>
@@ -606,8 +670,9 @@
                                         <tr>
                                             <td align="center" valign="top" style="font-size:11px; color:#848484">If you
                                                 have any questions or concerns please contact us at: <br />
-                                                <a href="mailto:hello@hypeten.com"
-                                                    style="color:#f53e22; text-decoration:none">hello@hypeten.com</a>
+                                                <a href="mailto:info@sippyme.com"
+                                                   style="color:#f53e22; text-decoration:none">info@sippyme.com
+                                                </a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -615,8 +680,9 @@
                                         </tr>
                                         <tr>
                                             <td align="center" valign="top" style="color:#c7c7c7; font-size:10px">
-                                                <strong style="color:#767676;">SIPPY LTD</strong>, 1 Sheikh Mohammed bin
-                                                Rashid Blvd, Burj Khalifa, Apt 1206 Dubai, UAE</td>
+                                                <strong style="color:#767676;">SIPPY LTD</strong>
+                                                , Al Sila Tower, Abu Dhabi Global Market, Abu Dhabi, UAE
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td align="center" height="10" valign="top"></td>
@@ -628,22 +694,31 @@
                             <tr>
                                 <td align="center" valign="top">
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                        style="background:#f3f3f3">
+                                           style="background:#f3f3f3">
                                         <tr>
                                             <td style="padding:10px;">
                                                 <table width="90%" border="0" cellspacing="0" cellpadding="0"
-                                                    align="center">
+                                                       align="center">
                                                     <tr>
                                                         <td align="left" valign="middle" width="50%"
                                                             style="font-size:10px; color:#a4a4a4">©2020 SIPPY LTD, All
-                                                            Rights Reserved</td>
+                                                            Rights Reserved
+                                                        </td>
                                                         <td align="right" valign="middle"
-                                                            style="font-size:10px; color:#a4a4a4"><a href="#"
-                                                                style="color:#a4a4a4; text-decoration:none">Privacy
-                                                                Policy</a> | <a href="#"
-                                                                style="color:#a4a4a4; text-decoration:none">Terms &
-                                                                Conditions</a> | <a href="#"
-                                                                style="color:#a4a4a4; text-decoration:none">Returns</a>
+                                                            style="font-size:10px; color:#a4a4a4">
+                                                            <a href="https://sippybeans.com/policies/privacy-policy"
+                                                               style="color:#a4a4a4; text-decoration:none">Privacy
+                                                                Policy
+                                                            </a>
+                                                            |
+                                                            <a href="https://sippybeans.com/policies/terms-of-service"
+                                                               style="color:#a4a4a4; text-decoration:none">Terms &
+                                                                Conditions
+                                                            </a>
+                                                            |
+                                                            <a href="https://sippybeans.com/policies/refund-policy"
+                                                               style="color:#a4a4a4; text-decoration:none">Returns
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 </table>

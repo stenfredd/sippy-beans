@@ -38,7 +38,12 @@ class EquipmentController extends Controller
             if(!empty($request->input('length'))) {
                 $equipments = $equipments->limit($request->input('length'));
             }
-            $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
+            if(!empty($request->input('category_page'))) {
+                $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
+            }
+            else {
+                $equipments = $equipments->with("images")->orderBy('id', 'desc')->get();
+            }
 
             return DataTables::of($equipments)
                 ->addIndexColumn()

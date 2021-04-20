@@ -297,6 +297,7 @@
                 data._token = '{{ csrf_token() }}';
                 data.search = $("#search_product").val();
                 data.category_id = '{{ $category->id ?? "" }}';
+                data.category_page = 1;
             }
         },
         "columns": [

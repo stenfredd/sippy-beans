@@ -50,7 +50,12 @@ class ProductController extends Controller
             if(!empty($request->input('length'))) {
                 $products = $products->limit($request->input('length'));
             }
-            $products = $products->with("images")->orderBy('id', 'desc')->get();
+            if(!empty($request->input('category_page'))) {
+                $products = $products->with("images")->orderBy('display_order', 'asc')->get();
+            }
+            else {
+                $products = $products->with("images")->orderBy('id', 'desc')->get();
+            }
 
             return DataTables::of($products)
                 ->addIndexColumn()

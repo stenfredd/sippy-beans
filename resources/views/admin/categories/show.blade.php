@@ -288,6 +288,7 @@
         "serverSide": true,
         "lengthChange": false,
         "searching": false,
+        "pageLength": 30,
         "order": [],
         "ajax": {
             "url": BASE_URL + @if(isset($is_equipment) && $is_equipment == 1) "equipments" @else "products" @endif,

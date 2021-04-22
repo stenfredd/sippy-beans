@@ -170,13 +170,13 @@ class CategoryController extends Controller
                 // Equipment::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
                 ProductCategory::updateOrCreate(
                     ['equipment_id' => $product['product_id'], 'category_id' => $category_id],
-                    ['display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1]
+                    ['equipment_id' => $product['product_id'], 'category_id' => $category_id, 'display_order' => $product['sort_order']]
                 );
             } else {
                 // Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
                 ProductCategory::updateOrCreate(
                     ['product_id' => $product['product_id'], 'category_id' => $category_id],
-                    ['display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1]
+                    ['product_id' => $product['product_id'], 'category_id' => $category_id, 'display_order' => $product['sort_order']]
                 );
             }
         }

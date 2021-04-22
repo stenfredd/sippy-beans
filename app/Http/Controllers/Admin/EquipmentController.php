@@ -18,7 +18,7 @@ class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $equipments = Equipment::select('equipments.*')->whereStatus(1);
+        $equipments = Equipment::select('*')->whereStatus(1);
         if ($request->ajax()) {
             if (! empty($request->input('search')) && ! is_array($request->input('search'))) {
                 $equipments = $equipments->where(function ($query) use ($request) {
@@ -34,7 +34,7 @@ class EquipmentController extends Controller
                 });
             }
             if (! empty($request->input('category_id'))) {
-                $equipments = $equipments->whereRaw('FIND_IN_SET(' . $request->category_id . ', category_id)');
+                $equipments = $equipments->whereRaw('FIND_IN_SET(' . $request->category_id . ', equipments.category_id)');
             }
             if (! empty($request->input('length'))) {
                 $equipments = $equipments->limit($request->input('length'));
@@ -48,7 +48,8 @@ class EquipmentController extends Controller
                             $join->on('equipments.id', '=', 'product_categories.equipment_id');
                             $join->where('product_categories.category_id', '=', $request->input('category_id'));
                         })
-                        ->orderBy('product_categories.display_order', 'asc')->get();
+                        ->orderBy('product_categories.display_order', 'asc')
+                        ->get();
                 }
             }
             else {

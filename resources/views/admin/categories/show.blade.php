@@ -434,6 +434,7 @@
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('sorting_products', JSON.stringify(sorting_products));
         formData.append('is_equipment', '{{ $is_equipment ?? 0 }}');
+        formData.append('category_id', '{{ $category->id ?? 0 }}');
 
         $.ajax({
             url: "{{ url('admin/categories/update-products-sort-orders') }}",

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Equipment;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -75,11 +76,10 @@ class CategoryController extends Controller
         $is_equipment = 0;
         if ($products == 0) {
             $products = Equipment::whereRaw('FIND_IN_SET('.$id.', category_id)')->count();
-            if($products > 0) {
-
-            }
             $is_equipment = 1;
         }
+//        $dbProducts = Product::leftJoin('product_categories', 'products.id', 'product_categories.product_id')->orderBy('product_categories.display_order')->get();
+//        $dbEquipments = Product::leftJoin('product_categories', 'products.id', 'product_categories.product_id')->orderBy('product_categories.display_order')->get();
         view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Category' : 'Add New Category'));
         return view('admin.categories.show', compact('category', 'products', 'is_equipment'));
     }
@@ -162,13 +162,22 @@ class CategoryController extends Controller
         ]);
 
         $is_equipment = $request->is_equipment ?? 0;
+        $category_id = $request->post('category_id');
 
         $sorting_products = json_decode($request->sorting_products, true);
         foreach ($sorting_products as $product) {
             if (isset($is_equipment) && $is_equipment == 1) {
-                Equipment::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+                // Equipment::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+                ProductCategory::updateOrCreate(
+                    ['equipment_id' => $product['product_id'], 'category_id' => $category_id],
+                    ['display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1]
+                );
             } else {
-                Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+                // Product::find($product['product_id'])->update(['display_order' => $product['sort_order']]);
+                ProductCategory::updateOrCreate(
+                    ['product_id' => $product['product_id'], 'category_id' => $category_id],
+                    ['display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1]
+                );
             }
         }
         $response = ['status' => true, 'message' => 'Product sorting order applied successfully.'];

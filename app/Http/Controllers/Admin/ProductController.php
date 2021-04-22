@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Seller;
 use App\Models\Origin;
 use App\Models\Brand;
@@ -27,31 +28,37 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::select('*')->whereStatus(1);
+        $products = Product::select('products.*')->whereStatus(1);
         if ($request->ajax()) {
-            if (!empty($request->input('search')) && !is_array($request->input('search'))) {
+            if (! empty($request->input('search')) && ! is_array($request->input('search'))) {
                 $products = $products->where(function ($query) use ($request) {
                     $query->where('product_name', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('varietal', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('altitude', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('flavor_note', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
-                    $query->orWhereHas('brand', function($owh) use ($request) {
+                    $query->orWhereHas('brand', function ($owh) use ($request) {
                         $owh->where('name', 'LIKE', "%" . $request->input('search') . "%");
                     });
-                    $query->orWhereHas('seller', function($owh) use ($request) {
+                    $query->orWhereHas('seller', function ($owh) use ($request) {
                         $owh->where('seller_name', 'LIKE', "%" . $request->input('search') . "%");
                     });
                 });
             }
-            if (!empty($request->input('category_id'))) {
-                $products = $products->whereRaw('FIND_IN_SET('.$request->category_id.', category_id)');
+            if (! empty($request->input('category_id'))) {
+                $products = $products->whereRaw('FIND_IN_SET(' . $request->category_id . ', products.category_id)');
             }
-            if(!empty($request->input('length'))) {
+            if (! empty($request->input('length'))) {
                 $products = $products->limit($request->input('length'));
             }
-            if(!empty($request->input('category_page'))) {
-                $products = $products->with("images")->orderBy('display_order', 'asc')->get();
+            if (! empty($request->input('category_page'))) {
+                $products = $products->with("images")
+                    // ->leftJoin('product_categories', 'products.id', 'product_categories.product_id')
+                    ->leftJoin('product_categories', function($join) use ($request) {
+                        $join->on('products.id', '=', 'product_categories.product_id');
+                        $join->where('product_categories.category_id', '=', $request->input('category_id'));
+                    })
+                    ->orderBy('product_categories.display_order', 'asc')->get();
             }
             else {
                 $products = $products->with("images")->orderBy('id', 'desc')->get();
@@ -59,11 +66,12 @@ class ProductController extends Controller
 
             return DataTables::of($products)
                 ->addIndexColumn()
-                ->addColumn('sort_image', function ($banner) {
+                ->addColumn('sort_image', function ($product) {
                     return '<img src="' . asset('assets/images/sort-icon.png') . '" class="handle">';
                 })
                 ->addColumn('image_path', function ($product) {
-                    $image_url = $product->images[0]->image_path ?? null;
+                    $image_url = $product->images[0]->image_path ?? NULL;
+
                     return '<img src="' . asset($image_url ?? 'assets/images/product-img.png') . '">';
                 })
                 ->addColumn('brand_name', function ($product) {
@@ -72,40 +80,43 @@ class ProductController extends Controller
                 ->addColumn('seller_name', function ($product) {
                     return $product->seller->seller_name ?? '-';
                 })
-                ->editColumn('created_at', function ($banner) {
-                    $date = $banner->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
-                    return $date . ('<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>');
+                ->editColumn('created_at', function ($product) {
+                    $date = $product->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
+
+                    return $date . ( '<span class="d-block gray">' . $product->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>' );
                 })
                 ->addColumn('action', function ($product) use ($request) {
                     $action = '<a href="' . url('admin/products/' . $product->id) . '"><i class="feather icon-eye"></i></a>';
-                if (isset($request->category_id) && !empty($request->category_id)) {
-                    $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $product->id . ')"><i class="feather icon-trash"></i></a>';
-                }
+                    if (isset($request->category_id) && ! empty($request->category_id)) {
+                        $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $product->id . ')"><i class="feather icon-trash"></i></a>';
+                    }
+
                     return $action;
                 })
                 ->editColumn('status', function ($product) {
-                    return ($product->status == 1 ? 'Enabled' : 'Disabled');
+                    return ( $product->status == 1 ? 'Enabled' : 'Disabled' );
                 })
                 ->rawColumns(['sort_image', 'chk_select', 'image_path', 'created_at', 'action'])
                 ->make(TRUE);
         }
         $total_products = $products->count();
         view()->share('page_title', 'Beans');
+
         return view('admin.products.list', compact('total_products'));
     }
 
-    public function show(Request $request, $id = null)
+    public function show(Request $request, $id = NULL)
     {
         $product = Product::with('variants')->find($id);
         $variants = [];
-        if (!empty($product) && isset($product->id)) {
+        if (! empty($product) && isset($product->id)) {
             foreach ($product->variants as $variant) {
                 $grind_ids = explode(',', $variant->grind_ids);
                 foreach ($grind_ids as $grind_id) {
                     $variant_grind = $variant->replicate();
                     // $variant->available_quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->whereGrindId($grind_id)->sum('quantity'));
                     // $variant_grind->quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->whereGrindId($grind_id)->sum('quantity'));
-                    $variant_grind->quantity = $variant->quantity - (OrderDetail::whereVariantId($variant->id)->sum('quantity'));
+                    $variant_grind->quantity = $variant->quantity - ( OrderDetail::whereVariantId($variant->id)->sum('quantity') );
                     $variant_grind->id = $variant->id;
                     $variant_grind->grind_id = $grind_id;
                     $variant_grind->grind_title = Grind::find($grind_id)->title ?? '';
@@ -132,10 +143,10 @@ class ProductController extends Controller
         $weights = Weight::whereStatus(1)->get();
         $categories = Category::whereStatus(1)->get();
 
-        view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Product' : 'Add New Product'));
+        view()->share('page_title', ( ! empty($id) && is_numeric($id) ? 'Update Product' : 'Add New Product' ));
+
         return view('admin.products.show', compact('product', 'brands', 'types', 'sellers', 'origins', 'characteristics', 'bestFor', 'levels', 'processes', 'types', 'weights', 'grinds', 'coffeeTypes', 'categories'));
     }
-
 
     public function store(Request $request)
     {
@@ -196,7 +207,7 @@ class ProductController extends Controller
                 }
             }
 
-            if (!empty($request->input('grind_id')) && !empty($request->input('weight_id'))) {
+            if (! empty($request->input('grind_id')) && ! empty($request->input('weight_id'))) {
                 foreach ($request->input('grind_id') as $key => $grind_id) {
                     Variant::whereProductId($product->id)->whereGrindId($grind_id)->delete();
                     foreach ($request->input('weight_id') as $weight_id) {
@@ -206,7 +217,7 @@ class ProductController extends Controller
                             'weight_id' => $weight_id,
                             'price' => 50,
                             'quantity' => $request->quantity ?? 100,
-                            'is_default' => ($key == 0 ? 1 : 0),
+                            'is_default' => ( $key == 0 ? 1 : 0 ),
                             'status' => 1
                         ]);
                     }
@@ -239,7 +250,7 @@ class ProductController extends Controller
         $this->validate($request, $validation);
 
         $request_data = $request->except(['image_0', 'image_1', 'image_2']);
-        $request_data['coffee_type_id'] = isset($request_data['coffee_type_id']) && !empty($request_data['coffee_type_id']) ? implode(',', $request_data['coffee_type_id']) : null;
+        $request_data['coffee_type_id'] = isset($request_data['coffee_type_id']) && ! empty($request_data['coffee_type_id']) ? implode(',', $request_data['coffee_type_id']) : NULL;
 
         // dd($request_data);
         /* if ($request->hasFile('image_url')) {
@@ -249,18 +260,18 @@ class ProductController extends Controller
             $request_data['image_url'] = asset('uploads/subscriptions/' . $imageName);
         } */
         $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
-        if(isset($request_data['category_id']) && !empty($request_data['category_id'])) {
+        if (isset($request_data['category_id']) && ! empty($request_data['category_id'])) {
             $request_data['category_id'] = implode(',', $request_data['category_id']);
         }
-        if (isset($request_data['product_id']) && !empty($request_data['product_id'])) {
+        if (isset($request_data['product_id']) && ! empty($request_data['product_id'])) {
             $product = Product::find($request_data['product_id'])->update($request_data);
             $product_id = $request_data['product_id'];
-        } else {
+        }
+        else {
             $request_data['status'] = 1;
             $product = Product::create($request_data);
             $product_id = $product->id;
         }
-
 
         if ($request->hasFile('image_0')) {
             $image_file = $request->file('image_0');
@@ -268,7 +279,7 @@ class ProductController extends Controller
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(1)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(1)->first();
-            if (empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'product';
                 $img->content_id = $product_id;
@@ -283,7 +294,7 @@ class ProductController extends Controller
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->first();
-            if (empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'product';
                 $img->content_id = $product_id;
@@ -298,7 +309,7 @@ class ProductController extends Controller
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->first();
-            if (empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'product';
                 $img->content_id = $product_id;
@@ -308,16 +319,29 @@ class ProductController extends Controller
             $img->save();
         }
 
-        $msg = isset($request_data['product_id']) && !empty($request_data['product_id']) ? 'updated' : 'created';
-        $msg1 = isset($request_data['product_id']) && !empty($request_data['product_id']) ? 'Updating' : 'Creating';
+        $msg = isset($request_data['product_id']) && ! empty($request_data['product_id']) ? 'updated' : 'created';
+        $msg1 = isset($request_data['product_id']) && ! empty($request_data['product_id']) ? 'Updating' : 'Creating';
         if ($product) {
 
-            if(!empty($request->input('add_variant'))) {
+            if(!empty($request->input('category_id'))) {
+                foreach ($request->input('category_id') as $category_id) {
+                    $productCategory = ProductCategory::whereProductId($product->id)->whereCategoryId($category_id)->first();
+                    if(empty($productCategory)) {
+                        ProductCategory::create([
+                            'product_id' => $product->id,
+                            'category_id' => $category_id,
+                            'display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1,
+                        ]);
+                    }
+                }
+            }
+
+            if (! empty($request->input('add_variant'))) {
                 $add_variant = $request->input('add_variant');
-                $request_data['add_variant'] = json_decode($add_variant, true);
+                $request_data['add_variant'] = json_decode($add_variant, TRUE);
                 $post_data = $request_data['add_variant'];
 
-                if (!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
+                if (! empty($post_data['grind_ids']) && ! empty($post_data['weight_ids']) && ! empty($post_data['add_variant'])) {
                     $grind_ids = implode(',', $post_data['grind_ids']);
                     foreach ($post_data['weight_ids'] as $weight_id) {
                         $weight_title = Weight::find($weight_id)->title ?? '';
@@ -337,9 +361,12 @@ class ProductController extends Controller
             }
 
             session()->flash('success', 'Product details ' . $msg . ' successfully.');
+
             return redirect(url('admin/products/' . $product_id));
-        } else {
+        }
+        else {
             session()->flash('error', $msg1 . ' product details failed, Please try again.');
+
             return redirect()->back();
         }
     }
@@ -347,16 +374,16 @@ class ProductController extends Controller
     public function saveVariants(Request $request)
     {
         $post_data = $request->all();
-        $save = true;
-        if (isset($post_data['variant_id']) && !empty($post_data['variant_id'])) {
+        $save = TRUE;
+        if (isset($post_data['variant_id']) && ! empty($post_data['variant_id'])) {
             // DB::enableQueryLog();
             $post_data['grind_id'] = $post_data['grind_id'];
             $dbVariant = Variant::find($request->variant_id);
-            if($post_data['variant_quantity_type'] === 'add') {
-                $post_data['quantity'] = $dbVariant->quantity + ($post_data['quantity']);
+            if ($post_data['variant_quantity_type'] === 'add') {
+                $post_data['quantity'] = $dbVariant->quantity + ( $post_data['quantity'] );
             }
             else {
-                $post_data['quantity'] = $dbVariant->quantity - ($post_data['quantity']);
+                $post_data['quantity'] = $dbVariant->quantity - ( $post_data['quantity'] );
             }
             unset($post_data['_token']);
             unset($post_data['variant_id']);
@@ -367,16 +394,17 @@ class ProductController extends Controller
             // dd($save, DB::getQueryLog(), $post_data);
         }
         if ($save) {
-            return response()->json(['status' => true, 'message' => 'Variant details updated successfully.']);
+            return response()->json(['status' => TRUE, 'message' => 'Variant details updated successfully.']);
         }
-        return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
+
+        return response()->json(['status' => FALSE, 'message' => 'Something went wrong, Please try again.']);
     }
 
     public function createVariants(Request $request)
     {
         $post_data = $request->all();
-        $response = ['status' => false, 'message' => 'Something went wrong, Please try again'];
-        if (!empty($post_data['grind_ids']) && !empty($post_data['weight_ids']) && !empty($post_data['add_variant'])) {
+        $response = ['status' => FALSE, 'message' => 'Something went wrong, Please try again'];
+        if (! empty($post_data['grind_ids']) && ! empty($post_data['weight_ids']) && ! empty($post_data['add_variant'])) {
             $grind_ids = implode(',', $post_data['grind_ids']);
             foreach ($post_data['weight_ids'] as $weight_id) {
                 $weight_title = Weight::find($weight_id)->title ?? '';
@@ -392,8 +420,9 @@ class ProductController extends Controller
                 ];
                 Variant::create($variant);
             }
-            $response = ['status' => true, 'message' => 'Variant details added successfully.'];
+            $response = ['status' => TRUE, 'message' => 'Variant details added successfully.'];
         }
+
         return response()->json($response);
     }
 
@@ -409,8 +438,9 @@ class ProductController extends Controller
         $variant->grind_ids = implode(',', $ids);
         $save = $variant->save();
         if ($save) {
-            return response()->json(['status' => true, 'message' => 'Variant deleted successfully.']);
+            return response()->json(['status' => TRUE, 'message' => 'Variant deleted successfully.']);
         }
-        return response()->json(['status' => false, 'message' => 'Something went wrong, Please try again.']);
+
+        return response()->json(['status' => FALSE, 'message' => 'Something went wrong, Please try again.']);
     }
 }

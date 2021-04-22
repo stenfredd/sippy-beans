@@ -17,7 +17,7 @@ class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $equipments = Equipment::select('*')->whereStatus(1);
+        $equipments = Equipment::select('equipments.*')->whereStatus(1);
         if ($request->ajax()) {
             if (!empty($request->input('search')) && !is_array($request->input('search'))) {
                 $equipments = $equipments->where(function ($query) use ($request) {
@@ -39,7 +39,16 @@ class EquipmentController extends Controller
                 $equipments = $equipments->limit($request->input('length'));
             }
             if(!empty($request->input('category_page'))) {
-                $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
+                // $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
+                if (! empty($request->input('category_page'))) {
+                    $equipments = $equipments->with("images")
+                        // ->leftJoin('product_categories', 'equipments.id', 'product_categories.equipment_id')
+                        ->leftJoin('product_categories', function($join) use ($request) {
+                            $join->on('equipments.id', '=', 'product_categories.equipment_id');
+                            $join->where('product_categories.category_id', '=', $request->input('category_id'));
+                        })
+                        ->orderBy('product_categories.display_order', 'asc')->get();
+                }
             }
             else {
                 $equipments = $equipments->with("images")->orderBy('id', 'desc')->get();

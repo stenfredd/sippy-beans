@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use App\Models\Equipment;
 use App\Models\Seller;
@@ -19,31 +20,31 @@ class EquipmentController extends Controller
     {
         $equipments = Equipment::select('equipments.*')->whereStatus(1);
         if ($request->ajax()) {
-            if (!empty($request->input('search')) && !is_array($request->input('search'))) {
+            if (! empty($request->input('search')) && ! is_array($request->input('search'))) {
                 $equipments = $equipments->where(function ($query) use ($request) {
                     $query->where('title', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('short_description', 'LIKE', "%" . $request->input('search') . "%");
                     $query->orWhere('description', 'LIKE', "%" . $request->input('search') . "%");
-                    $query->orWhereHas('brand', function($owh) use ($request) {
+                    $query->orWhereHas('brand', function ($owh) use ($request) {
                         $owh->where('name', 'LIKE', "%" . $request->input('search') . "%");
                     });
-                    $query->orWhereHas('seller', function($owh) use ($request) {
+                    $query->orWhereHas('seller', function ($owh) use ($request) {
                         $owh->where('seller_name', 'LIKE', "%" . $request->input('search') . "%");
                     });
                 });
             }
-            if (!empty($request->input('category_id'))) {
-                $equipments = $equipments->whereRaw('FIND_IN_SET('.$request->category_id.', category_id)');
+            if (! empty($request->input('category_id'))) {
+                $equipments = $equipments->whereRaw('FIND_IN_SET(' . $request->category_id . ', category_id)');
             }
-            if(!empty($request->input('length'))) {
+            if (! empty($request->input('length'))) {
                 $equipments = $equipments->limit($request->input('length'));
             }
-            if(!empty($request->input('category_page'))) {
+            if (! empty($request->input('category_page'))) {
                 // $equipments = $equipments->with("images")->orderBy('display_order', 'asc')->get();
                 if (! empty($request->input('category_page'))) {
                     $equipments = $equipments->with("images")
                         // ->leftJoin('product_categories', 'equipments.id', 'product_categories.equipment_id')
-                        ->leftJoin('product_categories', function($join) use ($request) {
+                        ->leftJoin('product_categories', function ($join) use ($request) {
                             $join->on('equipments.id', '=', 'product_categories.equipment_id');
                             $join->where('product_categories.category_id', '=', $request->input('category_id'));
                         })
@@ -60,7 +61,8 @@ class EquipmentController extends Controller
                     return '<img src="' . asset('assets/images/sort-icon.png') . '" class="handle">';
                 })
                 ->addColumn('image_path', function ($equipment) {
-                    $image_url = $equipment->images[0]->image_path ?? null;
+                    $image_url = $equipment->images[0]->image_path ?? NULL;
+
                     return '<img src="' . asset($image_url ?? 'assets/images/product-img.png') . '">';
                 })
                 ->addColumn('product_name', function ($equipment) {
@@ -74,17 +76,19 @@ class EquipmentController extends Controller
                 })
                 ->editColumn('created_at', function ($banner) {
                     $date = $banner->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
-                    return $date . ('<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>');
+
+                    return $date . ( '<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>' );
                 })
                 ->addColumn('action', function ($equipment) use ($request) {
                     $action = '<a href="' . url('admin/equipments/' . $equipment->id) . '"><i class="feather icon-eye"></i></a>';
-                if (isset($request->category_id) && !empty($request->category_id)) {
-                    $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $equipment->id . ')"><i class="feather icon-trash"></i></a>';
-                }
+                    if (isset($request->category_id) && ! empty($request->category_id)) {
+                        $action .= '<a class="ml-1" href="javascript:" onclick="removeProduct(' . $equipment->id . ')"><i class="feather icon-trash"></i></a>';
+                    }
+
                     return $action;
                 })
                 ->editColumn('status', function ($equipment) {
-                    return ($equipment->status == 1 ? 'Enabled' : 'Disabled');
+                    return ( $equipment->status == 1 ? 'Enabled' : 'Disabled' );
                 })
                 ->editColumn('price', function ($equipment) {
                     return $this->app_settings['currency_code'] . ' ' . number_format($equipment->price, 2);
@@ -94,6 +98,7 @@ class EquipmentController extends Controller
         }
         $total_equipments = $equipments->count();
         view()->share('page_title', 'Equipments');
+
         return view('admin.equipments.list', compact('total_equipments'));
     }
 
@@ -114,13 +119,14 @@ class EquipmentController extends Controller
 
         $request_data = $request->all();
         $request_data['status'] = isset($request_data['status']) ? $request_data['status'] : 0;
-        if(isset($request_data['category_id']) && !empty($request_data['category_id'])) {
+        if (isset($request_data['category_id']) && ! empty($request_data['category_id'])) {
             $request_data['category_id'] = implode(',', $request_data['category_id']);
         }
-        if (isset($request_data['equipment_id']) && !empty($request_data['equipment_id'])) {
+        if (isset($request_data['equipment_id']) && ! empty($request_data['equipment_id'])) {
             $equipment = Equipment::find($request_data['equipment_id'])->update($request_data);
             $equipment_id = $request_data['equipment_id'];
-        } else {
+        }
+        else {
             $equipment = Equipment::create($request_data);
             $equipment_id = $equipment->id;
         }
@@ -130,7 +136,7 @@ class EquipmentController extends Controller
             $imageName = time() . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/equipments'), $imageName);
             $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(1)->first();
-            if(empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'equipment';
                 $img->content_id = $equipment_id;
@@ -146,7 +152,7 @@ class EquipmentController extends Controller
             $image_file->move(public_path('uploads/equipments'), $imageName);
             // Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/equipments/' . $imageName]);
             $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(2)->first();
-            if (empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'equipment';
                 $img->content_id = $equipment_id;
@@ -161,7 +167,7 @@ class EquipmentController extends Controller
             $image_file->move(public_path('uploads/equipments'), $imageName);
             // Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/equipments/' . $imageName]);
             $img = Image::whereType('equipment')->whereContentId($equipment_id)->whereDisplayOrder(3)->first();
-            if (empty($img) || !isset($img->id)) {
+            if (empty($img) || ! isset($img->id)) {
                 $img = new Image();
                 $img->type = 'equipment';
                 $img->content_id = $equipment_id;
@@ -171,16 +177,34 @@ class EquipmentController extends Controller
             $img->save();
         }
 
-        $msg = isset($request_data['equipment_id']) && !empty($request_data['equipment_id']) ? 'updated' : 'created';
-        $msg1 = isset($request_data['equipment_id']) && !empty($request_data['equipment_id']) ? 'Updating' : 'Creating';
+        $msg = isset($request_data['equipment_id']) && ! empty($request_data['equipment_id']) ? 'updated' : 'created';
+        $msg1 = isset($request_data['equipment_id']) && ! empty($request_data['equipment_id']) ? 'Updating' : 'Creating';
         if ($equipment) {
+
+            if (! empty($request->input('category_id'))) {
+                foreach ($request->input('category_id') as $category_id) {
+                    $productCategory = ProductCategory::whereEquipmentId($equipment_id)->whereCategoryId($category_id)->first();
+                    if (empty($productCategory)) {
+                        ProductCategory::create([
+                            'equipment_id' => $equipment_id,
+                            'category_id' => $category_id,
+                            'display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1,
+                        ]);
+                    }
+                }
+            }
+
             session()->flash('success', 'Equipment details ' . $msg . ' successfully.');
+
             return redirect(url('admin/equipments/' . $equipment_id));
-        } else {
+        }
+        else {
             session()->flash('error', $msg1 . ' equipment details failed, Please try again.');
+
             return redirect()->back();
         }
     }
+
     public function delete(Request $request)
     {
         $validation = [
@@ -198,14 +222,15 @@ class EquipmentController extends Controller
         // }
         $delete = Equipment::destroy($request->equipment_id);
 
-        $response = ['status' => false, 'message' => 'Something went wrong, Please try again.'];
+        $response = ['status' => FALSE, 'message' => 'Something went wrong, Please try again.'];
         if ($delete) {
-            $response = ['status' => true, 'message' => 'Equipment deleted successfully.'];
+            $response = ['status' => TRUE, 'message' => 'Equipment deleted successfully.'];
         }
+
         return response()->json($response);
     }
 
-    public function show(Request $request, $id = null)
+    public function show(Request $request, $id = NULL)
     {
         $equipment = Equipment::with('images')->find($id);
         $brands = Brand::whereStatus(1)->get();
@@ -213,7 +238,8 @@ class EquipmentController extends Controller
         $coffeeTypes = CoffeeType::whereStatus(1)->orderBy('display_order', 'asc')->get();
         $categories = Category::whereStatus(1)->get();
 
-        view()->share('page_title', (!empty($id) && is_numeric($id) ? 'Update Equipment' : 'Add New Equipment'));
+        view()->share('page_title', ( ! empty($id) && is_numeric($id) ? 'Update Equipment' : 'Add New Equipment' ));
+
         return view('admin.equipments.show', compact('equipment', 'brands', 'sellers', 'coffeeTypes', 'categories'));
     }
 }

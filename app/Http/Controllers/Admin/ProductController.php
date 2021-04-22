@@ -325,10 +325,10 @@ class ProductController extends Controller
 
             if(!empty($request->input('category_id'))) {
                 foreach ($request->input('category_id') as $category_id) {
-                    $productCategory = ProductCategory::whereProductId($product->id)->whereCategoryId($category_id)->first();
+                    $productCategory = ProductCategory::whereProductId($product_id)->whereCategoryId($category_id)->first();
                     if(empty($productCategory)) {
                         ProductCategory::create([
-                            'product_id' => $product->id,
+                            'product_id' => $product_id,
                             'category_id' => $category_id,
                             'display_order' => ProductCategory::whereCategoryId($category_id)->count() + 1,
                         ]);
@@ -377,7 +377,7 @@ class ProductController extends Controller
         $save = TRUE;
         if (isset($post_data['variant_id']) && ! empty($post_data['variant_id'])) {
             // DB::enableQueryLog();
-            $post_data['grind_id'] = $post_data['grind_id'];
+            // $post_data['grind_id'] = $post_data['grind_id'];
             $dbVariant = Variant::find($request->variant_id);
             if ($post_data['variant_quantity_type'] === 'add') {
                 $post_data['quantity'] = $dbVariant->quantity + ( $post_data['quantity'] );

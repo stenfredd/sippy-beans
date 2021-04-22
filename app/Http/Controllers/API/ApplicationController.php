@@ -108,11 +108,25 @@ class ApplicationController extends Controller
         foreach ($categories_names as $category) {
             $db_category = Category::whereStatus(1)->where('category_title', $category)->orderBy('display_order', 'asc')->first() ?? NULL;
             if (! empty($db_category) && isset($db_category->id)) {
-                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])->orderBy('display_order', 'asc')->whereRaw("FIND_IN_SET('" . $db_category->id . "', category_id)")->limit(30)->get();
+                $products = Product::with(['variants', 'variants.images', 'images', 'weights'])
+                            ->leftJoin('product_categories', function ($join) use ($db_category) {
+                                $join->on('products.id', '=', 'product_categories.product_id');
+                                $join->where('product_categories.category_id', $db_category->id);
+                            })
+                            ->orderBy('product_categories.display_order', 'asc')
+                            ->whereRaw("FIND_IN_SET('" . $db_category->id . "', products.category_id)")
+                            ->limit(30)->get();
                 $equipment = FALSE;
                 if (empty($products) || count($products) == 0) {
                     $equipment = TRUE;
-                    $products = Equipment::with(['images'])->orderBy('display_order', 'asc')->whereRaw("FIND_IN_SET('" . $db_category->id . "', category_id)")->limit(30)->get();
+                    $products = Equipment::with(['images'])
+                                ->leftJoin('product_categories', function ($join) use ($db_category) {
+                                    $join->on('equipments.id', '=', 'product_categories.equipment_id');
+                                    $join->where('product_categories.category_id', $db_category->id);
+                                })
+                                ->orderBy('product_categories.display_order', 'asc')
+                                ->whereRaw("FIND_IN_SET('" . $db_category->id . "', equipments.category_id)")
+                                ->limit(30)->get();
                 }
                 foreach ($products as $product) {
                     $product->is_equipment = $equipment;

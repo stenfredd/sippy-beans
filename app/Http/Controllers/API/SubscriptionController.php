@@ -21,16 +21,14 @@ class SubscriptionController extends Controller
 
         $user_subscription = UserSubscription::whereUserId(auth('api')->user()->id ?? 0)->whereSubscriptionStatus(1)->orderBy('id', 'desc')->first();
         if (! empty($user_subscription) && isset($user_subscription->id)) {
+            if (!empty($user_subscription->cancelled_at) && $user_subscription->subscription_status == 1) {
+                $user_subscription->subscription_status = 2;
+                $user_subscription->save();
+                $user_subscription = $user_subscription->fresh();
+            }
             $user_subscription->next_billing_date = NULL;
             if (empty($user_subscription->cancelled_at)) {
                 $user_subscription->next_billing_date = Carbon::parse($user_subscription->start_date)->addDay()->format("M d,Y");
-            }
-            else {
-                if ($user_subscription->subscription_status == 1) {
-                    $user_subscription->subscription_status = 2;
-                    $user_subscription->save();
-                    $user_subscription = $user_subscription->fresh();
-                }
             }
         }
 

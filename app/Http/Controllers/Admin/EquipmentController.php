@@ -18,7 +18,7 @@ class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $equipments = Equipment::select('*')->whereStatus(1);
+        $equipments = Equipment::select('equipments.*')->whereStatus(1);
         if ($request->ajax()) {
             if (! empty($request->input('search')) && ! is_array($request->input('search'))) {
                 $equipments = $equipments->where(function ($query) use ($request) {
@@ -36,7 +36,7 @@ class EquipmentController extends Controller
             if (! empty($request->input('category_id'))) {
                 $equipments = $equipments->whereRaw('FIND_IN_SET(' . $request->category_id . ', equipments.category_id)');
             }
-            if (! empty($request->input('length'))) {
+            if (! empty($request->input('length')) && ! empty($request->input('category_page'))) {
                 $equipments = $equipments->limit($request->input('length'));
             }
             if (! empty($request->input('category_page'))) {
@@ -58,7 +58,7 @@ class EquipmentController extends Controller
 
             return DataTables::of($equipments)
                 ->addIndexColumn()
-                ->addColumn('sort_image', function ($banner) {
+                ->addColumn('sort_image', function ($equipment) {
                     return '<img src="' . asset('assets/images/sort-icon.png') . '" class="handle">';
                 })
                 ->addColumn('image_path', function ($equipment) {
@@ -75,10 +75,10 @@ class EquipmentController extends Controller
                 ->addColumn('seller_name', function ($equipment) {
                     return $equipment->seller->seller_name ?? '-';
                 })
-                ->editColumn('created_at', function ($banner) {
-                    $date = $banner->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
+                ->editColumn('created_at', function ($equipment) {
+                    $date = $equipment->created_at->timezone($this->app_settings['timezone'])->format("M d, Y");
 
-                    return $date . ( '<span class="d-block gray">' . $banner->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>' );
+                    return $date . ( '<span class="d-block gray">' . $equipment->created_at->timezone($this->app_settings["timezone"])->format("g:iA") . '</span>' );
                 })
                 ->addColumn('action', function ($equipment) use ($request) {
                     $action = '<a href="' . url('admin/equipments/' . $equipment->id) . '"><i class="feather icon-eye"></i></a>';

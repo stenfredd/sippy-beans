@@ -159,7 +159,7 @@ class StripeController extends Controller
 
                         Mail::to($order->user->email)->queue(new CustomerNewOrder($order));
                         try {
-                            Mail::to(env('APP_ORDER_EMAIL', 'hello@hypeten.com'))->queue(new AppNewOrder($order));
+                            Mail::to(env('APP_ORDER_EMAIL', 'orders@sippyme.com'))->queue(new AppNewOrder($order));
                         }
                         catch (\Exception $e) {
                             info($e->getMessage());

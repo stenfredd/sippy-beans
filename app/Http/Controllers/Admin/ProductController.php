@@ -48,7 +48,7 @@ class ProductController extends Controller
             if (! empty($request->input('category_id'))) {
                 $products = $products->whereRaw('FIND_IN_SET(' . $request->category_id . ', products.category_id)');
             }
-            if (! empty($request->input('length'))) {
+            if (! empty($request->input('length')) && ! empty($request->input('category_page'))) {
                 $products = $products->limit($request->input('length'));
             }
             if (! empty($request->input('category_page'))) {
@@ -247,6 +247,9 @@ class ProductController extends Controller
             // 'process_id' => 'required',
             // 'tags' => 'required'
         ];
+        if(empty($request->input('product_id'))) {
+            $validation['grind_ids'] = 'required';
+        }
         $this->validate($request, $validation);
 
         $request_data = $request->except(['image_0', 'image_1', 'image_2']);

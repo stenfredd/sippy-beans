@@ -440,6 +440,9 @@ class ProductController extends Controller
         $ids = array_diff($variant_grind_ids, [$request->grind_id]);
         $variant->grind_ids = implode(',', $ids);
         $save = $variant->save();
+        if(empty($ids)) {
+            $variant->delete();
+        }
         if ($save) {
             return response()->json(['status' => TRUE, 'message' => 'Variant deleted successfully.']);
         }

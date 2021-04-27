@@ -38,9 +38,9 @@ class CategoryController extends Controller
                     return $category_title;
                 })
                 ->addColumn('products_count', function ($category) {
-                    $pro_cnt = Product::whereRaw('FIND_IN_SET('.$category->id.', category_id)')->count();
+                    $pro_cnt = Product::whereRaw('FIND_IN_SET("'.$category->id.'", category_id)')->count();
                     if ($pro_cnt == 0) {
-                        $pro_cnt = Equipment::whereRaw('FIND_IN_SET('.$category->id.', category_id)')->count();
+                        $pro_cnt = Equipment::whereRaw('FIND_IN_SET("'.$category->id.'", category_id)')->count();
                     }
                     return $pro_cnt;
                 })
@@ -72,10 +72,10 @@ class CategoryController extends Controller
     public function show(Request $request, $id = null)
     {
         $category = Category::find($id);
-        $products = Product::whereRaw('FIND_IN_SET('.$id.', category_id)')->count();
+        $products = Product::whereRaw('FIND_IN_SET("'.$id.'", category_id)')->count();
         $is_equipment = 0;
         if ($products == 0) {
-            $products = Equipment::whereRaw('FIND_IN_SET('.$id.', category_id)')->count();
+            $products = Equipment::whereRaw('FIND_IN_SET("'.$id.'", category_id)')->count();
             $is_equipment = 1;
         }
 //        $dbProducts = Product::leftJoin('product_categories', 'products.id', 'product_categories.product_id')->orderBy('product_categories.display_order')->get();

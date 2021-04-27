@@ -247,9 +247,9 @@ class ProductController extends Controller
             // 'process_id' => 'required',
             // 'tags' => 'required'
         ];
-        if(empty($request->input('product_id'))) {
+        /*if(empty($request->input('product_id'))) {
             $validation['grind_ids'] = 'required';
-        }
+        }*/
         $this->validate($request, $validation);
 
         $request_data = $request->except(['image_0', 'image_1', 'image_2']);
@@ -293,7 +293,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('image_1')) {
             $image_file = $request->file('image_1');
-            $imageName = time() . '.' . $image_file->extension();
+            $imageName = (time() + 10) . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->first();
@@ -308,7 +308,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('image_2')) {
             $image_file = $request->file('image_2');
-            $imageName = time() . '.' . $image_file->extension();
+            $imageName = (time() + 20) . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->first();

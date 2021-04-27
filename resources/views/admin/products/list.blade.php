@@ -122,6 +122,7 @@
         "serverSide": true,
         "lengthChange": false,
         "searching": false,
+        "pageLength": 50,
         "order": [],
         "ajax": {
             "url": BASE_URL + "products",

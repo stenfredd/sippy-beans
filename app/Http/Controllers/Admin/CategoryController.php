@@ -87,7 +87,7 @@ class CategoryController extends Controller
     public function save(Request $request)
     {
         $validation = [
-            'title' => 'required_if:category_id,null',
+            'category_title' => 'required_if:category_id,null',
             'description' => 'required_if:category_id,null'
         ];
         $this->validate($request, $validation);

@@ -17,7 +17,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>CATEGORY TITLE</label>
-                                        <input type="text" class="form-control" name="title" id="title"
+                                        <input type="text" class="form-control" name="category_title" id="title"
                                             placeholder="Add a title for the category"
                                             value="{{ $category->category_title ?? '' }}">
                                     </div>
@@ -75,7 +75,7 @@
                             <div id="ecommerce-searchbar">
                                 <div class="row mt-1 justify-content-between align-items-top">
                                     <div class="col-lg-7 col-md-7">
-                                        <form>
+                                        <div>
                                             <fieldset class="form-group position-relative has-icon-right mb-1">
                                                 <input type="text" class="form-control form-control-lg"
                                                     id="search_product"
@@ -84,7 +84,7 @@
                                                     <i class="feather icon-search px-1"></i>
                                                 </div>
                                             </fieldset>
-                                        </form>
+                                        </div>
                                     </div>
                                     <div class="col-lg-5 col-md-5">
                                         <div class="d-flex justify-content-between align-items-top w-100">
@@ -125,8 +125,7 @@
         @endif
         <div class="row justify-content-end">
             <div class="col-md-6">
-                <button type="submit" class="btn btn-primary font-weight-bold btn-lg w-100 waves-effect waves-light"
-                    data-dismiss="modal">SAVE</button>
+                <button type="submit" class="btn btn-primary font-weight-bold btn-lg w-100 waves-effect waves-light">SAVE</button>
                 <button type="button"
                     class="btn font-weight-bold btn-lg w-100 waves-effect waves-light btn-outline-primary mt-1"
                     onclick="deleteCategory()">DELETE</button>

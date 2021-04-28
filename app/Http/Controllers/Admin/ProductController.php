@@ -342,7 +342,7 @@ class ProductController extends Controller
                 }
             }
             else {
-                ProductCategory::whereProductId($product_id)->whereCategoryId($category_id)->delete();
+                ProductCategory::whereProductId($product_id)->delete();
             }
 
             if (! empty($request->input('add_variant'))) {

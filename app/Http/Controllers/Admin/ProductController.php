@@ -54,7 +54,7 @@ class ProductController extends Controller
             if (! empty($request->input('category_page'))) {
                 $products = $products->with("images")
                     // ->leftJoin('product_categories', 'products.id', 'product_categories.product_id')
-                    ->leftJoin('product_categories', function($join) use ($request) {
+                    ->leftJoin('product_categories', function ($join) use ($request) {
                         $join->on('products.id', '=', 'product_categories.product_id');
                         $join->where('product_categories.category_id', '=', $request->input('category_id'));
                     })
@@ -266,6 +266,9 @@ class ProductController extends Controller
         if (isset($request_data['category_id']) && ! empty($request_data['category_id'])) {
             $request_data['category_id'] = implode(',', $request_data['category_id']);
         }
+        else {
+            $request_data['category_id'] = NULL;
+        }
         if (isset($request_data['product_id']) && ! empty($request_data['product_id'])) {
             $product = Product::find($request_data['product_id'])->update($request_data);
             $product_id = $request_data['product_id'];
@@ -293,7 +296,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('image_1')) {
             $image_file = $request->file('image_1');
-            $imageName = (time() + 10) . '.' . $image_file->extension();
+            $imageName = ( time() + 10 ) . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(2)->first();
@@ -308,7 +311,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('image_2')) {
             $image_file = $request->file('image_2');
-            $imageName = (time() + 20) . '.' . $image_file->extension();
+            $imageName = ( time() + 20 ) . '.' . $image_file->extension();
             $image_file->move(public_path('uploads/products'), $imageName);
             // Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->update(['image_path' => 'uploads/products/' . $imageName]);
             $img = Image::whereType('product')->whereContentId($product_id)->whereDisplayOrder(3)->first();
@@ -326,10 +329,10 @@ class ProductController extends Controller
         $msg1 = isset($request_data['product_id']) && ! empty($request_data['product_id']) ? 'Updating' : 'Creating';
         if ($product) {
 
-            if(!empty($request->input('category_id'))) {
+            if (! empty($request->input('category_id'))) {
                 foreach ($request->input('category_id') as $category_id) {
                     $productCategory = ProductCategory::whereProductId($product_id)->whereCategoryId($category_id)->first();
-                    if(empty($productCategory)) {
+                    if (empty($productCategory)) {
                         ProductCategory::create([
                             'product_id' => $product_id,
                             'category_id' => $category_id,
@@ -337,6 +340,9 @@ class ProductController extends Controller
                         ]);
                     }
                 }
+            }
+            else {
+                ProductCategory::whereProductId($product_id)->whereCategoryId($category_id)->delete();
             }
 
             if (! empty($request->input('add_variant'))) {
@@ -440,7 +446,7 @@ class ProductController extends Controller
         $ids = array_diff($variant_grind_ids, [$request->grind_id]);
         $variant->grind_ids = implode(',', $ids);
         $save = $variant->save();
-        if(empty($ids)) {
+        if (empty($ids)) {
             $variant->delete();
         }
         if ($save) {

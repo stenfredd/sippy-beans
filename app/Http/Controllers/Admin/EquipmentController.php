@@ -18,7 +18,7 @@ class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $equipments = Equipment::select('equipments.*')->whereStatus(1);
+        $equipments = Equipment::select('equipments.*');
         if ($request->ajax()) {
             if (! empty($request->input('search')) && ! is_array($request->input('search'))) {
                 $equipments = $equipments->where(function ($query) use ($request) {

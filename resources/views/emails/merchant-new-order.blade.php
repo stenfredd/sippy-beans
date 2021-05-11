@@ -260,7 +260,13 @@
                                                                                     <strong>Shipping Address</strong>
                                                                                 </td>
                                                                             </tr>
-                                                                            <tr>
+	                                                                        <tr>
+		                                                                        <td align="center" valign="top" style="color:#c7c7c7; font-size:10px">
+			                                                                        <strong style="color:#767676;">SIPPY LTD</strong>
+			                                                                        , Al Sila Tower, Abu Dhabi Global Market, Abu Dhabi, UAE
+		                                                                        </td>
+	                                                                        </tr>
+																			{{-- <tr>
                                                                                 <td style="font-size:12px">
                                                                                     <strong>{{ $order->user->name }}</strong>
                                                                                 </td>
@@ -280,7 +286,7 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td style="font-size:12px">{{ $order->user->country_code .' ' . $order->user->phone }}</td>
-                                                                            </tr>
+                                                                            </tr>--}}
                                                                         </table>
                                                                     </td>
                                                                 </tr>

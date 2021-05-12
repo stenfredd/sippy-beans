@@ -14,6 +14,7 @@ class Category extends Model
         'short_description',
         'description',
         'display_order',
+	    'image_url',
         'status'
     ];
 }

@@ -227,9 +227,19 @@ class ProductController extends Controller
 
 		return redirect('admin/products');
 	}
-
+	
+	public function syncAddProduct(Request $request)
+	{
+		echo 1263;
+		exit;
+	}
+	
 	public function save(Request $request)
 	{
+		//var_dump($_POST);
+		//exit;
+		
+		
 		$validation = [
 			// 'status' => 'required',
 			'product_name' => 'required',
@@ -422,6 +432,7 @@ class ProductController extends Controller
 					'price' => $post_data['add_variant'][$weight_id]['price'],
 					'quantity' => $post_data['add_variant'][$weight_id]['quantity'],
 					'reward_point' => $post_data['add_variant'][$weight_id]['reward_point'],
+					'title' => $request->product_name . ' ' . $weight_title,
 					'sku' => str_replace(' ', '-', $request->product_name) . '-' . $weight_title,
 					'status' => 1
 				];

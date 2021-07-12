@@ -44,18 +44,18 @@ class ProductController extends Controller
 			$price0 = $price[0];
 			$price1 = $price[1] ?? 0;
 
-			$sql = "SELECT product_id from variants WHERE price >= $price0";
+			$sql = "SELECT product_id from variants WHERE price > $price0";
 			if($price1 > 0) {
-				$sql .= " AND price <= $price1";
+				$sql .= " AND price < $price1";
 			}
-            $sql .= " AND product_id not in (SELECT product_id FROM variants WHERE price <= $price0";
+            $sql .= " AND product_id not in (SELECT product_id FROM variants WHERE price < $price0";
 			if($price1 > 0) {
-				$sql .= " OR price >= $price1";
+				$sql .= " OR price > $price1";
 			}
 			$sql .= ")";
 			$variants = DB::select($sql);
 			// $variants = Variant::whereBetween('price', $price)->get();
-			$product_ids = ! empty($variants) && count($variants) ? array_column($variants->toArray(), 'product_id') : [0];
+			$product_ids = ! empty($variants) && count($variants) ? array_column((array) $variants, 'product_id') : [0];
 			$products = $products->whereIn('id', $product_ids);
 		}
 		if (! empty($origin_id)) {
@@ -71,10 +71,11 @@ class ProductController extends Controller
 			$products = $products->whereIn('best_for_id', explode(',', $best_for_id));
 		}
 		if (! empty($coffee_type_id)) {
-			// $products = $products->whereIn('coffee_type_id', explode(',', $coffee_type_id));
+			/*$products = $products->whereIn('coffee_type_id', explode(',', $coffee_type_id));
 			foreach ($coffee_type_id as $ct_id) {
 				$products = $products->whereRaw('FIND_IN_SET(coffee_type_id) > 0', [$ct_id]);
-			}
+			}*/
+			$products = $products->whereRaw("CONCAT(',','" . $coffee_type_id . "', ',') REGEXP CONCAT(',(', REPLACE(coffee_type_id, ',', '|'), '),')");
 		}
 		if (! empty($type_id)) {
 			$products = $products->whereIn('type_id', explode(',', $type_id));

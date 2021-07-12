@@ -9,6 +9,7 @@ Auth::routes([
 ]);
 Route::get('/', function() { return redirect('admin'); })->middleware('auth'); // 'HomeController@admin');
 
+
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('/', 'HomeController@index')->name('home');
@@ -92,6 +93,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::post('service-policies', 'Admin\PageController@save');
     });
 });
+
+Route::get("sync/product/add", "Admin\ProductController@syncAddProduct");
 
 // Stripe Callback
 Route::get('/subscription/create', 'User\SubscriptionController@index')->name('subscription.create');

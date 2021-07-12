@@ -422,6 +422,7 @@ class ProductController extends Controller
 					'price' => $post_data['add_variant'][$weight_id]['price'],
 					'quantity' => $post_data['add_variant'][$weight_id]['quantity'],
 					'reward_point' => $post_data['add_variant'][$weight_id]['reward_point'],
+					'title' => $request->product_name . ' ' . $weight_title,
 					'sku' => str_replace(' ', '-', $request->product_name) . '-' . $weight_title,
 					'status' => 1
 				];

@@ -17,7 +17,7 @@ class CartController extends Controller
     public function index(Request $request)
     {
         $user_id = auth('api')->user()->id;
-        $db_cart_data = Cart::where('user_id', $user_id)->with(['variant', 'product', 'product.variants', 'product.images', 'equipment', 'equipment.images', 'subscription'])->get();
+        $db_cart_data = Cart::where('user_id', $user_id)->with(['variant', 'product', 'product.variants', 'product.images', 'equipment', 'equipment.images', 'subscription', 'product.weights'])->get();
         $response = [
             'status' => false,
             'message' => 'No cart data found.'

@@ -265,12 +265,12 @@
                         return '<div class="status-options">\
                                              <div class="status-options">\
                                                 <div class="d-inline-block selected mr-25">\
-                                                   <div class="color-option border-success">\
-                                                      <div class="filloption bg-success"></div>\
+                                                   <div class="color-option border-'+(parseInt(row.status) === 1 ? 'success' : 'danger')+'">\
+                                                      <div class="filloption bg-'+(parseInt(row.status) === 1 ? 'success' : 'danger')+'"></div>\
                                                    </div>\
                                                 </div>\
-                                                <span class="font-small-2 text-success font-weight-bold d-inline-block">\
-                                                Active</span>\
+                                                <span class="font-small-2 text-'+(parseInt(row.status) === 1 ? 'success' : 'danger')+' font-weight-bold d-inline-block">\
+                                                '+(parseInt(row.status) === 1 ? 'Active' : 'Inactive')+'</span>\
                                              </div>\
                                           </div>';
                     },

@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 Auth::routes([
     'register' => false
 ]);
-Route::get('/', function() { return redirect('admin'); })->middleware('auth'); // 'HomeController@admin');
+//Route::get('/', function() { return redirect('admin'); })->middleware('auth'); // 'HomeController@admin');
+
 
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -96,3 +97,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 // Stripe Callback
 Route::get('/subscription/create', 'User\SubscriptionController@index')->name('subscription.create');
 Route::any('stripe/callback', 'Server\StripeController@webhookCallback');
+
+
+Route::get('', 'HomePageController@index'); // 'HomeController@admin');

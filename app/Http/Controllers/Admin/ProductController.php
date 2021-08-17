@@ -228,6 +228,13 @@ class ProductController extends Controller
 		return redirect('admin/products');
 	}
 
+	public function deleteProduct(Request $request)
+	{
+		echo 1;
+		exit;
+	}
+	
+	
 	public function save(Request $request)
 	{
 		$validation = [
@@ -433,7 +440,7 @@ class ProductController extends Controller
 
 		return response()->json($response);
 	}
-
+	
 	public function deleteVariant(Request $request)
 	{
 		$request->validate([

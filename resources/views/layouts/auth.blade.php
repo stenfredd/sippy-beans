@@ -63,6 +63,7 @@
       <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-style.css')}}">
       <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-responsive-style.css')}}">
       <!-- END: Common CSS-->
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/dist/assets/css/auth-reg.min.css')}}">
     </head>
    <!-- END: Head-->
    <!-- BEGIN: Body-->
@@ -120,6 +121,7 @@
 
       <!----------service-policies---------->
       <script src="{{ asset('assets/js/service-policies.js')}}"></script>
+      <script src="{{ asset('assets/dist/assets/js/auth-reg.min.js')}}"></script>
       <!----------end service-policies---------->
    </body>
    <!-- END: Body-->

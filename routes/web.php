@@ -4,9 +4,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
+
 Auth::routes([
-    'register' => false
+    //'register' => false
 ]);
+
+Route::get('/tesst', 'Auth\RegisterController@index');
+
+Route::get('/password/new-password', 'Auth\NewPasswordController@index');
+Route::get('/account-not-activated', 'Auth\ActivateController@inactive');
+Route::get('/personal-data', 'User\PersonalDataController@index');
 //Route::get('/', function() { return redirect('admin'); })->middleware('auth'); // 'HomeController@admin');
 
 
@@ -100,3 +107,5 @@ Route::any('stripe/callback', 'Server\StripeController@webhookCallback');
 
 
 Route::get('', 'HomePageController@index'); // 'HomeController@admin');
+
+
